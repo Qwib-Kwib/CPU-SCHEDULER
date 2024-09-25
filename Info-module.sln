@@ -5,11 +5,6 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Info-module", "Info-module.csproj", "{2D2BF272-25B8-4D64-8A39-BE3001D705BE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D938D13-42AC-4B59-80EF-8E7FC1832DBF}"
-	ProjectSection(SolutionItems) = preProject
-		universitydb.sql = universitydb.sql
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
