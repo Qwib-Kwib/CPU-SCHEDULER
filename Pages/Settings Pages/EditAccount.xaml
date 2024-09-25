@@ -1,0 +1,55 @@
+﻿<Page x:Class="Info_module.Pages.Settings_Pages.EditAccount"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Info_module.Pages.Settings_Pages"
+      mc:Ignorable="d"
+      Title="EditAccount" d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="5*"/>
+            </Grid.RowDefinitions>
+            <Viewbox>
+                <Grid Height="225" Width="320">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="7*"/>
+                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="1.5*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*"/>
+                        <ColumnDefinition Width="5*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="oldUsername_txt" Margin="10,35,30,102" TextWrapping="Wrap" Height="20"/>
+                    <TextBox x:Name="oldPassword_txt" Margin="10,83,20,54" TextWrapping="Wrap" Width="130" Height="20"/>
+                    <Button x:Name="edit_btn" Content="Edit" Margin="110,6,110,7" Grid.ColumnSpan="2" Grid.Row="1" Height="20" Click="edit_btn_Click"/>
+
+                    <TextBlock TextWrapping="Wrap" Text="Old Username" Margin="10,10,70,128" Height="20"/>
+                    <TextBlock TextWrapping="Wrap" Text="Old Password" Margin="10,60,70,76" Height="20"/>
+                    <Button x:Name="clear_btn" Content="Clear" Margin="110,7,110,7" Grid.ColumnSpan="2" Grid.Row="2" Height="20" Click="clear_btn_Click"/>
+                    <TextBox x:Name="newUsername_txt" Margin="10,35,30,102" TextWrapping="Wrap" Height="20" Grid.Column="1"/>
+                    <TextBox x:Name="newPassword_txt" Margin="10,83,20,54" TextWrapping="Wrap" Width="130" Height="20" Grid.Column="1"/>
+                    <TextBlock TextWrapping="Wrap" Text="New Username" Margin="10,10,50,128" Height="20" Grid.Column="1"/>
+                    <TextBlock TextWrapping="Wrap" Text="New Password" Margin="10,61,70,76" Height="20" Grid.Column="1"/>
+
+                </Grid>
+            </Viewbox>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
+
+        </Grid>
+
+    </Grid>
+</Page>

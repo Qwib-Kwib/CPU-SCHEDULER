@@ -1,0 +1,81 @@
+﻿<Page x:Class="Info_module.Pages.TableMenus.DepartmentMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Info_module.Pages.TableMenus"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DepartmentMenu">
+
+    <Grid Background="#FFFBFBFB">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0"/>
+        </Grid.ColumnDefinitions>
+
+        <!--top bar-->
+        <Frame x:Name="TopBarFrame" Content="" NavigationUIVisibility="Hidden" d:IsLocked="True"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="7.5*"/>
+            </Grid.ColumnDefinitions>
+            <Viewbox Stretch="Fill">
+                <Grid Height="350" Width="200">
+                    <TextBlock TextWrapping="Wrap" Text="Building Code" Margin="10,47,95,283" Height="20"/>
+                    <TextBox x:Name="deparmentCode_txt" TextWrapping="Wrap" Margin="10,112,10,216"/>
+                    <TextBlock TextWrapping="Wrap" Text="Department Name" Margin="10,139,85,191" Height="20"/>
+                    <TextBox x:Name="departmentName_txt" TextWrapping="Wrap" Margin="10,159,10,156" Height="35"/>
+                    <TextBlock TextWrapping="Wrap" Text="Department ID" Margin="10,1,100,329" Height="20"/>
+                    <TextBox x:Name="departmentId_txt" TextWrapping="Wrap" IsEnabled="False" Margin="10,22,10,308" Height="20"/>
+                    <Button x:Name="addDepartment_btn" Content="Add" Margin="18,298,107,32" Width="75" Height="20" Click="addDepartment_btn_Click"/>
+                    <Button x:Name="editDepartment_btn" Content="Update" Margin="108,298,17,32" Width="75" Height="20" Click="editDepartment_btn_Click"/>
+                    <Button x:Name="statusDepartment_btn" Content="Remove" Margin="108,323,17,7" Width="75" Height="20" Click="statusDepartment_btn_Click"/>
+                    <ComboBox x:Name="buildingCode_cbx" VerticalAlignment="Top" Margin="10,67,10,0" Height="20"/>
+                    <TextBlock TextWrapping="Wrap" Text="Department Code" Margin="10,92,90,238" Height="20"/>
+                    <Button x:Name="imageUpload_btn" Content="Upload" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" FontSize="10" Width="48" Margin="10,228,0,0" Click="imageUpload_btn_Click"/>
+                    <TextBlock TextWrapping="Wrap" Text="Logo" Margin="10,203,140,127" Height="20"/>
+                    <Border Height="90" Margin="93,203,17,0" VerticalAlignment="Top" Background="#FFE6E6E6" BorderBrush="Black" Width="90">
+                        <Image x:Name="logoPreview_img" OpacityMask="Black" Margin="2,2,2,2"/>
+                    </Border>
+                    <Button x:Name="clearDepartment_btn" Content="Clear" Margin="18,323,107,7" Width="75" Height="20" Click="clearDepartment_btn_Click"/>
+                </Grid>
+            </Viewbox>
+            <Viewbox Margin="11,0,0,0" Grid.Column="1" Stretch="Fill">
+                <Grid Height="350" Width="589">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="317*"/>
+                        <RowDefinition Height="33*"/>
+                    </Grid.RowDefinitions>
+                    <Viewbox Margin="5,10,5,10" Width="579" Stretch="Fill">
+                        <DataGrid x:Name="department_data" AutoGenerateColumns="False" SelectionChanged="department_data_SelectionChanged" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" Height="427" Width="921" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Department ID" Binding="{Binding Department_ID}" Width="100" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Building Code" Binding="{Binding Building_Code}" Width="100" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Department Code" Binding="{Binding Department_Code}" Width="120" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Department Name" Binding="{Binding Department_Name}" Width="500" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="500" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Viewbox>
+                    <Viewbox Stretch="Fill" Margin="411,5,10,6" Grid.Row="1">
+                        <Grid Height="22" Width="171">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Show:" VerticalAlignment="Center" Height="22" Width="46" FontSize="16"/>
+                            <ComboBox x:Name="Status_cmb" HorizontalAlignment="Left" Margin="51,0,0,0" VerticalAlignment="Center" Width="120" SelectedIndex="0" SelectionChanged="Status_cmb_SelectionChanged">
+                                <ComboBoxItem Content="Active"/>
+                                <ComboBoxItem Content="Inactive"/>
+                                <ComboBoxItem Content="All"/>
+                            </ComboBox>
+                        </Grid>
+                    </Viewbox>
+                </Grid>
+            </Viewbox>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,126 @@
+﻿<Page x:Class="Info_module.Pages.SideBar"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Info_module.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SideBar">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="70*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Background="#FF19191F">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2.5*"/>
+                    <RowDefinition Height="7.5*"/>
+                </Grid.RowDefinitions>
+                <Viewbox Margin="74,10,74,12">
+                    <Image Source="/Images/CPU_LOGO.png" Height="92" Width="92"/>
+                </Viewbox>
+                <Viewbox Grid.Row="1" Stretch="Fill">
+                    <Grid Height="338" Width="240">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="18*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock TextWrapping="Wrap" Text="Navigation" Margin="0,3,0,3" FontSize="18" Foreground="AntiqueWhite"/>
+                        <Button x:Name="Department_btn" Click="Department_btn_Click" Grid.Row="1">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Department" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Building_btn" Width="240" Click="Building_btn_Click" Grid.Row="2">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Building" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Curriculum_btn" Width="240" Click="Curriculum_btn_Click" Grid.Row="3">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Curriculum" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Instructor_btn" Width="240" Click="Instructor_btn_Click" Grid.Row="4">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Instructor" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Student_btn" Width="240" Click="Student_btn_Click" Grid.Row="5">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Student" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Settings_btn" Width="240" Click="Settings_btn_Click" Grid.Row="7">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Settings" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="LogOut_btn" Width="240" Grid.Row="8" Click="LogOut_btn_Click">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Log-out" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="Back_btn" Width="240" Click="Back_btn_Click" Grid.Row="9">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text="Back" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                    </Grid>
+                </Viewbox>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Rectangle IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="Black" Opacity="0.3"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Button x:Name="offSidebar" Opacity="0" Click="offSidebar_Click"/>
+        </Grid>
+
+    </Grid>
+</Page>

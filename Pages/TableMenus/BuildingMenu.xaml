@@ -1,0 +1,81 @@
+﻿<Page x:Class="Info_module.Pages.TableMenus.BuildingMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Info_module.Pages.TableMenus"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="BuildingMenu">
+
+    <Grid Background="#FFFBFBFB">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0"/>
+        </Grid.ColumnDefinitions>
+
+        <!--top bar-->
+        <Frame x:Name="TopBarFrame" Content="" NavigationUIVisibility="Hidden"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="7*"/>
+            </Grid.ColumnDefinitions>
+            <Viewbox Margin="15,15,15,15" Stretch="Fill">
+                <Grid Height="285" Width="216">
+                    <TextBox x:Name="ID_txt" HorizontalAlignment="Left" Margin="0,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                    <TextBox x:Name="buildingCode_txt" HorizontalAlignment="Left" Margin="0,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBox x:Name="buildingName_txt" HorizontalAlignment="Center" Margin="0,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="216" Height="41"/>
+                    <TextBox x:Name="posX_txt" HorizontalAlignment="Left" Margin="0,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="85" PreviewTextInput="TextBox_PreviewTextInput" Height="18"/>
+                    <TextBox x:Name="PosY_txt" HorizontalAlignment="Left" Margin="108,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="85" PreviewTextInput="TextBox_PreviewTextInput" Height="18"/>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="0,44,0,0" TextWrapping="Wrap" Text="Building Code" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="0,88,0,0" TextWrapping="Wrap" Text="Building Name" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="0,155,0,0" TextWrapping="Wrap" Text="Position X:" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="108,155,0,0" TextWrapping="Wrap" Text="Position Y:" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top" Width="60" Click="add_btn_Click"/>
+                    <Button x:Name="edit_btn" Content="Update" Margin="78,200,78,0" VerticalAlignment="Top" Click="edit_btn_Click"/>
+                    <Button x:Name="status_btn" Content="Activate" Margin="145,200,10,0" VerticalAlignment="Top" Click="remove_btn_Click" Height="20" Width="60"/>
+                    <Button x:Name="btnCSVRooms" Content="Configure Rooms" HorizontalAlignment="Left" Margin="8,252,0,0" VerticalAlignment="Top" Height="33" Width="194" Click="btnCSVRooms_Click"/>
+                    <Button x:Name="clear_btn" Content="Clear" HorizontalAlignment="Left" Margin="58,225,0,0" VerticalAlignment="Top" Height="22" Width="96" Click="clear_btn_Click"/>
+                </Grid>
+            </Viewbox>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="373*"/>
+                    <ColumnDefinition Width="188*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="158*"/>
+                    <RowDefinition Height="17*"/>
+                </Grid.RowDefinitions>
+                <Viewbox Margin="10,10,10,10" Stretch="Fill" Grid.ColumnSpan="2">
+                    <DataGrid x:Name="account_data" Loaded="building_data_Loaded" AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" Height="410" Width="821" SelectionChanged="account_data_SelectionChanged" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Building_Id}" Width="60" CanUserResize="False" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Building Code" Binding="{Binding Building_Code}" Width="100" CanUserResize="False" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Building Name" Binding="{Binding Building_Name}" Width="320" CanUserResize="False" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" CanUserResize="False" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Viewbox>
+                <Viewbox Stretch="Fill" Margin="14,6,10,6" Grid.Row="1" Grid.Column="1">
+                    <Grid Height="22" Width="171">
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Show:" VerticalAlignment="Center" Height="22" Width="46" FontSize="16"/>
+                        <ComboBox x:Name="Status_cmb" Margin="51,0,0,0" VerticalAlignment="Center" SelectedIndex="0" SelectionChanged="Status_cmb_SelectionChanged">
+                            <ComboBoxItem Content="Active"/>
+                            <ComboBoxItem Content="Inactive"/>
+                            <ComboBoxItem Content="All"/>
+                        </ComboBox>
+                    </Grid>
+                </Viewbox>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Page>
