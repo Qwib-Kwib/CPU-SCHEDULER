@@ -43,12 +43,9 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
         private void LoadUI()
         {
             TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Curriculum Menu";
-            topBar.Visibility = Visibility.Visible;
-            topBar.BackButtonClicked += TopBar_BackButtonClicked;
-            TopBarFrame.Navigate(topBar);
-            // Navigate the frame to TopBar
-            Status_cmb.SelectionChanged += Status_cmb_SelectionChanged;
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Curriculum Menu", TopBar_BackButtonClicked);
+
             LoadDepartmentDetails();
             LoadCurriculum();
         }

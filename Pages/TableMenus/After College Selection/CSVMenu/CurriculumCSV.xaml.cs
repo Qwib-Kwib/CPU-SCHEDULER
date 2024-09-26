@@ -21,6 +21,7 @@ using System.Windows.Shapes;
 using CsvHelper.Configuration;
 
 using static Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
+using ZstdSharp.Unsafe;
 
 namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 {
@@ -32,26 +33,41 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         public int DepartmentId { get; set; }
         public int CurriculumId { get; set; }
 
+        private int selectedSubjectId;
+        private string selectedServingDept;
+        private int selectedYear;
+        private string selectedSemester;
+        private string selectedSubjectCode;
+        private string selectedSubjectTittle;
+        private string selectedSubjectType;
+        private string selectedLABorLEC;
+        private int selectedHour;
+        private int selectedUnit;
+        private int selectedStatus;
+
         string connectionString = App.ConnectionString;
 
 
         public CurriculumCSV(int departmentId, int curriculumId)
         {
             InitializeComponent();
-            TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Curriculum Menu";
-            topBar.Visibility = Visibility.Visible;
-            topBar.BackButtonClicked += TopBar_BackButtonClicked;
-            TopBarFrame.Navigate(topBar);
 
             DepartmentId = departmentId;
             CurriculumId = curriculumId;
-            LoadCurriculumDetails();
-            LoadSubject();
+
+            LoadUI();
+
         }
 
-        private void LoadCurriculumDetails()
+        #region ui
+
+        private void LoadUI()
         {
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Curriculum Menu", TopBar_BackButtonClicked);
+
+
+            //curriculum revision text block
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -67,14 +83,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     MySqlCommand curriculumCommand = new MySqlCommand(curriculumQuery, connection);
                     curriculumCommand.Parameters.AddWithValue("@curriculumId", CurriculumId);
 
-                    // Query to fetch Logo_Image from departments table
-                    string departmentQuery = @"
-                SELECT Logo_Image 
-                FROM departments 
-                WHERE Dept_Id = @deptId";
-
-                    MySqlCommand departmentCommand = new MySqlCommand(departmentQuery, connection);
-                    departmentCommand.Parameters.AddWithValue("@deptId", DepartmentId);
 
                     // Execute the first query to get Curriculum_Revision
                     string curriculumRevision = null;
@@ -88,39 +96,73 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
                     // Set the curriculum revision text box
                     curriculumRevision_txt.Text = curriculumRevision;
-
-                    // Execute the second query to get Logo_Image
-                    byte[] logoImageData = null;
-                    using (MySqlDataReader departmentReader = departmentCommand.ExecuteReader())
-                    {
-                        if (departmentReader.Read())
-                        {
-                            // Load logo image
-                            if (!(departmentReader["Logo_Image"] is DBNull))
-                            {
-                                logoImageData = (byte[])departmentReader["Logo_Image"];
-                                BitmapImage bitmap = new BitmapImage();
-                                bitmap.BeginInit();
-                                bitmap.StreamSource = new MemoryStream(logoImageData);
-                                bitmap.EndInit();
-                                Logo_img.Source = bitmap;
-                            }
-                            else
-                            {
-                                // Handle case where no image is found
-                                Logo_img.Source = null;
-                            }
-                        }
-                    }
                 }
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show("Error loading curriculum details: " + ex.Message);
             }
+
+            LoadSubject();
+            LoadDepartmentitems();
+
+
+
+        }
+        private void TopBar_BackButtonClicked(object sender, EventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            NavigationService.Navigate(new CurriculumMenu(DepartmentId));
         }
 
-        private void LoadSubject()
+        public class Department
+        {
+            public int DepartmentIds { get; set; }
+            public string DepartmentCodes { get; set; }
+
+        }
+
+        private void LoadDepartmentitems()
+        {
+            try
+            {
+                using(MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Dept_Id, Dept_Code FROM departments";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+
+                    List<Department> departments = new List<Department>();
+                    using(MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            departments.Add(new Department
+                            {
+                                DepartmentIds = reader.GetInt32("Dept_Id"),
+                                DepartmentCodes = reader.GetString("Dept_Code")
+                            });
+                        }
+                    }
+
+                    servingDepartment_cmbx.ItemsSource = departments;
+                    servingDepartment_cmbx.DisplayMemberPath = "DepartmentCodes";
+                    servingDepartment_cmbx.SelectedValuePath = "DepartmentIds";
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error loading Departments: " + ex.Message);
+            }
+        }
+
+
+
+        #endregion
+
+        #region Data Grid
+
+        private void LoadSubject(string statusFilter = "Active")
         {
             try
             {
@@ -138,11 +180,24 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     s.Subject_Type AS Subject_Type,
                     s.Lecture_Lab AS Lecture_Lab,
                     s.Hours AS Hours,
-                    s.Units AS Units
+                    s.Units AS Units,
+                    CASE
+                        WHEN s.Status = 1 Then 'Active'
+                        ELSE 'Inactive'
+                    END AS 'Status'
                 FROM subjects s
                 JOIN departments d ON s.Dept_Id = d.Dept_Id
                 JOIN curriculum_subjects cs ON s.Subject_Id = cs.Subject_Id
                 WHERE cs.Curriculum_Id = @curriculumId";
+
+                    if (statusFilter == "Active")
+                    {
+                        query += " AND s.Status = 1";
+                    }
+                    else if (statusFilter == "Inactive")
+                    {
+                        query += " AND s.Status = 0";
+                    }
 
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@curriculumId", CurriculumId);
@@ -161,19 +216,366 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             }
         }
 
-
-
-        private void NavigateBack(string sourceButton)
+        private void Status_cmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            NavigationService.Navigate(new CurriculumMenu(DepartmentId));
+            string selectedStatus = "Active";
+            if (switch_btn == null)
+            {
+                return;
+            }
+
+            if (Status_cmb.SelectedItem != null)
+            {
+                ComboBoxItem selectedItem = (ComboBoxItem)Status_cmb.SelectedItem;
+                selectedStatus = selectedItem.Content.ToString();
+
+                // Load the curriculum data filtered by the selected status
+                LoadSubject(selectedStatus);
+
+                // Dynamically change the button content based on the selected status
+                if (selectedStatus == "Active")
+                {
+                    switch_btn.Content = "Deactivate";
+                    switch_btn.FontSize = 12;
+                }
+                else if (selectedStatus == "Inactive")
+                {
+                    switch_btn.Content = "Activate";
+                    switch_btn.FontSize = 12;
+                }
+                else
+                {
+                    switch_btn.Content = "Switch Status";
+                    switch_btn.FontSize = 12;
+                }
+            }
         }
 
-        private void TopBar_BackButtonClicked(object sender, EventArgs e)
+        private void subject_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            NavigateBack("Curriculum");
+            if (subject_data.SelectedItem is DataRowView selectedRow)
+            {
+                selectedSubjectId = Convert.ToInt32(selectedRow["Subject_Id"]);
+                selectedServingDept = selectedRow["Serving_Department"].ToString();
+                selectedYear = Convert.ToInt32(selectedRow["Year_Level"]);
+                selectedSemester = selectedRow["Semester"].ToString();
+                selectedSubjectCode = selectedRow["Subject_Code"].ToString();
+                selectedSubjectTittle = selectedRow["Subject_Title"].ToString();
+                selectedSubjectType = selectedRow["Subject_Type"].ToString();
+                selectedLABorLEC = selectedRow["Lecture_Lab"].ToString();
+                selectedHour = Convert.ToInt32(selectedRow["Hours"]);
+                selectedUnit = Convert.ToInt32(selectedRow["Units"]);
+                selectedStatus = (selectedRow["Status"].ToString() == "Active") ? 1 : 0;
+
+
+                //fill up text boxes
+                subjectId_txt.Text = selectedSubjectId.ToString();
+                yearLevel_txt.Text = selectedYear.ToString();
+                subjectCode_txt.Text = selectedSubjectCode.ToString();
+                subjecTitle_txt.Text = selectedSubjectTittle.ToString();
+                hours_txt.Text = selectedHour.ToString();
+                units_txt.Text = selectedUnit.ToString();
+
+                //match combobox
+
+                SetSelectedDepartment(selectedServingDept);
+
+
+                string selectedSemesterText = selectedSemester == "1" ? "1st Semester"
+                           : selectedSemester == "2" ? "2nd Semester"
+                           : "Summer";
+
+                foreach (ComboBoxItem item in semester_cmbx.Items)
+                {
+                    if (item.Content.ToString() == selectedSemesterText)
+                    {
+                        semester_cmbx.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                string selectedSubjectTypeText = selectedSubjectType == "major" ? "Major" : "minor";
+                foreach (ComboBoxItem item in subjectType_cmbx.Items)
+                {
+                    if (item.Content.ToString() == selectedSubjectTypeText)
+                    {
+                        subjectType_cmbx.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                string selectedLecLabText = selectedLABorLEC == "LEC" ? "Lecture" : "Laboratory";
+                foreach (ComboBoxItem item in lecLab_cmbx.Items)
+                {
+                    if (item.Content.ToString() == selectedLecLabText)
+                    {
+                        lecLab_cmbx.SelectedItem = item;
+                        break;
+                    }
+                }
+
+            }
+
+        }
+        private void SetSelectedDepartment(string selectedServingDept)
+        {
+            // Find and set the matching department code
+            var department = servingDepartment_cmbx.Items.OfType<Department>()
+                                .FirstOrDefault(d => d.DepartmentCodes == selectedServingDept);
+
+            if (department != null)
+            {
+                servingDepartment_cmbx.SelectedItem = department;
+            }
         }
 
+        #endregion
+
+        #region Forms
+
+        private void hours_txt_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = App.IsTextNumeric(e.Text);
+        }
+
+        private void units_txt_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = App.IsTextNumeric(e.Text);
+        }
+        private void ClearFormInputs()
+        {
+            subjectId_txt.Clear();
+            servingDepartment_cmbx.SelectedItem = null;
+            yearLevel_txt.Clear();
+            subjectCode_txt.Clear();
+            semester_cmbx.SelectedItem = null;
+            subjecTitle_txt.Clear();
+            subjectType_cmbx.SelectedItem = null;
+            lecLab_cmbx.SelectedItem = null;
+            hours_txt.Clear();
+            units_txt.Clear();
+        }
+
+
+        private void add_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // Validation: Check if all fields are filled
+            if (string.IsNullOrWhiteSpace(subjectId_txt.Text) ||
+                servingDepartment_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(yearLevel_txt.Text) ||
+                string.IsNullOrWhiteSpace(subjectCode_txt.Text) ||
+                semester_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(subjecTitle_txt.Text) ||
+                subjectType_cmbx.SelectedItem == null ||
+                lecLab_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(hours_txt.Text) ||
+                string.IsNullOrWhiteSpace(units_txt.Text))
+            {
+                MessageBox.Show("Please fill out all fields before adding a Subject.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return; // Stop execution if validation fails
+            }
+
+            // Additional validation: Ensure Hours and Units are valid integers
+            if (!int.TryParse(hours_txt.Text, out int hours) || !int.TryParse(units_txt.Text, out int units))
+            {
+                MessageBox.Show("Hours and Units must be valid numbers.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            int newSubjectId;
+            int curriculumId = CurriculumId; // Assuming curriculum_cmbx holds curriculum_id
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Insert into the subjects table
+                    string insertSubjectQuery = @"INSERT INTO subjects (Dept_Id, Year_Level, Semester, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units)
+                                          VALUES (@Dept_Id, @Year_Level, @Semester, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units)";
+                    using (MySqlCommand command = new MySqlCommand(insertSubjectQuery, conn))
+                    {
+                        // Set the parameter values
+                        command.Parameters.AddWithValue("@Dept_Id", (servingDepartment_cmbx.SelectedItem as Department)?.DepartmentIds);
+                        command.Parameters.AddWithValue("@Year_Level", yearLevel_txt.Text);
+                        command.Parameters.AddWithValue("@Semester", (semester_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Subject_Code", subjectCode_txt.Text);
+                        command.Parameters.AddWithValue("@Subject_Title", subjecTitle_txt.Text);
+                        command.Parameters.AddWithValue("@Subject_Type", (subjectType_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Lecture_Lab", (lecLab_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Hours", hours);
+                        command.Parameters.AddWithValue("@Units", units);
+
+                        // Execute the query to insert into the subjects table
+                        command.ExecuteNonQuery();
+
+                        // Retrieve the new Subject_Id (Last Inserted ID)
+                        newSubjectId = (int)command.LastInsertedId;
+                    }
+
+                    // Insert into the curriculum_subjects table
+                    string insertCurriculumSubjectQuery = @"INSERT INTO curriculum_subjects (subject_id, curriculum_id) 
+                                                    VALUES (@Subject_Id, @Curriculum_Id)";
+                    using (MySqlCommand curriculumCommand = new MySqlCommand(insertCurriculumSubjectQuery, conn))
+                    {
+                        curriculumCommand.Parameters.AddWithValue("@Subject_Id", newSubjectId);
+                        curriculumCommand.Parameters.AddWithValue("@Curriculum_Id", curriculumId);
+
+                        // Execute the query to insert into curriculum_subjects table
+                        curriculumCommand.ExecuteNonQuery();
+                    }
+                }
+
+                // Inform the user that the subject was added successfully
+                MessageBox.Show("Subject added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                LoadSubject();
+                ClearFormInputs();
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error adding subject: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void update_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // Validation: Ensure all fields are filled out before proceeding
+            if (string.IsNullOrWhiteSpace(subjectId_txt.Text) ||
+                servingDepartment_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(yearLevel_txt.Text) ||
+                string.IsNullOrWhiteSpace(subjectCode_txt.Text) ||
+                semester_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(subjecTitle_txt.Text) ||
+                subjectType_cmbx.SelectedItem == null ||
+                lecLab_cmbx.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(hours_txt.Text) ||
+                string.IsNullOrWhiteSpace(units_txt.Text))
+            {
+                MessageBox.Show("Please fill out all fields before updating the Subject.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Additional validation: Ensure Hours and Units are valid integers
+            if (!int.TryParse(hours_txt.Text, out int hours) || !int.TryParse(units_txt.Text, out int units))
+            {
+                MessageBox.Show("Hours and Units must be valid numbers.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Subject_Id should be retrieved or already available
+            int subjectId = int.Parse(subjectId_txt.Text); // Assuming subjectId_txt is populated with the Subject_Id
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // SQL query to update the existing subject record
+                    string updateQuery = @"UPDATE subjects 
+                                   SET Dept_Id = @Dept_Id,
+                                       Year_Level = @Year_Level,
+                                       Semester = @Semester,
+                                       Subject_Code = @Subject_Code,
+                                       Subject_Title = @Subject_Title,
+                                       Subject_Type = @Subject_Type,
+                                       Lecture_Lab = @Lecture_Lab,
+                                       Hours = @Hours,
+                                       Units = @Units
+                                   WHERE Subject_Id = @Subject_Id";
+
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, conn))
+                    {
+                        // Set the parameter values
+                        command.Parameters.AddWithValue("@Dept_Id", (servingDepartment_cmbx.SelectedItem as Department)?.DepartmentIds);
+                        command.Parameters.AddWithValue("@Year_Level", yearLevel_txt.Text);
+                        command.Parameters.AddWithValue("@Semester", (semester_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Subject_Code", subjectCode_txt.Text);
+                        command.Parameters.AddWithValue("@Subject_Title", subjecTitle_txt.Text);
+                        command.Parameters.AddWithValue("@Subject_Type", (subjectType_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Lecture_Lab", (lecLab_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                        command.Parameters.AddWithValue("@Hours", hours);
+                        command.Parameters.AddWithValue("@Units", units);
+                        command.Parameters.AddWithValue("@Subject_Id", subjectId); // This is the ID of the subject being updated
+
+                        // Execute the update query
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                // Inform the user that the subject was updated successfully
+                MessageBox.Show("Subject updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                LoadSubject();
+                ClearFormInputs(); // Optionally clear the form inputs after updating
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error updating subject: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void clear_btn_Click(object sender, RoutedEventArgs e)
+        {
+            ClearFormInputs ();
+        }
+
+        private void switch_btn_Click(object sender, RoutedEventArgs e)
+        {
+            if (subject_data.SelectedItems.Count > 0)
+            {
+                try
+                {
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        foreach (DataRowView rowView in subject_data.SelectedItems)
+                        {
+                            DataRow row = rowView.Row;
+                            int subjectId = selectedSubjectId;
+                            int currentStatus = selectedStatus;
+                            
+
+                            int newStatus = (currentStatus == 1) ? 0 : 1;
+
+                            string query = "UPDATE subjects SET Status = @Status WHERE Subject_Id = @SubjectId";
+                            using (MySqlCommand command = new MySqlCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@Status", newStatus);
+                                command.Parameters.AddWithValue("@SubjectId", subjectId);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    MessageBox.Show("Status updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadSubject(); // Refresh data after updating status
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show("Error updating status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select at least one entry to update status.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void csv_btn_Click(object sender, RoutedEventArgs e)
+        {
+            form_grid.Visibility = Visibility.Hidden;
+            csv_grid.Visibility = Visibility.Visible;
+            csv_grid.Margin = new Thickness(10, 0, 10, 0);
+
+        }
+
+
+
+        #endregion
+
+        #region CSV
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Please ensure the CSV columns are: Subject Id, Serving Department, Year Level, Semester, Subject Code, Subject Title, Subject Type, Lecture Lab, Hours, and Units.");
@@ -268,10 +670,11 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             return csvData;
         }
 
-
         private void back_btn_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new CurriculumMenu(DepartmentId));
+            form_grid.Visibility = Visibility.Visible;
+            csv_grid.Visibility = Visibility.Hidden;
+            csv_grid.Margin = new Thickness(-220, 0, 240, 0);
         }
 
         private void save_btn_Click(object sender, RoutedEventArgs e)
@@ -384,5 +787,12 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
 
 
+
+
+
+
+        #endregion
+
+        
     }
 }

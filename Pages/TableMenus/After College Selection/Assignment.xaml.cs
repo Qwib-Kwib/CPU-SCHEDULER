@@ -39,28 +39,15 @@ namespace Info_module.Pages.TableMenus
         #region UI 
         private void LoadUI()
         {
-            TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Assignment Menu";
-            topBar.Visibility = Visibility.Visible;
-            topBar.BackButtonClicked += TopBar_BackButtonClicked;
-            TopBarFrame.Navigate(topBar);
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Assignment Menu", TopBar_BackButtonClicked);
             LoadInstructors();
         }
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
-            NavigateBack("Curriculum");
-        }
-
-        // Method to navigate back to the previous page
-        private void NavigateBack(string sourceButton)
-        {
-            //CollegeSelection collegeSelection = new CollegeSelection(sourceButton);
-            //NavigationService.Navigate(collegeSelection);
             NavigationService.Navigate(new MainMenu());
         }
-
-
 
         #endregion
 

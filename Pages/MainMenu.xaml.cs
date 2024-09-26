@@ -25,11 +25,16 @@ namespace Info_module.Pages
         {
             InitializeComponent();
 
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Main Menu", TopBar_BackButtonClicked);
             TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Main Menu";
-            topBar.btnBack.Visibility = Visibility.Collapsed;
-            TopBarFrame.Navigate(topBar);
+            topBar.HideButton();
         }
+        private void TopBar_BackButtonClicked(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new MainMenu());
+        }
+
         private void NavigatefromMainMenu(string sourceButton)
         {
             CollegeSelection collegeSelection = new CollegeSelection(sourceButton);

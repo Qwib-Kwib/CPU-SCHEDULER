@@ -135,8 +135,8 @@
                                         <RowDefinition Height="29*"/>
                                         <RowDefinition Height="5*"/>
                                     </Grid.RowDefinitions>
-                                    <Button x:Name="StatusAdd_btn" Content="Add" Margin="18,5,18,5" Grid.Row="1" Click="StatusAdd_btn_Click"/>
-                                    <Button x:Name="StatusDelete_btn" Margin="18,5,18,5" Content="Delete" Grid.Row="2" Click="StatusDelete_btn_Click"/>
+                                    <Button x:Name="AvailabilityAdd_btn" Content="Add" Margin="18,5,18,5" Grid.Row="1" Click="AvailabilityAdd_btn_Click"/>
+                                    <Button x:Name="AvailabilityDelete_btn" Margin="18,5,18,5" Content="Delete" Grid.Row="2" Click="AvailabilityDelete_btn_Click"/>
                                 </Grid>
                             </Grid>
                         </Grid>

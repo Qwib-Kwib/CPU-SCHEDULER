@@ -37,6 +37,8 @@ namespace Info_module.Pages.TableMenus
         private int selectedMaxSeat;
         private int selectedStatus;
 
+        string connectionString = App.ConnectionString;
+
         public CSVRooms(int buildingId)
         {
 
@@ -45,16 +47,12 @@ namespace Info_module.Pages.TableMenus
             LoadUI();
         }
 
-        string connectionString = App.ConnectionString;
-
         #region UI
+
         private void LoadUI()
         {
-            TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Configure Room";
-            topBar.Visibility = Visibility.Visible;
-            topBar.BackButtonClicked += TopBar_BackButtonClicked;
-            TopBarFrame.Navigate(topBar);
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Configuration Menu", TopBar_BackButtonClicked);
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -154,7 +152,7 @@ namespace Info_module.Pages.TableMenus
                     Room_Type,  
                     Max_Seat, 
                     CASE 
-                        WHEN status = 1 THEN 'Active' 
+                        WHEN Status = 1 THEN 'Active' 
                         ELSE 'Inactive' 
                     END AS 'Status'
                 FROM rooms
@@ -163,11 +161,11 @@ namespace Info_module.Pages.TableMenus
                     // Modify the query based on the status filter
                     if (statusFilter == "Active")
                     {
-                        query += " AND status = 1";
+                        query += " AND Status = 1";
                     }
                     else if (statusFilter == "Inactive")
                     {
-                        query += " AND status = 0";
+                        query += " AND Status = 0";
                     }
 
                     MySqlCommand command = new MySqlCommand(query, connection);
@@ -244,6 +242,16 @@ namespace Info_module.Pages.TableMenus
             e.Handled = App.IsTextNumeric(e.Text);
         }
 
+        private void ClearFormInputs()
+        {
+            roomId_txt.Clear();
+            buildingCode_txt.Clear();
+            roomFloor_txt.Clear();
+            roomCode_txt.Clear();
+            roomType_cmbx.SelectedIndex = -1;
+            maxSeat_txt.Clear();
+        }
+
         private void addRoom_btn_Click(object sender, RoutedEventArgs e)
         {
             // Validation: Check if all relevant forms are filled
@@ -281,6 +289,7 @@ namespace Info_module.Pages.TableMenus
                     }
                 }
                 LoadBuilding();
+                ClearFormInputs();
                 MessageBox.Show("Room added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (MySqlException ex)
@@ -332,6 +341,7 @@ namespace Info_module.Pages.TableMenus
                     }
                 }
                 LoadBuilding();
+                ClearFormInputs();
                 MessageBox.Show("Room updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (MySqlException ex)
@@ -343,20 +353,14 @@ namespace Info_module.Pages.TableMenus
 
         private void clear_btn_Click(object sender, RoutedEventArgs e)
         {
-            roomId_txt.Clear();
-            buildingCode_txt.Clear();
-            roomFloor_txt.Clear();
-            roomCode_txt.Clear();
-            roomType_cmbx.SelectedIndex = -1;
-            maxSeat_txt.Clear();
-
+            ClearFormInputs();
         }
 
         private void switchCsv_click(object sender, RoutedEventArgs e)
         {
             roomForm_grid.Visibility = Visibility.Hidden;
             roomCsv_grid.Visibility = Visibility.Visible;
-            roomCsv_grid.Margin = new Thickness(10, 10, 10, 9);
+            roomCsv_grid.Margin = new Thickness(10, 10, 10, 10);
 
         }
 

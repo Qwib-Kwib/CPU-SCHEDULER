@@ -16,11 +16,8 @@ namespace Info_module.Pages.TableMenus
         public BuildingMenu()
         {
             InitializeComponent();
-            TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Building Menu";
-            topBar.Visibility = Visibility.Visible;
-            topBar.BackButtonClicked += TopBar_BackButtonClicked;
-            TopBarFrame.Navigate(topBar);
+            var app = (App)Application.Current;
+            app.LoadUI(TopBarFrame, "Building Menu", TopBar_BackButtonClicked);
         }
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)

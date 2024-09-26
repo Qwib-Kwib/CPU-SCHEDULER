@@ -33,6 +33,11 @@ namespace Info_module.Pages
             BackButtonClicked?.Invoke(this, EventArgs.Empty);
         }
 
+        public void HideButton()
+        {
+            btnBack.Visibility = Visibility.Collapsed;
+        }
+
         private void btnSideBar_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.SideFrameInstance.Navigate(new SideBar());
