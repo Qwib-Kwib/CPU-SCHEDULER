@@ -407,26 +407,54 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT Subject_Id, Subject_Code FROM subjects WHERE Dept_Id = @Dept_Id";
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@Dept_Id", DepartmentId);
 
-                    List<Subject> subjects = new List<Subject>();
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    // Step 1: Get all curriculum IDs for the given department
+                    string curriculumQuery = "SELECT Curriculum_Id FROM curriculum WHERE Course_Id = @Dept_Id";
+                    MySqlCommand curriculumCommand = new MySqlCommand(curriculumQuery, connection);
+                    curriculumCommand.Parameters.AddWithValue("@Dept_Id", DepartmentId);
+
+                    List<int> curriculumIds = new List<int>();
+                    using (MySqlDataReader curriculumReader = curriculumCommand.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (curriculumReader.Read())
                         {
-                            subjects.Add(new Subject
-                            {
-                                SubjectId = reader.GetInt32("Subject_Id"),
-                                SubjectCode = reader.GetString("Subject_Code")
-                            });
+                            curriculumIds.Add(curriculumReader.GetInt32("Curriculum_Id"));
                         }
                     }
 
-                    subjectCode_cmbx.ItemsSource = subjects;
-                    subjectCode_cmbx.DisplayMemberPath = "SubjectCode";
-                    subjectCode_cmbx.SelectedValuePath = "SubjectId";
+                    if (curriculumIds.Count > 0)
+                    {
+                        // Step 2: Get all subject IDs from the curriculum_subject table that match the curriculum IDs
+                        string subjectQuery = @"
+                    SELECT DISTINCT cs.Subject_Id, s.Subject_Code 
+                    FROM curriculum_subjects cs
+                    JOIN subjects s ON cs.Subject_Id = s.Subject_Id
+                    WHERE cs.Curriculum_Id IN (" + string.Join(",", curriculumIds) + ")";
+
+                        MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
+
+                        List<Subject> subjects = new List<Subject>();
+                        using (MySqlDataReader subjectReader = subjectCommand.ExecuteReader())
+                        {
+                            while (subjectReader.Read())
+                            {
+                                subjects.Add(new Subject
+                                {
+                                    SubjectId = subjectReader.GetInt32("Subject_Id"),
+                                    SubjectCode = subjectReader.GetString("Subject_Code")
+                                });
+                            }
+                        }
+
+                        // Step 3: Bind the results to the ComboBox
+                        subjectCode_cmbx.ItemsSource = subjects;
+                        subjectCode_cmbx.DisplayMemberPath = "SubjectCode";
+                        subjectCode_cmbx.SelectedValuePath = "SubjectId";
+                    }
+                    else
+                    {
+                        MessageBox.Show("No curriculum found for the given department.");
+                    }
                 }
             }
             catch (MySqlException ex)
@@ -434,6 +462,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 MessageBox.Show("Error loading subjects: " + ex.Message);
             }
         }
+
 
         private void subjectCode_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

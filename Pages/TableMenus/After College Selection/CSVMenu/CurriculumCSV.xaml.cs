@@ -216,41 +216,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             }
         }
 
-        private void Status_cmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string selectedStatus = "Active";
-            if (switch_btn == null)
-            {
-                return;
-            }
-
-            if (Status_cmb.SelectedItem != null)
-            {
-                ComboBoxItem selectedItem = (ComboBoxItem)Status_cmb.SelectedItem;
-                selectedStatus = selectedItem.Content.ToString();
-
-                // Load the curriculum data filtered by the selected status
-                LoadSubject(selectedStatus);
-
-                // Dynamically change the button content based on the selected status
-                if (selectedStatus == "Active")
-                {
-                    switch_btn.Content = "Deactivate";
-                    switch_btn.FontSize = 12;
-                }
-                else if (selectedStatus == "Inactive")
-                {
-                    switch_btn.Content = "Activate";
-                    switch_btn.FontSize = 12;
-                }
-                else
-                {
-                    switch_btn.Content = "Switch Status";
-                    switch_btn.FontSize = 12;
-                }
-            }
-        }
-
         private void subject_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (subject_data.SelectedItem is DataRowView selectedRow)
@@ -391,32 +356,48 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 {
                     conn.Open();
 
-                    // Insert into the subjects table
-                    string insertSubjectQuery = @"INSERT INTO subjects (Dept_Id, Year_Level, Semester, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units)
-                                          VALUES (@Dept_Id, @Year_Level, @Semester, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units)";
-                    using (MySqlCommand command = new MySqlCommand(insertSubjectQuery, conn))
+                    // Check if the subject code already exists
+                    string checkSubjectQuery = @"SELECT Subject_Id FROM subjects WHERE Subject_Code = @Subject_Code";
+                    using (MySqlCommand checkCommand = new MySqlCommand(checkSubjectQuery, conn))
                     {
-                        // Set the parameter values
-                        command.Parameters.AddWithValue("@Dept_Id", (servingDepartment_cmbx.SelectedItem as Department)?.DepartmentIds);
-                        command.Parameters.AddWithValue("@Year_Level", yearLevel_txt.Text);
-                        command.Parameters.AddWithValue("@Semester", (semester_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
-                        command.Parameters.AddWithValue("@Subject_Code", subjectCode_txt.Text);
-                        command.Parameters.AddWithValue("@Subject_Title", subjecTitle_txt.Text);
-                        command.Parameters.AddWithValue("@Subject_Type", (subjectType_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
-                        command.Parameters.AddWithValue("@Lecture_Lab", (lecLab_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
-                        command.Parameters.AddWithValue("@Hours", hours);
-                        command.Parameters.AddWithValue("@Units", units);
+                        checkCommand.Parameters.AddWithValue("@Subject_Code", subjectCode_txt.Text);
+                        object result = checkCommand.ExecuteScalar();
 
-                        // Execute the query to insert into the subjects table
-                        command.ExecuteNonQuery();
+                        if (result != null)
+                        {
+                            // Subject already exists
+                            newSubjectId = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            // Insert into the subjects table
+                            string insertSubjectQuery = @"INSERT INTO subjects (Dept_Id, Year_Level, Semester, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units)
+                                          VALUES (@Dept_Id, @Year_Level, @Semester, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units)";
+                            using (MySqlCommand command = new MySqlCommand(insertSubjectQuery, conn))
+                            {
+                                // Set the parameter values
+                                command.Parameters.AddWithValue("@Dept_Id", (servingDepartment_cmbx.SelectedItem as Department)?.DepartmentIds);
+                                command.Parameters.AddWithValue("@Year_Level", yearLevel_txt.Text);
+                                command.Parameters.AddWithValue("@Semester", (semester_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                                command.Parameters.AddWithValue("@Subject_Code", subjectCode_txt.Text);
+                                command.Parameters.AddWithValue("@Subject_Title", subjecTitle_txt.Text);
+                                command.Parameters.AddWithValue("@Subject_Type", (subjectType_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                                command.Parameters.AddWithValue("@Lecture_Lab", (lecLab_cmbx.SelectedItem as ComboBoxItem)?.Tag.ToString());
+                                command.Parameters.AddWithValue("@Hours", hours);
+                                command.Parameters.AddWithValue("@Units", units);
 
-                        // Retrieve the new Subject_Id (Last Inserted ID)
-                        newSubjectId = (int)command.LastInsertedId;
+                                // Execute the query to insert into the subjects table
+                                command.ExecuteNonQuery();
+
+                                // Retrieve the new Subject_Id (Last Inserted ID)
+                                newSubjectId = (int)command.LastInsertedId;
+                            }
+                        }
                     }
 
                     // Insert into the curriculum_subjects table
                     string insertCurriculumSubjectQuery = @"INSERT INTO curriculum_subjects (subject_id, curriculum_id) 
-                                                    VALUES (@Subject_Id, @Curriculum_Id)";
+                                                VALUES (@Subject_Id, @Curriculum_Id)";
                     using (MySqlCommand curriculumCommand = new MySqlCommand(insertCurriculumSubjectQuery, conn))
                     {
                         curriculumCommand.Parameters.AddWithValue("@Subject_Id", newSubjectId);
@@ -437,6 +418,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             {
                 MessageBox.Show("Error adding subject: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
         }
 
         private void update_btn_Click(object sender, RoutedEventArgs e)
@@ -522,7 +504,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             ClearFormInputs ();
         }
 
-        private void switch_btn_Click(object sender, RoutedEventArgs e)
+        private void remove_btn_Click(object sender, RoutedEventArgs e)
         {
             if (subject_data.SelectedItems.Count > 0)
             {
@@ -531,37 +513,36 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
-                        foreach (DataRowView rowView in subject_data.SelectedItems)
+
+                        int subjectId = selectedSubjectId;
+                        int curriculumId = CurriculumId;
+
+                        // Delete the connection between the subject and curriculum in the curriculum_subjects table
+                        string query = "DELETE FROM curriculum_subjects WHERE Subject_Id = @SubjectId AND Curriculum_Id = @CurriculumId";
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                            DataRow row = rowView.Row;
-                            int subjectId = selectedSubjectId;
-                            int currentStatus = selectedStatus;
-                            
-
-                            int newStatus = (currentStatus == 1) ? 0 : 1;
-
-                            string query = "UPDATE subjects SET Status = @Status WHERE Subject_Id = @SubjectId";
-                            using (MySqlCommand command = new MySqlCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@Status", newStatus);
-                                command.Parameters.AddWithValue("@SubjectId", subjectId);
-                                command.ExecuteNonQuery();
-                            }
+                            command.Parameters.AddWithValue("@SubjectId", subjectId);
+                            command.Parameters.AddWithValue("@CurriculumId", curriculumId);
+                            command.ExecuteNonQuery();
                         }
+
+                        MessageBox.Show("Subject removed from curriculum successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        ClearFormInputs() ;
+                        LoadSubject(); // Refresh the data grid after deletion
                     }
-                    MessageBox.Show("Status updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadSubject(); // Refresh data after updating status
                 }
                 catch (MySqlException ex)
                 {
-                    MessageBox.Show("Error updating status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Error removing subject from curriculum: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Please select at least one entry to update status.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select at least one subject to remove.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
 
         private void csv_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -578,29 +559,49 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         #region CSV
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Please ensure the CSV columns are: Subject Id, Serving Department, Year Level, Semester, Subject Code, Subject Title, Subject Type, Lecture Lab, Hours, and Units.");
+            // Ask the user for confirmation before proceeding
+            MessageBoxResult confirmationResult = MessageBox.Show("This will overwrite the current subjects, proceed?",
+                                                                  "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-
-            if (openFileDialog.ShowDialog() == true)
+            // If the user clicks "Yes", proceed with the upload
+            if (confirmationResult == MessageBoxResult.Yes)
             {
-                string filePath = openFileDialog.FileName;
-                try
+                MessageBox.Show("Please ensure the CSV columns are: Serving Department, Year Level, Semester, Subject Code, Subject Title, Subject Type, Lecture Lab, Hours, and Units.",
+                                "CSV Format Information", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    DataTable dataTable = ReadCsvFile(filePath);
-                    if (dataTable != null)
+                    string filePath = openFileDialog.FileName;
+                    try
                     {
-                        subject_data.ItemsSource = dataTable.DefaultView;
+                        DataTable dataTable = ReadCsvFile(filePath);
+                        if (dataTable != null)
+                        {
+                            subject_data.ItemsSource = dataTable.DefaultView;
+
+                            // Show confirmation message after the CSV is uploaded and loaded successfully
+                            MessageBox.Show("CSV file uploaded successfully.",
+                                            "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error reading CSV file: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error reading CSV file: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            // If the user clicks "No", cancel the upload process
+            else
+            {
+
             }
         }
+
+
 
         // Method to read CSV file into DataTable
         private DataTable ReadCsvFile(string filePath)
@@ -610,17 +611,16 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             {
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    // Define the columns based on the expected CSV format
-                    csvData.Columns.Add("Subject_Id", typeof(int)); // Assuming Subject Id is an integer
-                    csvData.Columns.Add("Serving_Department", typeof(string));
-                    csvData.Columns.Add("Year_Level", typeof(string));
-                    csvData.Columns.Add("Semester", typeof(string));
-                    csvData.Columns.Add("Subject_Code", typeof(string));
-                    csvData.Columns.Add("Subject_Title", typeof(string));
-                    csvData.Columns.Add("Subject_Type", typeof(string));
-                    csvData.Columns.Add("Lecture_Lab", typeof(string));
-                    csvData.Columns.Add("Hours", typeof(string));
-                    csvData.Columns.Add("Units", typeof(string));
+                    // Define the columns based on the expected CSV format (order matters here)
+                    csvData.Columns.Add("Serving_Department", typeof(string)); // Column index 0
+                    csvData.Columns.Add("Year_Level", typeof(int));       // Column index 1
+                    csvData.Columns.Add("Semester", typeof(string));      // Column index 2
+                    csvData.Columns.Add("Subject_Code", typeof(string));  // Column index 3
+                    csvData.Columns.Add("Subject_Title", typeof(string)); // Column index 4
+                    csvData.Columns.Add("Subject_Type", typeof(string));  // Column index 5
+                    csvData.Columns.Add("Lecture_Lab", typeof(string));   // Column index 6
+                    csvData.Columns.Add("Hours", typeof(int));            // Column index 7
+                    csvData.Columns.Add("Units", typeof(int));            // Column index 8
 
                     // Read the header line first to skip it
                     sr.ReadLine();
@@ -631,7 +631,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         string[] rows = sr.ReadLine().Split(',');
 
                         // Ensure that the CSV row has the expected number of columns
-                        if (rows.Length != 10)
+                        if (rows.Length != 9)
                         {
                             MessageBox.Show("Error: CSV file format is incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             return null;
@@ -640,16 +640,17 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         try
                         {
                             DataRow dr = csvData.NewRow();
-                            dr["Subject_Id"] = string.IsNullOrEmpty(rows[0].Trim()) ? -1 : Convert.ToInt32(rows[0].Trim()); // Use -1 if ID is empty
-                            dr["Serving_Department"] = rows[1].Trim();
-                            dr["Year_Level"] = rows[2].Trim();
-                            dr["Semester"] = rows[3].Trim();
-                            dr["Subject_Code"] = rows[4].Trim();
-                            dr["Subject_Title"] = rows[5].Trim();
-                            dr["Subject_Type"] = rows[6].Trim();
-                            dr["Lecture_Lab"] = rows[7].Trim();
-                            dr["Hours"] = rows[8].Trim();
-                            dr["Units"] = rows[9].Trim();
+
+                            // Access columns by index instead of name
+                            dr[0] = rows[0].Trim().ToUpper(); // Serving_Department (Convert to uppercase)
+                            dr[1] = Convert.ToInt32(rows[1].Trim()); // Year_Level
+                            dr[2] = rows[2].Trim(); // Semester
+                            dr[3] = rows[3].Trim(); // Subject_Code
+                            dr[4] = rows[4].Trim(); // Subject_Title
+                            dr[5] = rows[5].Trim(); // Subject_Type
+                            dr[6] = rows[6].Trim(); // Lecture_Lab
+                            dr[7] = Convert.ToInt32(rows[7].Trim()); // Hours
+                            dr[8] = Convert.ToInt32(rows[8].Trim()); // Units
 
                             csvData.Rows.Add(dr);
                         }
@@ -660,6 +661,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -669,6 +671,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
             return csvData;
         }
+
 
         private void back_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -696,8 +699,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     foreach (DataRowView item in subject_data.Items)
                     {
                         DataRow row = item.Row;
-
-                        string deptCode = row["Serving_Department"].ToString(); // Assuming this is the Dept_Code in your DataGrid
+                        string deptCode = row["Serving_Department"].ToString().ToUpper(); // Dept_Code assumed in DataGrid
 
                         // Query to retrieve Dept_Id based on Dept_Code
                         string deptIdQuery = "SELECT Dept_Id FROM departments WHERE Dept_Code = @Dept_Code;";
@@ -712,22 +714,30 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         }
                         int deptId = Convert.ToInt32(deptIdObj);
 
-                        // Check if the Subject_Code already exists in the subjects table
+                        // Get the Subject Code
                         string subjectCode = row["Subject_Code"].ToString();
-                        string subjectCheckQuery = "SELECT Subject_Id FROM subjects WHERE Subject_Code = @Subject_Code AND Dept_Id = @Dept_Id;";
-                        MySqlCommand subjectCheckCmd = new MySqlCommand(subjectCheckQuery, connection);
-                        subjectCheckCmd.Parameters.AddWithValue("@Subject_Code", subjectCode);
-                        subjectCheckCmd.Parameters.AddWithValue("@Dept_Id", deptId);
 
-                        object subjectIdObj = subjectCheckCmd.ExecuteScalar();
-                        int subjectId;
+                        int subjectId = 0;
 
-                        if (subjectIdObj == null || subjectIdObj == DBNull.Value)
+                        // Check if the subject code already exists in the subjects table
+                        string checkSubjectQuery = "SELECT Subject_Id FROM subjects WHERE Subject_Code = @Subject_Code AND Dept_Id = @Dept_Id;";
+                        MySqlCommand checkSubjectCmd = new MySqlCommand(checkSubjectQuery, connection);
+                        checkSubjectCmd.Parameters.AddWithValue("@Subject_Code", subjectCode);
+                        checkSubjectCmd.Parameters.AddWithValue("@Dept_Id", deptId);
+
+                        object subjectIdObj = checkSubjectCmd.ExecuteScalar();
+
+                        if (subjectIdObj != null && subjectIdObj != DBNull.Value)
                         {
-                            // If the subject doesn't exist, insert it into the subjects table
+                            // Subject already exists, retrieve the Subject_Id
+                            subjectId = Convert.ToInt32(subjectIdObj);
+                        }
+                        else
+                        {
+                            // Subject does not exist, insert a new record into the subjects table
                             string insertSubjectQuery = @"
                         INSERT INTO subjects (Dept_Id, Year_Level, Semester, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units)
-                        VALUES (@Dept_Id, @Year_Level, @Semester, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Lec_Hours, @Credit_Units);
+                        VALUES (@Dept_Id, @Year_Level, @Semester, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units);
                         SELECT LAST_INSERT_ID();";
 
                             MySqlCommand insertSubjectCmd = new MySqlCommand(insertSubjectQuery, connection);
@@ -739,31 +749,27 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                             insertSubjectCmd.Parameters.AddWithValue("@Subject_Type", row["Subject_Type"].ToString());
                             insertSubjectCmd.Parameters.AddWithValue("@Lecture_Lab", row["Lecture_Lab"].ToString());
 
-                            // Validate and convert Lec Hours
+                            // Validate and set Lec Hours
                             if (!int.TryParse(row["Hours"].ToString(), out int lecHours))
                             {
-                                MessageBox.Show("Invalid value for Lec Hours: " + row["Hours"].ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("Invalid value for Hours: " + row["Hours"].ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
-                            insertSubjectCmd.Parameters.AddWithValue("@Lec_Hours", lecHours);
+                            insertSubjectCmd.Parameters.AddWithValue("@Hours", lecHours);
 
-                            // Validate and convert Credit Units
+                            // Validate and set Credit Units
                             if (!int.TryParse(row["Units"].ToString(), out int creditUnits))
                             {
-                                MessageBox.Show("Invalid value for Credit Units: " + row["Units"].ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("Invalid value for Units: " + row["Units"].ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 return;
                             }
-                            insertSubjectCmd.Parameters.AddWithValue("@Credit_Units", creditUnits);
+                            insertSubjectCmd.Parameters.AddWithValue("@Units", creditUnits);
 
+                            // Execute the insert command and get the new Subject_Id
                             subjectId = Convert.ToInt32(insertSubjectCmd.ExecuteScalar());
                         }
-                        else
-                        {
-                            // If the subject exists, use the existing Subject_Id
-                            subjectId = Convert.ToInt32(subjectIdObj);
-                        }
 
-                        // Insert into curriculum_subjects to create the binding between subject and curriculum
+                        // Insert into the curriculum_subjects to bind the subject to the curriculum
                         string insertCurriculumSubjectQuery = @"
                     INSERT INTO curriculum_subjects (curriculum_id, subject_id)
                     VALUES (@Curriculum_Id, @Subject_Id);";
@@ -787,12 +793,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
 
 
+    #endregion
 
 
-
-
-        #endregion
-
-        
     }
 }

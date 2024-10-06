@@ -17,6 +17,7 @@ using Microsoft.Win32;
 using System.IO;
 using System.Data;
 using System.Diagnostics;
+using System.IO.Packaging;
 
 namespace Info_module.Pages.TableMenus
 {
@@ -361,6 +362,7 @@ namespace Info_module.Pages.TableMenus
             roomForm_grid.Visibility = Visibility.Hidden;
             roomCsv_grid.Visibility = Visibility.Visible;
             roomCsv_grid.Margin = new Thickness(10, 10, 10, 10);
+            Buttons(false);
 
         }
 
@@ -425,33 +427,55 @@ namespace Info_module.Pages.TableMenus
 
         private void InsertDataIntoDatabase(DataTable dataTable)
         {
+            int skippedCount = 0; // Counter for skipped rows
+
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
+
                     foreach (DataRow row in dataTable.Rows)
                     {
                         // Only insert rows that have not already been inserted
                         if (row.RowState == DataRowState.Added)
                         {
-                            string query = "INSERT INTO rooms (Building_Id, Room_Code, Room_Floor, Room_Type, Max_Seat, status) " +
-                                           "VALUES (@Building_Id, @Room_Code, @Room_Floor, @Room_Type, @Max_Seat, @status)";
-                            using (MySqlCommand command = new MySqlCommand(query, connection))
+                            // First, check if the Room_Code already exists
+                            string checkQuery = "SELECT COUNT(*) FROM rooms WHERE Room_Code = @Room_Code";
+                            using (MySqlCommand checkCommand = new MySqlCommand(checkQuery, connection))
                             {
-                                command.Parameters.AddWithValue("@Building_Id", buildingId);
-                                command.Parameters.AddWithValue("@Room_Code", row["Room_Code"]);
-                                command.Parameters.AddWithValue("@Room_Floor", row["Floor_Level"]);
-                                command.Parameters.AddWithValue("@Room_Type", row["Room_Type"]);
-                                command.Parameters.AddWithValue("@Max_Seat", row["Max_Seat"]);
-                                command.Parameters.AddWithValue("@status", row["Status"]);
+                                checkCommand.Parameters.AddWithValue("@Room_Code", row["Room_Code"]);
+                                int roomExists = Convert.ToInt32(checkCommand.ExecuteScalar());
 
-                                command.ExecuteNonQuery();
+                                // If room code exists, skip this row and count it
+                                if (roomExists > 0)
+                                {
+                                    skippedCount++;
+                                    continue; // Skip to the next row
+                                }
+                            }
+
+                            // If room does not exist, insert it
+                            string insertQuery = "INSERT INTO rooms (Building_Id, Room_Code, Room_Floor, Room_Type, Max_Seat, status) " +
+                                                 "VALUES (@Building_Id, @Room_Code, @Room_Floor, @Room_Type, @Max_Seat, @status)";
+                            using (MySqlCommand insertCommand = new MySqlCommand(insertQuery, connection))
+                            {
+                                insertCommand.Parameters.AddWithValue("@Building_Id", buildingId);
+                                insertCommand.Parameters.AddWithValue("@Room_Code", row["Room_Code"]);
+                                insertCommand.Parameters.AddWithValue("@Room_Floor", row["Floor_Level"]);
+                                insertCommand.Parameters.AddWithValue("@Room_Type", row["Room_Type"]);
+                                insertCommand.Parameters.AddWithValue("@Max_Seat", row["Max_Seat"]);
+                                insertCommand.Parameters.AddWithValue("@status", row["Status"]);
+
+                                insertCommand.ExecuteNonQuery();
                             }
                         }
                     }
                 }
-                MessageBox.Show("Data inserted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Notify user how many rows were inserted and how many were skipped
+                MessageBox.Show($"{dataTable.Rows.Count - skippedCount} rows were inserted successfully. {skippedCount} rows were skipped due to duplicate Room_Code.",
+                                "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (MySqlException ex)
             {
@@ -459,8 +483,10 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
+
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
         {
+
             MessageBox.Show("Exclude ID and Building Code from CSV.");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -476,6 +502,7 @@ namespace Info_module.Pages.TableMenus
                     if (dataTable != null)
                     {
                         room_data.ItemsSource = dataTable.DefaultView;
+                        Buttons(true);
                     }
                 }
                 catch (Exception ex)
@@ -552,7 +579,37 @@ namespace Info_module.Pages.TableMenus
             DataView dataView = (DataView)room_data.ItemsSource;
             DataTable dataTable = dataView.Table;
             InsertDataIntoDatabase(dataTable);
+            Buttons(false);
         }
+        private void cancel_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // Show confirmation dialog
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to cancel?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            // If the user clicks Yes, clear the DataGrid
+            if (result == MessageBoxResult.Yes)
+            {
+                LoadBuilding();
+                Buttons(false);
+            }
+        }
+
+        private void Buttons(bool isVisible)
+        {
+            if (isVisible)
+            {
+                cancel_btn.Visibility = Visibility.Visible;
+                add_btn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                cancel_btn.Visibility = Visibility.Hidden;
+                add_btn.Visibility = Visibility.Hidden;
+            }
+        }
+
+
+
 
 
 
@@ -560,7 +617,7 @@ namespace Info_module.Pages.TableMenus
 
         #endregion
 
-        
+
     }
 
 }

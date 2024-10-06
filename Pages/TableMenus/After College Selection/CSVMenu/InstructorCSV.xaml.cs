@@ -42,6 +42,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             DepartmentId = departmentId;
             LoadBuildingDetails();
             LoadAllData();
+            Buttons(false);
         }
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
@@ -102,6 +103,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     if (dataTable != null)
                     {
                         Instructor_data.ItemsSource = dataTable.DefaultView;
+                        Buttons(true);
                     }
                 }
                 catch (Exception ex)
@@ -196,6 +198,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             // Reload data after insertion
             LoadBuildingDetails();
             LoadAllData();
+            Buttons(false);
         }
 
 
@@ -242,45 +245,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         }
 
 
-        private void Remove_btn_Click(object sender, RoutedEventArgs e)
-        {
-            // Get the DataTable from the DataGrid
-            DataTable dataTable = ((DataView)Instructor_data.ItemsSource).Table;
-
-            // Create a list to store rows to be removed
-            List<DataRow> rowsToRemove = new List<DataRow>();
-
-            // Check selected items and collect rows to remove
-            foreach (DataRowView selectedItem in Instructor_data.SelectedItems)
-            {
-                DataRow row = selectedItem.Row;
-                // Check if ID column is empty
-                if (string.IsNullOrEmpty(row["ID"].ToString()))
-                {
-                    rowsToRemove.Add(row);
-                }
-            }
-
-            // Remove selected rows from the DataTable
-            foreach (DataRow rowToRemove in rowsToRemove)
-            {
-                dataTable.Rows.Remove(rowToRemove);
-            }
-
-            // Refresh the DataGrid to reflect changes
-            Instructor_data.ItemsSource = null;
-            Instructor_data.ItemsSource = dataTable.DefaultView;
-
-            MessageBox.Show("Selected rows with empty ID removed.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-
-        private void ViewData_btn_Click(object sender, RoutedEventArgs e)
-        {
-            LoadBuildingDetails();
-            LoadAllData();
-        }
-
         private void LoadAllData()
         {
             try
@@ -319,49 +283,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         }
 
 
-        private void Status_btn_Click(object sender, RoutedEventArgs e)
-        {
-            if (Instructor_data.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("No rows selected.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            try
-            {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    // Iterate through selected rows in the DataGrid
-                    foreach (DataRowView rowView in Instructor_data.SelectedItems)
-                    {
-                        DataRow row = rowView.Row;
-                        int employeeId = Convert.ToInt32(row["Employee_Id"]); // Assuming Employee_Id is an integer
-
-                        // Toggle the status in the database (assuming Status is a numeric column)
-                        string query = @"
-                    UPDATE instructor
-                    SET Status = CASE WHEN Status = 1 THEN 0 ELSE 1 END
-                    WHERE Employee_Id = @Employee_Id";
-
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@Employee_Id", employeeId);
-                        command.ExecuteNonQuery();
-                    }
-
-                    LoadAllData();
-                    MessageBox.Show("Status updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Refresh the data in the DataGrid after update
-                    ViewData_btn_Click(sender, e); // Call your method to refresh data after update
-                }
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show("Error updating status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
 
         private void back_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -371,6 +292,32 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         private void Instructor_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void Buttons(bool isVisible)
+        {
+            if (isVisible)
+            {
+                cancel_btn.Visibility = Visibility.Visible;
+                add_btn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                cancel_btn.Visibility = Visibility.Hidden;
+                add_btn.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void cancel_btn_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to cancel?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            // If the user clicks Yes, clear the DataGrid
+            if (result == MessageBoxResult.Yes)
+            {
+                LoadAllData();
+                Buttons(false);
+            }
         }
     }
 }

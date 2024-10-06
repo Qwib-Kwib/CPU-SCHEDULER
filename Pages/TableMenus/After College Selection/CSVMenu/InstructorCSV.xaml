@@ -54,13 +54,11 @@
                         <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="8.5*"/>
                     </Grid.RowDefinitions>
-                    <Button x:Name="Upload_btn" Content="Upload" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Margin="10,10,10,240" Grid.Row="1" Click="Upload_btn_Click"/>
+                    <Button x:Name="Upload_btn" Content="Load CSV" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Margin="10,10,10,240" Grid.Row="1" Click="Upload_btn_Click"/>
                     <Button x:Name="add_btn" Content="Add" Margin="10,46,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Grid.Row="1" Height="30" Click="Add_btn_Click" VerticalAlignment="Top"/>
-                    <Button x:Name="remove_btn" Content="Remove" Margin="10,80,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Grid.Row="1" Height="30" VerticalAlignment="Top" Click="Remove_btn_Click"/>
                     <Button x:Name="back_btn" Content="Back" Margin="10,240,10,10" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Click="back_btn_Click" Grid.Row="1"/>
                     <TextBlock x:Name="DepartmentCode_txtblck" Text="{Binding Dept_Code}" Margin="5,10,5,10" TextWrapping="Wrap" TextAlignment="Center" FontSize="20"/>
-                    <Button x:Name="viewData_btn" Content="View Data" Margin="10,146,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Grid.Row="1" Height="30" VerticalAlignment="Top" Click="ViewData_btn_Click"/>
-                    <Button x:Name="status_btn" Content="Enable/Disable" Margin="10,180,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Grid.Row="1" Height="30" VerticalAlignment="Top" Click="Status_btn_Click"/>
+                    <Button x:Name="cancel_btn" Content="Cancel" Margin="10,82,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Grid.Row="1" Height="30" Click="cancel_btn_Click" VerticalAlignment="Top"/>
                 </Grid>
             </Viewbox>
         </Grid>

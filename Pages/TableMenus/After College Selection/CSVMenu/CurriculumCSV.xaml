@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="30*"/>
                     <ColumnDefinition Width="70*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="1" Height="350" Margin="0,0,10,0">
+                <Grid Grid.Column="1" Height="350" Margin="0,0,10,0" HorizontalAlignment="Right" Width="550">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="8.5*"/>
@@ -44,14 +44,6 @@
                         </DataGrid>
                     </Viewbox>
                     <TextBlock x:Name="curriculumRevision_txt" Margin="10,5,10,5" TextWrapping="Wrap" Text="{Binding Dept_Name}" FontSize="22" FontWeight="Bold" FontFamily="Copperplate Gothic Bold"/>
-                    <Grid Margin="369,268,10,7" Height="22" Width="171" Grid.Row="1">
-                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Show:" VerticalAlignment="Center" Height="22" Width="46" FontSize="16"/>
-                        <ComboBox x:Name="Status_cmb" HorizontalAlignment="Left" Margin="46,0,0,0" VerticalAlignment="Center" Width="120" SelectedIndex="0" SelectionChanged="Status_cmb_SelectionChanged">
-                            <ComboBoxItem Content="Active"/>
-                            <ComboBoxItem Content="Inactive"/>
-                            <ComboBoxItem Content="All"/>
-                        </ComboBox>
-                    </Grid>
                 </Grid>
                 <Grid x:Name="csv_grid" Height="350" Margin="-220,0,240,0">
                     <Grid.RowDefinitions>
@@ -98,7 +90,7 @@
                     <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="10,266,0,0" VerticalAlignment="Top" Width="90" Click="add_btn_Click"/>
                     <Button x:Name="update_btn" Content="Update" HorizontalAlignment="Left" Margin="120,266,0,0" VerticalAlignment="Top" Width="90" Click="update_btn_Click"/>
                     <Button x:Name="clear_btn" Content="Clear" HorizontalAlignment="Left" Margin="10,291,0,0" VerticalAlignment="Top" Width="90" Click="clear_btn_Click"/>
-                    <Button x:Name="switch_btn" Content="Deactivate" HorizontalAlignment="Left" Margin="120,291,0,0" VerticalAlignment="Top" Width="90" Click="switch_btn_Click"/>
+                    <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="120,291,0,0" VerticalAlignment="Top" Width="90" Click="remove_btn_Click"/>
                     <ComboBox x:Name="servingDepartment_cmbx" HorizontalAlignment="Left" Margin="10,61,0,0" VerticalAlignment="Top" Width="90" FontSize="10"/>
                 </Grid>
             </Grid>

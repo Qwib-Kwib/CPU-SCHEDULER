@@ -26,8 +26,9 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button x:Name="Upload_btn" Content="Load CSV" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Margin="10,10,10,240" Click="Upload_btn_Click"/>
-                    <Button x:Name="add_btn" Content="Upload" Margin="10,70,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Height="30" Click="Add_btn_Click" VerticalAlignment="Top"/>
+                    <Button x:Name="add_btn" Content="Add" Margin="10,70,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Height="30" Click="Add_btn_Click" VerticalAlignment="Top"/>
                     <Button x:Name="switchForm_btn" Content="Back" Margin="10,240,10,10" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Click="switchForm_btn_Click"/>
+                    <Button x:Name="cancel_btn" Content="Cancel" Margin="10,105,10,0" RenderTransformOrigin="-0.177,0.501" Width="160" Height="30" VerticalAlignment="Top" Click="cancel_btn_Click"/>
                 </Grid>
                 <Grid x:Name="roomForm_grid" Margin="10,10,10,10">
                     <Grid.RowDefinitions>
