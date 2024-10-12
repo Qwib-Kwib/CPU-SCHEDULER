@@ -463,7 +463,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             }
         }
 
-
         private void subjectCode_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (subjectCode_cmbx.SelectedItem is Subject selectedSubject)
@@ -579,7 +578,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                         return; // Exit if there's an error
                     }
                 }
-
+                LoadInstructorSubjects(employeeId);
                 MessageBox.Show($"{loadQuantity} Subject Load(s) inserted successfully!");
             }
 
@@ -590,28 +589,49 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
 
         private void subjectDelete_btn_Click(object sender, RoutedEventArgs e)
         {
+            int employeeId_num = InternalEmployeeId;  // Assuming this holds the current employee's ID
             if (instrutorSubject_data.SelectedItem is DataRowView selectedRow)
             {
                 try
                 {
-                    int instructorSubjectId = Convert.ToInt32(selectedRow["Instructor_Subject_Id"]);
+                    string subjectCode = selectedRow["Subject_Code"].ToString();
+                    int quantityToDelete = 1;  // Default value
+
+                    // Retrieve the value from the quantity TextBox, if available
+                    if (int.TryParse(quantity_txtbx.Text, out int parsedQuantity))
+                    {
+                        quantityToDelete = parsedQuantity;
+                    }
 
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
-                        string query = "DELETE FROM instructor_subject WHERE Instructor_Subject_Id = @instructorSubjectId";
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@instructorSubjectId", instructorSubjectId);
-                        int rowsAffected = command.ExecuteNonQuery();
 
-                        if (rowsAffected > 0)
+                        // Query to delete rows for the selected subject code, excluding rows where status is "assigned"
+                        string query = @"
+                    DELETE FROM subject_load
+                    WHERE Subject_Code = @subjectCode 
+                    AND Employee_Id = @employeeId 
+                    AND Status <> 'assigned'
+                    LIMIT @quantityToDelete";
+
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                            MessageBox.Show("Subject deleted from instructor successfully.");
-                            LoadInstructorSubjects(InternalEmployeeId);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Error deleting subject from instructor.");
+                            command.Parameters.AddWithValue("@subjectCode", subjectCode);
+                            command.Parameters.AddWithValue("@employeeId", employeeId_num);
+                            command.Parameters.AddWithValue("@quantityToDelete", quantityToDelete);
+
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show($"{rowsAffected} subject(s) deleted from instructor successfully.");
+                                LoadInstructorSubjects(employeeId_num);  // Refresh the subjects after deletion
+                            }
+                            else
+                            {
+                                MessageBox.Show("No subjects were deleted (perhaps they are marked as 'assigned').");
+                            }
                         }
                     }
                 }
@@ -626,6 +646,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             }
         }
 
+
         private void LoadInstructorSubjects(int internalEmployeeId)
         {
             try
@@ -634,12 +655,16 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 {
                     connection.Open();
 
-                    // Query to retrieve the subject load along with the subject titles for the given employee
+                    // Query to retrieve subject count, subject code, and subject title, grouped by subject code and title
                     string query = @"
-                SELECT sl.ID, sl.Subject_Code, s.Subject_Title
+                SELECT sl.ID AS instructorSubject_Id,
+                       COUNT(sl.Subject_Id) AS Subject_Count, 
+                       sl.Subject_Code, 
+                       s.Subject_Title
                 FROM subject_load sl
                 INNER JOIN subjects s ON sl.Subject_Id = s.Subject_Id
-                WHERE sl.Employee_Id = @Employee_Id";
+                WHERE sl.Employee_Id = @Employee_Id
+                GROUP BY sl.Subject_Code, s.Subject_Title";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -670,8 +695,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             }
         }
 
-
-
         private void Quantity_txtbx_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = App.IsTextNumeric(e.Text);
@@ -698,49 +721,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 }
             }
         }
-
-
-        private void update_btn_Copy_Click(object sender, RoutedEventArgs e)
-        {
-            // Check if a subject is selected in the DataGrid
-            if (instrutorSubject_data.SelectedItem is DataRowView selectedRow)
-            {
-                // Get the Instructor_Subject_Id and the new quantity value
-                int instructorSubjectId = Convert.ToInt32(selectedRow["Instructor_Subject_Id"]);
-
-                // Validate that a numeric value is entered for the quantity
-                if (int.TryParse(quantity_txtbx.Text, out int newQuantity) && newQuantity > 0)
-                {
-                    // Update the quantity in the database
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        string query = "UPDATE instructor_subject SET Quantity = @quantity WHERE Instructor_Subject_Id = @instructorSubjectId";
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@quantity", newQuantity);
-                        command.Parameters.AddWithValue("@instructorSubjectId", instructorSubjectId);
-
-                        // Execute the query
-                        int rowsAffected = command.ExecuteNonQuery();
-                        MessageBox.Show("Update Succesfully");
-
-                        // Refresh the DataGrid to show updated values if rows were affected
-                        if (rowsAffected > 0)
-                        {
-                            int internalEmployeeId = InternalEmployeeId; // Assuming you have this variable
-                            LoadInstructorSubjects(internalEmployeeId);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please select a subject to update.");
-            }
-        }
-
-
-
 
 
         #endregion
