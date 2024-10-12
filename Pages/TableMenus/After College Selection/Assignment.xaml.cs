@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,6 +27,8 @@ namespace Info_module.Pages.TableMenus
 
         public int DepartmentId { get; set; }
         public int EmployeeId { get; set; } 
+
+        public int SubjectId { get; set; }
 
         string connectionString = App.ConnectionString;
 
@@ -91,12 +94,20 @@ namespace Info_module.Pages.TableMenus
 
         private void instructor_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
                 EmployeeId = (int)selectedRow["Internal_Employee_Id"];
 
                 LoadInstructorSubjects(EmployeeId);
+            }
+        }
+
+        private void instructorSubject_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (instructorSubject_data.SelectedItem is DataRow selectedRow) 
+            {
+                SubjectId = (int)selectedRow["Instructor_Subject_Id"];
             }
         }
 
@@ -120,7 +131,7 @@ namespace Info_module.Pages.TableMenus
                     DataTable dataTable = new DataTable();
                     dataAdapter.Fill(dataTable);
 
-                    instrutorSubject_data.ItemsSource = dataTable.DefaultView;
+                    instructorSubject_data.ItemsSource = dataTable.DefaultView;
                 }
             }
             catch (MySqlException ex)
@@ -137,5 +148,7 @@ namespace Info_module.Pages.TableMenus
         {
 
         }
+
+        
     }
 }

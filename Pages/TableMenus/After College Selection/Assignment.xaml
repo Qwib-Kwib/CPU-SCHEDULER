@@ -53,7 +53,7 @@
                             <Grid Height="150" Width="280">
                                 <TextBlock TextWrapping="Wrap" Text="Instructors Subject" Margin="5,0,127,132"/>
                                 <Viewbox Margin="5,23,5,5" Stretch="Fill">
-                                    <DataGrid x:Name="instrutorSubject_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="instructor_data_SelectionChanged" Height="252" Width="568">
+                                    <DataGrid x:Name="instructorSubject_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="252" Width="568" SelectionChanged="instructorSubject_data_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="ID" IsReadOnly="True" Binding="{Binding Instructor_Subject_Id}" Visibility="Hidden"/>
                                             <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Code" IsReadOnly="True" Binding="{Binding Subject_Code}"/>
