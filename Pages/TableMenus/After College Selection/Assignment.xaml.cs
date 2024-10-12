@@ -3,6 +3,7 @@ using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1001,7 +1002,13 @@ namespace Info_module.Pages.TableMenus
 
         public class SubjectMode
         {
-            private const string connectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
+            private string connectionString;
+
+            // Constructor to initialize the connection string
+            public SubjectMode(string connectionString)
+            {
+                this.connectionString = connectionString;
+            }
 
             public string GetSubjectMode(int subjectId_num)
             {
@@ -1207,6 +1214,67 @@ namespace Info_module.Pages.TableMenus
                 }
 
                 return units;
+            }
+        }
+
+        public class InstructorAvailabilityChecker
+        {
+            private string connectionString;
+
+            public InstructorAvailabilityChecker(string connectionString)
+            {
+                this.connectionString = connectionString;
+            }
+
+            public List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> CheckAvailability(
+                List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots,
+                int employeeId_num)
+            {
+                // Create a list to store the updated slots
+                List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
+
+                // SQL query to get the instructor's availability
+                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Employee_Id = @EmployeeId";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        // Create a list to hold the instructor's available times
+                        List<(TimeSpan startTime, TimeSpan endTime)> instructorSlots = new List<(TimeSpan, TimeSpan)>();
+
+                        while (reader.Read())
+                        {
+                            TimeSpan startTime = reader.GetTimeSpan(0);
+                            TimeSpan endTime = reader.GetTimeSpan(1);
+                            instructorSlots.Add((startTime, endTime));
+                        }
+
+                        // Check each available slot against the instructor's availability
+                        foreach (var slot in availableSlots)
+                        {
+                            int additionalNumber = slot.additionalNumber;
+
+                            foreach (var instructorSlot in instructorSlots)
+                            {
+                                if (slot.startTime >= instructorSlot.startTime && slot.endTime <= instructorSlot.endTime)
+                                {
+                                    additionalNumber += 5;
+                                    break; // No need to check further once we find a match
+                                }
+                            }
+
+                            // Add the updated slot to the new list
+                            updatedSlots.Add((slot.startTime, slot.endTime, slot.day, additionalNumber));
+                        }
+                    }
+                }
+
+                return updatedSlots;
             }
         }
 
@@ -1458,8 +1526,7 @@ namespace Info_module.Pages.TableMenus
                     }
                     //------------------------------------------------------------------------------------------------------------------------------------
                     //Get the mode
-                    SubjectMode subjectMode = new SubjectMode();
-
+                    var subjectMode = new SubjectMode(connectionString);
                     // Get the subject mode (Face_To_Face or Online)
                     string mode = subjectMode.GetSubjectMode(subjectId_num);
                     //------------------------------------------------------------------------------------------------------------------------------------
@@ -1491,7 +1558,10 @@ namespace Info_module.Pages.TableMenus
                     foreach (var (interval, days) in resultDays)
                     {
                         // Include stubCode in the call to GenerateAvailableTimeSlots
-                        List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots = generator.GenerateAvailableTimeSlots(interval, days, selectedRoom, stubCode);
+                        List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> currentSlots = generator.GenerateAvailableTimeSlots(interval, days, selectedRoom, stubCode);
+
+                        var checker = new InstructorAvailabilityChecker(connectionString);
+                        List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots = checker.CheckAvailability(currentSlots, employeeId_num);
 
                         // Prepare the message for this specific (TimeSpan, string) pair
                         string message = $"Available slots for {days}:\n\n";
@@ -1532,7 +1602,7 @@ namespace Info_module.Pages.TableMenus
                         catch (InvalidOperationException)
                         {
                             // Handle the error if availableSlots is empty or if maxAdditionalNumber cannot be calculated
-                            MessageBox.Show("Rooms or employee schedule is full.", "Error");
+                            MessageBox.Show("Unable to calculate maximum available slots. Please check the schedules.", "Error");
                             continue; // Skip to the next interval
                         }
 
