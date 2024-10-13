@@ -34,7 +34,6 @@ namespace Info_module.Pages.TableMenus
 
         //public static readonly string ConnectionString = @"Server=26.182.137.35;Database=universitydb;User ID=test;Password=;";
         private const string connectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
-        //string connectionString = App.ConnectionString;
 
         public Assignment()
         {
@@ -191,6 +190,8 @@ namespace Info_module.Pages.TableMenus
                 return matchCountByIdentifier.Values.Max();
             }
         }
+
+        #region
         //------------------------------------------------------------------------------------------------------------------------------------
         public class MatchDefinite
         {
@@ -401,7 +402,6 @@ namespace Info_module.Pages.TableMenus
         public class RoomFetcher
         {
             private string connectionString;
-
             public RoomFetcher(string connectionString)
             {
                 this.connectionString = connectionString;
@@ -1361,7 +1361,7 @@ namespace Info_module.Pages.TableMenus
                         connection.Open();
 
                         // Query to get Max_Student from subjects table where Subject_Id matches
-                        string query = "SELECT Max_Student FROM subjects WHERE Subject_Id = @SubjectId";
+                        string query = "SELECT Max_Student FROM subject_load WHERE Subject_Id = @SubjectId";
 
                         MySqlCommand command = new MySqlCommand(query, connection);
                         command.Parameters.AddWithValue("@SubjectId", subjectId);
@@ -1619,9 +1619,9 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void assign_btn_Click(object sender, RoutedEventArgs e)
         {
-            string employeeId = employee_id.Text;
+            string employeeId = EmployeeId.ToString();
 
             // Initialize the SubjectLoader with the connection string
             SubjectLoader subjectLoader = new SubjectLoader(connectionString);
@@ -1665,6 +1665,13 @@ namespace Info_module.Pages.TableMenus
             Console.WriteLine("Finished processing all pairs.");
         }
 
-        
+        #endregion
+
+        private void debug_Click(object sender, RoutedEventArgs e)
+        {
+            RoomFetcher fetcher = new RoomFetcher(connectionString);
+            List<int> roomList = fetcher.GetRoomIds();
+            MessageBox.Show("Fetched room IDs: " + string.Join(",", roomList));
+        }
     }
 }

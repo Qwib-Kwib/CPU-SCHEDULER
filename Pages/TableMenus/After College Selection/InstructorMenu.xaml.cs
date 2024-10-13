@@ -27,6 +27,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
     public partial class InstructorMenu : Page
     {
         public int DepartmentId { get; set; }
+
         public int InternalEmployeeId { get; set; }
 
         string connectionString = App.ConnectionString;

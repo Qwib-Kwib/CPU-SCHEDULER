@@ -70,10 +70,11 @@
             <Viewbox Grid.Column="1" Stretch="Fill">
                 <Grid Height="299" Width="450">
                     <DataGrid  Margin="10,25,10,83" x:Name="schedule_data"/>
-                    <Button Margin="188,264,188,10" Content="Assign" Height="25" Click="Button_Click"/>
+                    <Button x:Name="assign_btn" Margin="188,264,188,10" Content="Assign" Height="25" Click="assign_btn_Click"/>
                     <TextBlock TextWrapping="Wrap" Text="Schedule" Margin="10,0,360,279"/>
                     <TextBox x:Name="employee_id" HorizontalAlignment="Center" Height="18" Margin="0,241,0,0" TextWrapping="Wrap" Text="Employee Number" VerticalAlignment="Top" Width="132"/>
                     <TextBlock HorizontalAlignment="Left" Margin="38,241,0,0" TextWrapping="Wrap" Text="Select Employee Id:" VerticalAlignment="Top" Height="19" Width="107"/>
+                    <Button x:Name="debug" Content="Button" HorizontalAlignment="Left" Margin="46,265,0,0" VerticalAlignment="Top" Click="debug_Click"/>
 
                 </Grid>
 
