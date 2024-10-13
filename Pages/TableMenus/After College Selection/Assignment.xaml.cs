@@ -26,6 +26,7 @@ namespace Info_module.Pages.TableMenus
     {
 
         public int DepartmentId { get; set; }
+
         public int EmployeeId { get; set; } 
 
         public int SubjectId { get; set; }
