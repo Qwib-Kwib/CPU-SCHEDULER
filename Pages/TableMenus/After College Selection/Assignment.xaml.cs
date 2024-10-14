@@ -48,6 +48,8 @@ namespace Info_module.Pages.TableMenus
             var app = (App)Application.Current;
             app.LoadUI(TopBarFrame, "Assignment Menu", TopBar_BackButtonClicked);
             LoadInstructors();
+            LoadDepartmentitems();
+            loadSchedule();
         }
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
@@ -55,12 +57,65 @@ namespace Info_module.Pages.TableMenus
             NavigationService.Navigate(new MainMenu());
         }
 
+        public class Department
+        {
+            public int DepartmentIds { get; set; }
+            public string DepartmentCodes { get; set; }
+
+        }
+
+        private void LoadDepartmentitems()
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Dept_Id, Dept_Code FROM departments";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+
+                    List<Department> departments = new List<Department>();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            departments.Add(new Department
+                            {
+                                DepartmentIds = reader.GetInt32("Dept_Id"),
+                                DepartmentCodes = reader.GetString("Dept_Code")
+                            });
+                        }
+                    }
+
+                    // Add "All" option at the top
+                    departments.Insert(0, new Department { DepartmentIds = -1, DepartmentCodes = "All" });
+
+                    collegiate_cmbx.ItemsSource = departments;
+
+                    collegiate_cmbx.DisplayMemberPath = "DepartmentCodes";
+                    collegiate_cmbx.SelectedValuePath = "DepartmentIds";
+
+                    // Set the default selected item as "All"
+                    collegiate_cmbx.SelectedIndex = 0; // Selects "All"
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error loading Departments: " + ex.Message);
+            }
+        }
+
+
+
         #endregion
 
         //Instructor
         #region Instructor
 
-        private void LoadInstructors()
+        private DataTable instructorDataTable; // Store the loaded data
+
+        private void LoadInstructors(string filter = "No Assignments")
         {
             try
             {
@@ -68,7 +123,7 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    // Updated query to show all instructors, without filtering by department
+                    // Base query to load instructors with relevant subject status
                     string query = @"
             SELECT i.Internal_Employee_Id, 
                    i.Employee_Id AS EmployeeId,
@@ -76,16 +131,71 @@ namespace Info_module.Pages.TableMenus
                    CONCAT(i.Lname, ', ', i.Fname, ' ', IFNULL(i.Mname, '')) AS FullName
             FROM instructor i
             JOIN departments d ON i.Dept_Id = d.Dept_Id
-            WHERE i.Status = 1"; // Only filter by active status
+            WHERE i.Status = 1";
+
+                    // Apply the filter logic based on subject load status
+                    switch (filter)
+                    {
+                        case "No Assignments":
+                            // Only instructors with "waiting" subjects, but no "assigned" subjects
+                            query += @" AND EXISTS (
+                                    SELECT 1 
+                                    FROM subject_load s 
+                                    WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                      AND s.Status = 'waiting')
+                                AND NOT EXISTS (
+                                    SELECT 1 
+                                    FROM subject_load s 
+                                    WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                      AND s.Status = 'assigned')";
+                            break;
+
+                        case "Partial Assignments":
+                            // Instructors who have both "waiting" and "assigned" subjects
+                            query += @" AND EXISTS (
+                                    SELECT 1 
+                                    FROM subject_load s 
+                                    WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                      AND s.Status = 'waiting')
+                                AND EXISTS (
+                                    SELECT 1 
+                                    FROM subject_load s 
+                                    WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                      AND s.Status = 'assigned')";
+                            break;
+
+                        case "Complete Assignments":
+                            // Only instructors with "assigned" subjects and no "waiting" subjects
+                            query += @" AND EXISTS (
+                                        SELECT 1 
+                                        FROM subject_load s 
+                                        WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                            AND s.Status = 'assigned')
+                                    AND NOT EXISTS (
+                                        SELECT 1 
+                                        FROM subject_load s 
+                                        WHERE s.Employee_Id = i.Internal_Employee_Id 
+                                        AND s.Status = 'waiting')";
+                            break;
+
+                        case "all":
+                        default:
+                            // No additional filter, show all instructors with subject load
+                            query += @" AND EXISTS (
+                                    SELECT 1 
+                                    FROM subject_load s 
+                                    WHERE s.Employee_Id = i.Internal_Employee_Id)";
+                            break;
+                    }
 
                     MySqlCommand command = new MySqlCommand(query, connection);
 
                     MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
-                    DataTable dataTable = new DataTable();
-                    dataAdapter.Fill(dataTable);
+                    instructorDataTable = new DataTable(); // Initialize the DataTable
+                    dataAdapter.Fill(instructorDataTable); // Fill the DataTable
 
                     // Bind the resulting data to the DataGrid
-                    instructor_data.ItemsSource = dataTable.DefaultView;
+                    instructor_data.ItemsSource = instructorDataTable.DefaultView;
                 }
             }
             catch (MySqlException ex)
@@ -95,14 +205,17 @@ namespace Info_module.Pages.TableMenus
         }
 
 
+
         private void instructor_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
                 EmployeeId = (int)selectedRow["Internal_Employee_Id"];
+                employeeId_txt.Text = (string)selectedRow["EmployeeId"];
+                loadScheduleByInstructor(EmployeeId);
 
-                LoadInstructorSubjects(EmployeeId);
+               LoadInstructorSubjects(EmployeeId);
             }
         }
 
@@ -114,6 +227,61 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
+        
+
+        private void collegiate_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Only filter if the ComboBox has a valid selection
+            if (collegiate_cmbx.SelectedValue != null)
+            {
+                // Get the selected department ID
+                int selectedDeptId = (int)collegiate_cmbx.SelectedValue;
+
+                // Find the department code corresponding to the selected ID
+                string selectedDeptCode = null;
+
+                if (collegiate_cmbx.SelectedItem is Department selectedDepartment)
+                {
+                    selectedDeptCode = selectedDepartment.DepartmentCodes; // Get the department code
+                }
+
+                // Use DataView to filter the DataTable
+                if (instructorDataTable != null)
+                {
+                    DataView view = new DataView(instructorDataTable);
+
+                    if (selectedDeptCode != "All") // If the selected value is not "All"
+                    {
+                        view.RowFilter = $"Department = '{selectedDeptCode}'"; // Filter by department code
+                    }
+                    else
+                    {
+                        view.RowFilter = string.Empty; // Show all if "All" is selected
+                    }
+
+                    instructor_data.ItemsSource = view; // Bind the filtered view to the DataGrid
+                }
+            }
+            else
+            {
+                // If nothing is selected, reset the DataGrid to show all data
+                instructor_data.ItemsSource = instructorDataTable.DefaultView;
+            }
+        }
+
+        private void instructorAssignment_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (instructorAssignment_cmbx.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string selectedFilter = selectedItem.Content.ToString();
+                LoadInstructors(selectedFilter); // Pass the filter to the LoadClasses method
+            }
+        }
+
+        #endregion
+
+        #region //SUbject
+
         private void LoadInstructorSubjects(int internalEmployeeId)
         {
             try
@@ -122,10 +290,14 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
                     string query = @"
-                SELECT isub.Instructor_Subject_Id, s.Subject_Code, s.Subject_Title, isub.Quantity
-                FROM instructor_subject isub
-                JOIN subjects s ON isub.Subject_Id = s.Subject_Id
-                WHERE isub.Internal_Employee_Id = @internalEmployeeId";
+                    SELECT sl.ID AS SubjectLoadId, 
+                        s.Subject_Code, 
+                        s.Subject_Title, 
+                        sl.Max_Student, 
+                        sl.Status
+                    FROM subject_load sl
+                    JOIN subjects s ON sl.Subject_Id = s.Subject_Id
+                    WHERE sl.Employee_Id = @internalEmployeeId"; // Change this line to filter by Employee_Id
 
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@internalEmployeeId", internalEmployeeId);
@@ -143,9 +315,135 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
+        private void subjectFilter_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Check if the ComboBox has a valid selection
+            if (subjectFilter_cmbx.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string selectedStatus = selectedItem.Tag.ToString(); // Get the tag for filtering
+
+                // Use DataView to filter the DataTable
+                if (instructorSubject_data.ItemsSource is DataView view)
+                {
+                    if (selectedStatus != "All") // If the selected value is not "All"
+                    {
+                        view.RowFilter = $"Status = '{selectedStatus}'"; // Adjust 'Status' based on your actual column name
+                    }
+                    else
+                    {
+                        view.RowFilter = string.Empty; // Show all if "All" is selected
+                    }
+
+                    instructorSubject_data.ItemsSource = view; // Bind the filtered view to the DataGrid
+                }
+            }
+        }
+
+
+
+
+
+
 
 
         #endregion
+
+        #region //sechedule
+
+        private void loadSchedule()
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    // Query to load data from the class table
+                    string query = @"
+                SELECT c.Class_Id,
+                       c.Subject_Id,
+                       c.Internal_Employee_Id,
+                       c.Room_Id,
+                       c.Stub_Code,
+                       c.Class_Mode,
+                       c.Class_Day,
+                       c.Start_Time,
+                       c.End_Time,
+                       s.Subject_Code AS SubjectCode,
+                       CONCAT(i.Lname, ', ', i.Fname) AS InstructorName,
+                       r.Room_Code AS RoomCode
+                FROM class c
+                LEFT JOIN subjects s ON c.Subject_Id = s.Subject_Id
+                LEFT JOIN instructor i ON c.Internal_Employee_Id = i.Internal_Employee_Id
+                LEFT JOIN rooms r ON c.Room_Id = r.Room_Id";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+
+                    // Bind the resulting data to the DataGrid
+                    schedule_data.ItemsSource = dataTable.DefaultView;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error loading class details: " + ex.Message);
+            }
+        }
+
+        private void loadScheduleByInstructor(int EmployeeId)
+        {
+            string employeeId = EmployeeId.ToString();
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    // Query to load data from the class table
+                    string query = @"
+                SELECT c.Class_Id,
+                       c.Subject_Id,
+                       c.Internal_Employee_Id,
+                       c.Room_Id,
+                       c.Stub_Code,
+                       c.Class_Mode,
+                       c.Class_Day,
+                       c.Start_Time,
+                       c.End_Time,
+                       s.Subject_Code AS SubjectCode,
+                       CONCAT(i.Lname, ', ', i.Fname) AS InstructorName,
+                       r.Room_Code AS RoomCode
+                FROM class c
+                LEFT JOIN subjects s ON c.Subject_Id = s.Subject_Id
+                LEFT JOIN instructor i ON c.Internal_Employee_Id = i.Internal_Employee_Id
+                LEFT JOIN rooms r ON c.Room_Id = r.Room_Id
+                Where c.Internal_Employee_Id = @EmployeeId";
+
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+
+                    // Bind the resulting data to the DataGrid
+                    schedule_data.ItemsSource = dataTable.DefaultView;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error loading class details: " + ex.Message);
+            }
+        }
+        private void loadSchedule_btn_Click(object sender, RoutedEventArgs e)
+        {
+            loadSchedule();
+
+        }
+
+        #endregion
+
+        #region //algorithm
 
         //------------------------------------------------------------------------------------------------------------------------------------
         public class MatchMinimum
@@ -190,8 +488,6 @@ namespace Info_module.Pages.TableMenus
                 return matchCountByIdentifier.Values.Max();
             }
         }
-
-        #region
         //------------------------------------------------------------------------------------------------------------------------------------
         public class MatchDefinite
         {
@@ -270,7 +566,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to get disability status from the instructor table
-                    string query = "SELECT Disability FROM instructor WHERE Employee_Id = @EmployeeId";
+                    string query = "SELECT Disability FROM instructor WHERE Internal_Employee_Id = @EmployeeId";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@EmployeeId", employeeId);
@@ -358,7 +654,7 @@ namespace Info_module.Pages.TableMenus
                 // Loop through the room list and find rooms with Room_Type containing 'Lecture'
                 foreach (var room in roomList_test)
                 {
-                    if (room.Item2.Contains("Lecture"))
+                    if (room.Item2.Contains("LEC"))
                     {
                         lectureRoomIds.Add(room.Item1);
                     }
@@ -374,7 +670,7 @@ namespace Info_module.Pages.TableMenus
                 // Loop through the room list and find rooms with Room_Type containing 'Laboratory' or 'AVR'
                 foreach (var room in roomList_test)
                 {
-                    if (room.Item2.Contains("Laboratory") || room.Item2.Contains("AVR"))
+                    if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
                     {
                         matchingRoomIds.Add(room.Item1);
                     }
@@ -402,6 +698,7 @@ namespace Info_module.Pages.TableMenus
         public class RoomFetcher
         {
             private string connectionString;
+
             public RoomFetcher(string connectionString)
             {
                 this.connectionString = connectionString;
@@ -632,8 +929,8 @@ namespace Info_module.Pages.TableMenus
 
                     int units = Convert.ToInt32(subjectCommand.ExecuteScalar());
 
-                    // Query to get the Start_Time using Employee_Id from instructor_availability table
-                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Employee_Id = @employeeId";
+                    // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
+                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
                     MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
                     availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
 
@@ -684,7 +981,7 @@ namespace Info_module.Pages.TableMenus
 
                     foreach (var schedule in scheduleList)
                     {
-                        string query = @"INSERT INTO class (Subject_Id, Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
+                        string query = @"INSERT INTO class (Subject_Id, Internal_Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
                                  VALUES (@SubjectId, @EmployeeId, @RoomId, @ClassDay, @StartTime, @EndTime)";
 
                         using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -812,10 +1109,10 @@ namespace Info_module.Pages.TableMenus
                     // Remove slots occupied by Room_Id
                     RemoveOccupiedSlotsByRoom(ref dayTimeSlots, day, selectedRoom);
 
-                    // Remove slots occupied by Employee_Id
+                    // Remove slots occupied by Internal_Employee_Id
                     RemoveOccupiedSlotsByEmployee(ref dayTimeSlots, day);
 
-                    // Check instructor availability (Employee_Id in instructor_availability)
+                    // Check instructor availability (Internal_Employee_Id in instructor_availability)
                     List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(dayTimeSlots);
 
                     // If any slots are available within the instructor's availability, add them
@@ -890,7 +1187,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to find the occupied time slots for the employee on the given day
-                    string query = "SELECT Start_Time, End_Time FROM class WHERE Employee_Id = @EmployeeId AND Class_Day = @Day";
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
                     cmd.Parameters.AddWithValue("@Day", day);
@@ -918,7 +1215,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to find the availability for the employee (instructor_availability table)
-                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Employee_Id = @EmployeeId";
+                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
 
@@ -957,8 +1254,8 @@ namespace Info_module.Pages.TableMenus
 
             public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId)
             {
-                string query = @"INSERT INTO class (Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
-                         VALUES (@Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
+                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
+                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
@@ -967,7 +1264,7 @@ namespace Info_module.Pages.TableMenus
                         conn.Open();
                         using (MySqlCommand cmd = new MySqlCommand(query, conn))
                         {
-                            cmd.Parameters.AddWithValue("@Employee_Id", employeeId);
+                            cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
                             cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
                             cmd.Parameters.AddWithValue("@Room_Id", roomId);
                             cmd.Parameters.AddWithValue("@Start_Time", startTime);
@@ -1114,7 +1411,7 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
+                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Internal_Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
 
                     using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
                     {
@@ -1235,7 +1532,7 @@ namespace Info_module.Pages.TableMenus
                 List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
 
                 // SQL query to get the instructor's availability
-                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Employee_Id = @EmployeeId";
+                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -1665,13 +1962,19 @@ namespace Info_module.Pages.TableMenus
             Console.WriteLine("Finished processing all pairs.");
         }
 
+
+        private void assingAll_btn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+
         #endregion
 
-        private void debug_Click(object sender, RoutedEventArgs e)
+        private void debug_btn_Click(object sender, RoutedEventArgs e)
         {
-            RoomFetcher fetcher = new RoomFetcher(connectionString);
-            List<int> roomList = fetcher.GetRoomIds();
-            MessageBox.Show("Fetched room IDs: " + string.Join(",", roomList));
         }
+
     }
 }
