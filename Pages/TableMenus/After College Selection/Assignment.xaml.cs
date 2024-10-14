@@ -70,7 +70,7 @@ namespace Info_module.Pages.TableMenus
 
                     // Updated query to show all instructors, without filtering by department
                     string query = @"
-            SELECT i.Internal_Internal_Employee_Id, 
+            SELECT i.Internal_Employee_Id, 
                    i.Internal_Employee_Id AS EmployeeId,
                    d.Dept_Code AS Department,
                    CONCAT(i.Lname, ', ', i.Fname, ' ', IFNULL(i.Mname, '')) AS FullName
@@ -100,7 +100,7 @@ namespace Info_module.Pages.TableMenus
 
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
-                EmployeeId = (int)selectedRow["Internal_Internal_Employee_Id"];
+                EmployeeId = (int)selectedRow["Internal_Employee_Id"];
 
                 LoadInstructorSubjects(EmployeeId);
             }
@@ -125,7 +125,7 @@ namespace Info_module.Pages.TableMenus
                 SELECT isub.Instructor_Subject_Id, s.Subject_Code, s.Subject_Title, isub.Quantity
                 FROM instructor_subject isub
                 JOIN subjects s ON isub.Subject_Id = s.Subject_Id
-                WHERE isub.Internal_Internal_Employee_Id = @internalEmployeeId";
+                WHERE isub.Internal_Employee_Id = @internalEmployeeId";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@internalEmployeeId", internalEmployeeId);
