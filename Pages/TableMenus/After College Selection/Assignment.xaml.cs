@@ -100,8 +100,13 @@ namespace Info_module.Pages.TableMenus
 
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
+                // Get the Internal_Employee_Id from the selected row
                 EmployeeId = (int)selectedRow["Internal_Employee_Id"];
 
+                // Set the value of the employee_id textbox
+                employee_id.Text = EmployeeId.ToString();
+
+                // Load instructor subjects for the selected employee
                 LoadInstructorSubjects(EmployeeId);
             }
         }
@@ -268,7 +273,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to get disability status from the instructor table
-                    string query = "SELECT Disability FROM instructor WHERE Employee_Id = @EmployeeId";
+                    string query = "SELECT Disability FROM instructor WHERE Internal_Employee_Id = @EmployeeId";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@EmployeeId", employeeId);
@@ -356,7 +361,7 @@ namespace Info_module.Pages.TableMenus
                 // Loop through the room list and find rooms with Room_Type containing 'Lecture'
                 foreach (var room in roomList_test)
                 {
-                    if (room.Item2.Contains("Lecture"))
+                    if (room.Item2.Contains("LEC"))
                     {
                         lectureRoomIds.Add(room.Item1);
                     }
@@ -372,7 +377,7 @@ namespace Info_module.Pages.TableMenus
                 // Loop through the room list and find rooms with Room_Type containing 'Laboratory' or 'AVR'
                 foreach (var room in roomList_test)
                 {
-                    if (room.Item2.Contains("Laboratory") || room.Item2.Contains("AVR"))
+                    if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
                     {
                         matchingRoomIds.Add(room.Item1);
                     }
@@ -631,8 +636,8 @@ namespace Info_module.Pages.TableMenus
 
                     int units = Convert.ToInt32(subjectCommand.ExecuteScalar());
 
-                    // Query to get the Start_Time using Employee_Id from instructor_availability table
-                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Employee_Id = @employeeId";
+                    // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
+                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
                     MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
                     availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
 
@@ -683,7 +688,7 @@ namespace Info_module.Pages.TableMenus
 
                     foreach (var schedule in scheduleList)
                     {
-                        string query = @"INSERT INTO class (Subject_Id, Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
+                        string query = @"INSERT INTO class (Subject_Id, Internal_Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
                                  VALUES (@SubjectId, @EmployeeId, @RoomId, @ClassDay, @StartTime, @EndTime)";
 
                         using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -811,10 +816,10 @@ namespace Info_module.Pages.TableMenus
                     // Remove slots occupied by Room_Id
                     RemoveOccupiedSlotsByRoom(ref dayTimeSlots, day, selectedRoom);
 
-                    // Remove slots occupied by Employee_Id
+                    // Remove slots occupied by Internal_Employee_Id
                     RemoveOccupiedSlotsByEmployee(ref dayTimeSlots, day);
 
-                    // Check instructor availability (Employee_Id in instructor_availability)
+                    // Check instructor availability (Internal_Employee_Id in instructor_availability)
                     List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(dayTimeSlots);
 
                     // If any slots are available within the instructor's availability, add them
@@ -889,7 +894,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to find the occupied time slots for the employee on the given day
-                    string query = "SELECT Start_Time, End_Time FROM class WHERE Employee_Id = @EmployeeId AND Class_Day = @Day";
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
                     cmd.Parameters.AddWithValue("@Day", day);
@@ -917,7 +922,7 @@ namespace Info_module.Pages.TableMenus
                     connection.Open();
 
                     // Query to find the availability for the employee (instructor_availability table)
-                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Employee_Id = @EmployeeId";
+                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
 
@@ -956,8 +961,8 @@ namespace Info_module.Pages.TableMenus
 
             public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId)
             {
-                string query = @"INSERT INTO class (Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
-                         VALUES (@Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
+                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
+                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
@@ -966,7 +971,7 @@ namespace Info_module.Pages.TableMenus
                         conn.Open();
                         using (MySqlCommand cmd = new MySqlCommand(query, conn))
                         {
-                            cmd.Parameters.AddWithValue("@Employee_Id", employeeId);
+                            cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
                             cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
                             cmd.Parameters.AddWithValue("@Room_Id", roomId);
                             cmd.Parameters.AddWithValue("@Start_Time", startTime);
@@ -1065,7 +1070,7 @@ namespace Info_module.Pages.TableMenus
                 List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
 
                 // Updated SQL query to include only records with Status = 'Waiting'
-                string query = "SELECT ID, Subject_Id FROM subject_load WHERE Employee_Id = @EmployeeId AND Status = 'Waiting'";
+                string query = "SELECT ID, Subject_Id FROM subject_load WHERE Internal_Employee_Id = @EmployeeId AND Status = 'Waiting'";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -1113,7 +1118,7 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
+                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Internal_Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
 
                     using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
                     {
@@ -1234,7 +1239,7 @@ namespace Info_module.Pages.TableMenus
                 List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
 
                 // SQL query to get the instructor's availability
-                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Employee_Id = @EmployeeId";
+                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -1360,7 +1365,7 @@ namespace Info_module.Pages.TableMenus
                         connection.Open();
 
                         // Query to get Max_Student from subjects table where Subject_Id matches
-                        string query = "SELECT Max_Student FROM subjects WHERE Subject_Id = @SubjectId";
+                        string query = "SELECT Max_Student FROM subject_load WHERE Subject_Id = @SubjectId";
 
                         MySqlCommand command = new MySqlCommand(query, connection);
                         command.Parameters.AddWithValue("@SubjectId", subjectId);
