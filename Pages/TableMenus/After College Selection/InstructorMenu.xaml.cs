@@ -27,6 +27,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
     public partial class InstructorMenu : Page
     {
         public int DepartmentId { get; set; }
+
         public int InternalEmployeeId { get; set; }
 
         string connectionString = App.ConnectionString;
@@ -559,7 +560,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 }
 
                 // Step 3: Insert into subject_load, repeat based on loadQuantity
-                string insertQuery = "INSERT INTO subject_load (Employee_Id, Subject_Id, Subject_Code) VALUES (@employeeId, @subjectId, @subjectCode)";
+                string insertQuery = "INSERT INTO subject_load (Internal_Employee_Id, Subject_Id, Subject_Code) VALUES (@employeeId, @subjectId, @subjectCode)";
 
                 for (int i = 0; i < loadQuantity; i++) // Loop to insert multiple times
                 {
@@ -611,7 +612,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                         string query = @"
                     DELETE FROM subject_load
                     WHERE Subject_Code = @subjectCode 
-                    AND Employee_Id = @employeeId 
+                    AND Internal_Employee_Id = @employeeId 
                     AND Status <> 'assigned'
                     LIMIT @quantityToDelete";
 
@@ -663,7 +664,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                        s.Subject_Title
                 FROM subject_load sl
                 INNER JOIN subjects s ON sl.Subject_Id = s.Subject_Id
-                WHERE sl.Employee_Id = @Employee_Id
+                WHERE sl.Internal_Employee_Id = @Employee_Id
                 GROUP BY sl.Subject_Code, s.Subject_Title";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
