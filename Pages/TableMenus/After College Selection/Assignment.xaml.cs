@@ -211,11 +211,17 @@ namespace Info_module.Pages.TableMenus
 
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
+                // Get the Internal_Employee_Id from the selected row
                 EmployeeId = (int)selectedRow["Internal_Employee_Id"];
                 employeeId_txt.Text = (string)selectedRow["EmployeeId"];
                 loadScheduleByInstructor(EmployeeId);
 
-               LoadInstructorSubjects(EmployeeId);
+
+                // Set the value of the employee_id textbox
+                employee_id.Text = EmployeeId.ToString();
+
+                // Load instructor subjects for the selected employee
+                LoadInstructorSubjects(EmployeeId);
             }
         }
 
@@ -591,8 +597,9 @@ namespace Info_module.Pages.TableMenus
                     {
                         connection.Open();
 
-                        // Query to get disability status from the instructor table
-                        string query = "SELECT Disability FROM instructor WHERE Internal_Employee_Id = @EmployeeId";
+
+                    // Query to get disability status from the instructor table
+                    string query = "SELECT Disability FROM instructor WHERE Internal_Employee_Id = @EmployeeId";
 
                         MySqlCommand command = new MySqlCommand(query, connection);
                         command.Parameters.AddWithValue("@EmployeeId", employeeId);
@@ -691,10 +698,7 @@ namespace Info_module.Pages.TableMenus
             {
                 try
                 {
-                    List<int> lectureRoomIds = new List<int>();
-
-                    // Loop through the room list and find rooms with Room_Type containing 'Lecture'
-                    foreach (var room in roomList_test)
+                    if (room.Item2.Contains("LEC"))
                     {
                         if (room.Item2.Contains("LEC"))
                         {
@@ -715,10 +719,7 @@ namespace Info_module.Pages.TableMenus
             {
                 try
                 {
-                    List<int> matchingRoomIds = new List<int>();
-
-                    // Loop through the room list and find rooms with Room_Type containing 'Laboratory' or 'AVR'
-                    foreach (var room in roomList_test)
+                    if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
                     {
                         if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
                         {
@@ -1017,7 +1018,10 @@ namespace Info_module.Pages.TableMenus
                         MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
                         subjectCommand.Parameters.AddWithValue("@subjectId", subjectId);
 
-                        int units = Convert.ToInt32(subjectCommand.ExecuteScalar());
+                    // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
+                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
+                    MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
+                    availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
 
                         // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
                         string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
@@ -1075,7 +1079,8 @@ namespace Info_module.Pages.TableMenus
                 {
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
-                        connection.Open();
+                        string query = @"INSERT INTO class (Subject_Id, Internal_Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
+                                 VALUES (@SubjectId, @EmployeeId, @RoomId, @ClassDay, @StartTime, @EndTime)";
 
                         foreach (var schedule in scheduleList)
                         {
@@ -1307,12 +1312,11 @@ namespace Info_module.Pages.TableMenus
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
-
-                        // Query to find the occupied time slots for the employee on the given day
-                        string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
-                        MySqlCommand cmd = new MySqlCommand(query, connection);
-                        cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
-                        cmd.Parameters.AddWithValue("@Day", day);
+                    // Query to find the occupied time slots for the employee on the given day
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+                    cmd.Parameters.AddWithValue("@Day", day);
 
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -1338,8 +1342,12 @@ namespace Info_module.Pages.TableMenus
             {
                 try
                 {
-                    List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = new List<(TimeSpan startTime, TimeSpan endTime)>();
+                    connection.Open();
 
+                    // Query to find the availability for the employee (instructor_availability table)
+                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
@@ -1390,7 +1398,10 @@ namespace Info_module.Pages.TableMenus
 
             public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId)
             {
-                try
+                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
+                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
                          VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
@@ -1399,25 +1410,17 @@ namespace Info_module.Pages.TableMenus
                     {
                         try
                         {
-                            conn.Open();
-                            using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                            {
-                                cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
-                                cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
-                                cmd.Parameters.AddWithValue("@Room_Id", roomId);
-                                cmd.Parameters.AddWithValue("@Start_Time", startTime);
-                                cmd.Parameters.AddWithValue("@End_Time", endTime);
-                                cmd.Parameters.AddWithValue("@Class_Day", day);
-                                cmd.Parameters.AddWithValue("@Class_Mode", mode); // Insert mode
-                                cmd.Parameters.AddWithValue("@Stub_Code", stubCode); // Insert stubCode
+                            cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
+                            cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
+                            cmd.Parameters.AddWithValue("@Room_Id", roomId);
+                            cmd.Parameters.AddWithValue("@Start_Time", startTime);
+                            cmd.Parameters.AddWithValue("@End_Time", endTime);
+                            cmd.Parameters.AddWithValue("@Class_Day", day);
+                            cmd.Parameters.AddWithValue("@Class_Mode", mode); // Insert mode
+                            cmd.Parameters.AddWithValue("@Stub_Code", stubCode); // Insert stubCode
 
-                                cmd.ExecuteNonQuery();
-                                Console.WriteLine("Class successfully inserted.");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"An error occurred: {ex.Message}");
+                            cmd.ExecuteNonQuery();
+                            Console.WriteLine("Class successfully inserted.");
                         }
                     }
                 }
@@ -1512,7 +1515,12 @@ namespace Info_module.Pages.TableMenus
 
             public List<(string employeeId, string subjectId)> GetSubjectsByEmployeeId(string employeeId)
             {
-                try
+                List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
+
+                // Updated SQL query to include only records with Status = 'Waiting'
+                string query = "SELECT ID, Subject_Id FROM subject_load WHERE Internal_Employee_Id = @EmployeeId AND Status = 'Waiting'";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
 
@@ -1569,7 +1577,11 @@ namespace Info_module.Pages.TableMenus
             {
                 try
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    connection.Open();
+
+                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Internal_Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
+
+                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
                     {
                         connection.Open();
 
@@ -1704,7 +1716,13 @@ namespace Info_module.Pages.TableMenus
                 List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots,
                 int employeeId_num)
             {
-                try
+                // Create a list to store the updated slots
+                List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
+
+                // SQL query to get the instructor's availability
+                string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     // Create a list to store the updated slots
                     List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
