@@ -218,7 +218,7 @@ namespace Info_module.Pages.TableMenus
 
 
                 // Set the value of the employee_id textbox
-                employee_id.Text = EmployeeId.ToString();
+                employeeId_txt.Text = EmployeeId.ToString();
 
                 // Load instructor subjects for the selected employee
                 LoadInstructorSubjects(EmployeeId);
@@ -457,57 +457,41 @@ namespace Info_module.Pages.TableMenus
             public Dictionary<int, int> CalculateMatchCounts(List<(int, int)> roomList, List<int> parameter)
             {
                 // Define a dictionary to count the matches for each identifier
-                try
+                Dictionary<int, int> matchCountByIdentifier = new Dictionary<int, int>();
+
+                // Iterate over roomList and check for numbers in parameter that are less than or equal to the second number in roomList
+                foreach (var item in roomList)
                 {
-                    Dictionary<int, int> matchCountByIdentifier = new Dictionary<int, int>();
+                    int identifier = item.Item1;
+                    int valueToMatch = item.Item2;
+                    int count = 0;
 
-                    // Iterate over roomList and check for numbers in parameter that are less than or equal to the second number in roomList
-                    foreach (var item in roomList)
+                    foreach (int number in parameter)
                     {
-                        int identifier = item.Item1;
-                        int valueToMatch = item.Item2;
-                        int count = 0;
-
-                        foreach (int number in parameter)
+                        if (valueToMatch >= number)
                         {
-                            if (valueToMatch >= number)
-                            {
-                                count++;
-                            }
-                        }
-
-                        // Accumulate the match count for the identifier
-                        if (matchCountByIdentifier.ContainsKey(identifier))
-                        {
-                            matchCountByIdentifier[identifier] += count;
-                        }
-                        else
-                        {
-                            matchCountByIdentifier[identifier] = count;
+                            count++;
                         }
                     }
 
-                    return matchCountByIdentifier;
+                    // Accumulate the match count for the identifier
+                    if (matchCountByIdentifier.ContainsKey(identifier))
+                    {
+                        matchCountByIdentifier[identifier] += count;
+                    }
+                    else
+                    {
+                        matchCountByIdentifier[identifier] = count;
+                    }
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("error match minimum dictionary");
-                    throw;
-                }
+
+                return matchCountByIdentifier;
             }
 
             public int FindMaxMatches(Dictionary<int, int> matchCountByIdentifier)
             {
-                try
-                {
-                    // Find the maximum total match count
-                    return matchCountByIdentifier.Values.Max();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error find max matches");
-                    throw;
-                }
+                // Find the maximum total match count
+                return matchCountByIdentifier.Values.Max();
             }
         }
         //------------------------------------------------------------------------------------------------------------------------------------
@@ -516,43 +500,35 @@ namespace Info_module.Pages.TableMenus
             public Dictionary<int, int> CalculateMatchCounts(List<(int, int)> roomList, List<int> parameter)
             {
                 // Define a dictionary to count the matches for each identifier
-                try
+                Dictionary<int, int> matchCountByIdentifier = new Dictionary<int, int>();
+
+                // Iterate over roomList and check for numbers in parameter that are less than or equal to the second number in roomList
+                foreach (var item in roomList)
                 {
-                    Dictionary<int, int> matchCountByIdentifier = new Dictionary<int, int>();
+                    int identifier = item.Item1;
+                    int valueToMatch = item.Item2;
+                    int count = 0;
 
-                    // Iterate over roomList and check for numbers in parameter that are less than or equal to the second number in roomList
-                    foreach (var item in roomList)
+                    foreach (int number in parameter)
                     {
-                        int identifier = item.Item1;
-                        int valueToMatch = item.Item2;
-                        int count = 0;
-
-                        foreach (int number in parameter)
+                        if (valueToMatch >= number)
                         {
-                            if (valueToMatch >= number)
-                            {
-                                count++;
-                            }
-                        }
-
-                        // Accumulate the match count for the identifier
-                        if (matchCountByIdentifier.ContainsKey(identifier))
-                        {
-                            matchCountByIdentifier[identifier] += count;
-                        }
-                        else
-                        {
-                            matchCountByIdentifier[identifier] = count;
+                            count++;
                         }
                     }
 
-                    return matchCountByIdentifier;
+                    // Accumulate the match count for the identifier
+                    if (matchCountByIdentifier.ContainsKey(identifier))
+                    {
+                        matchCountByIdentifier[identifier] += count;
+                    }
+                    else
+                    {
+                        matchCountByIdentifier[identifier] = count;
+                    }
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("error match Definite");
-                    throw;
-                }
+
+                return matchCountByIdentifier;
             }
         }
         //------------------------------------------------------------------------------------------------------------------------------------
@@ -589,37 +565,28 @@ namespace Info_module.Pages.TableMenus
             // Method to get disability status for the given employee id
             private int GetDisabilityStatus(string employeeId)
             {
-                try
+                int disability = -1; // Default to -1 to indicate not found
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    int disability = -1; // Default to -1 to indicate not found
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
-
+                    connection.Open();
 
                     // Query to get disability status from the instructor table
                     string query = "SELECT Disability FROM instructor WHERE Internal_Employee_Id = @EmployeeId";
 
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
                         {
-                            if (reader.Read())
-                            {
-                                disability = reader.GetInt32("Disability"); // Read the disability status
-                            }
+                            disability = reader.GetInt32("Disability"); // Read the disability status
                         }
                     }
+                }
 
-                    return disability;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error Get disability Status");
-                    throw;
-                }
+                return disability;
             }
 
             // Method to get the lowest available floors, starting from floor 1 and going up
@@ -656,84 +623,66 @@ namespace Info_module.Pages.TableMenus
 
             public List<int> FindRooms(string subjectId, List<(int, string)> roomList_test)
             {
-                try
+                List<int> matchingRoomIds = new List<int>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<int> matchingRoomIds = new List<int>();
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    // Query to get Lecture_Lab attribute from the subjects table
+                    string query = @"SELECT Lecture_Lab FROM subjects WHERE Subject_Id = @subjectId";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@subjectId", subjectId);
+
+                    string lectureLabAttribute = command.ExecuteScalar()?.ToString();
+
+                    if (!string.IsNullOrEmpty(lectureLabAttribute))
                     {
-                        connection.Open();
-
-                        // Query to get Lecture_Lab attribute from the subjects table
-                        string query = @"SELECT Lecture_Lab FROM subjects WHERE Subject_Id = @subjectId";
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@subjectId", subjectId);
-
-                        string lectureLabAttribute = command.ExecuteScalar()?.ToString();
-
-                        if (!string.IsNullOrEmpty(lectureLabAttribute))
+                        // Separate function calls based on whether it's 'LEC' or 'LAB'
+                        if (lectureLabAttribute == "LEC")
                         {
-                            // Separate function calls based on whether it's 'LEC' or 'LAB'
-                            if (lectureLabAttribute == "LEC")
-                            {
-                                matchingRoomIds = FindLectureRooms(roomList_test);
-                            }
-                            else if (lectureLabAttribute == "LAB")
-                            {
-                                matchingRoomIds = FindLaboratoryOrAvrRooms(roomList_test);
-                            }
+                            matchingRoomIds = FindLectureRooms(roomList_test);
+                        }
+                        else if (lectureLabAttribute == "LAB")
+                        {
+                            matchingRoomIds = FindLaboratoryOrAvrRooms(roomList_test);
                         }
                     }
+                }
 
-                    return matchingRoomIds;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error Find rooms");
-                    throw;
-                }
+                return matchingRoomIds;
             }
 
             private List<int> FindLectureRooms(List<(int, string)> roomList_test)
             {
-                try
+                List<int> lectureRoomIds = new List<int>();
+
+                // Loop through the room list and find rooms with Room_Type containing 'Lecture'
+                foreach (var room in roomList_test)
                 {
                     if (room.Item2.Contains("LEC"))
                     {
-                        if (room.Item2.Contains("LEC"))
-                        {
-                            lectureRoomIds.Add(room.Item1);
-                        }
+                        lectureRoomIds.Add(room.Item1);
                     }
+                }
 
-                    return lectureRoomIds;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error Find Lecture Rooms");
-                    throw;
-                }
+                return lectureRoomIds;
             }
 
             private List<int> FindLaboratoryOrAvrRooms(List<(int, string)> roomList_test)
             {
-                try
+                List<int> matchingRoomIds = new List<int>();
+
+                // Loop through the room list and find rooms with Room_Type containing 'Laboratory' or 'AVR'
+                foreach (var room in roomList_test)
                 {
                     if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
                     {
-                        if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
-                        {
-                            matchingRoomIds.Add(room.Item1);
-                        }
+                        matchingRoomIds.Add(room.Item1);
                     }
+                }
 
-                    return matchingRoomIds;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error find lab or avr");
-                    throw;
-                }
+                return matchingRoomIds;
             }
         }
 
@@ -763,37 +712,29 @@ namespace Info_module.Pages.TableMenus
 
             public List<int> GetRoomIds()
             {
-                try
+                List<int> roomList_1 = new List<int>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<int> roomList_1 = new List<int>();
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    // Query to get only Room_Id from rooms table
+                    string query = "SELECT Room_Id FROM rooms";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        connection.Open();
-
-                        // Query to get only Room_Id from rooms table
-                        string query = "SELECT Room_Id FROM rooms";
-
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                int roomId = reader.GetInt32("Room_Id");
+                            int roomId = reader.GetInt32("Room_Id");
 
-                                // Add Room_Id to the list
-                                roomList_1.Add(roomId);
-                            }
+                            // Add Room_Id to the list
+                            roomList_1.Add(roomId);
                         }
                     }
+                }
 
-                    return roomList_1;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get room ids");
-                    throw;
-                }
+                return roomList_1;
             }
         }
 
@@ -810,35 +751,27 @@ namespace Info_module.Pages.TableMenus
             // Method to fetch Dept_Id based on Subject_Id
             public int GetDeptIdBySubject(int subjectId)
             {
-                try
+                int deptId = -1; // Initialize to -1 to handle invalid cases
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    int deptId = -1; // Initialize to -1 to handle invalid cases
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    string query = "SELECT Dept_Id FROM subjects WHERE Subject_Id = @SubjectId";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        connection.Open();
+                        command.Parameters.AddWithValue("@SubjectId", subjectId);
+                        object result = command.ExecuteScalar();
 
-                        string query = "SELECT Dept_Id FROM subjects WHERE Subject_Id = @SubjectId";
-
-                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        if (result != null)
                         {
-                            command.Parameters.AddWithValue("@SubjectId", subjectId);
-                            object result = command.ExecuteScalar();
-
-                            if (result != null)
-                            {
-                                deptId = Convert.ToInt32(result); // Get the Dept_Id from the query result
-                            }
+                            deptId = Convert.ToInt32(result); // Get the Dept_Id from the query result
                         }
                     }
+                }
 
-                    return deptId;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get dept id by subject");
-                    throw;
-                }
+                return deptId;
             }
         }
         public class BuildingFetcher
@@ -854,37 +787,29 @@ namespace Info_module.Pages.TableMenus
             // Method to fetch all Building_Id values for a given Dept_Id
             public List<int> GetBuildingIdsByDeptId(int deptId)
             {
-                try
+                List<int> buildingIds = new List<int>(); // Initialize the list to store Building_Id values
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<int> buildingIds = new List<int>(); // Initialize the list to store Building_Id values
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    string query = "SELECT Building_Id FROM departments WHERE Dept_Id = @DeptId";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        connection.Open();
-
-                        string query = "SELECT Building_Id FROM departments WHERE Dept_Id = @DeptId";
-
-                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        command.Parameters.AddWithValue("@DeptId", deptId);
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            command.Parameters.AddWithValue("@DeptId", deptId);
-                            using (MySqlDataReader reader = command.ExecuteReader())
+                            while (reader.Read())
                             {
-                                while (reader.Read())
-                                {
-                                    int buildingId = reader.GetInt32("Building_Id");
-                                    buildingIds.Add(buildingId); // Add each Building_Id to the list
-                                }
+                                int buildingId = reader.GetInt32("Building_Id");
+                                buildingIds.Add(buildingId); // Add each Building_Id to the list
                             }
                         }
                     }
-
-                    return buildingIds;
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get building id by dept id");
-                    throw;
-                } // Return the list of Building_Id values
+
+                return buildingIds; // Return the list of Building_Id values
             }
         }
 
@@ -901,39 +826,31 @@ namespace Info_module.Pages.TableMenus
             // Method to fetch Room_Id values that match the given Building_Id list
             public List<int> GetRoomIdsByBuildingIds(List<int> buildingIds)
             {
-                try
+                List<int> roomIds = new List<int>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<int> roomIds = new List<int>();
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    // Convert buildingIds to a comma-separated string for SQL IN clause
+                    string buildingIdsParam = string.Join(",", buildingIds);
+
+                    string query = $"SELECT Room_Id FROM rooms WHERE Building_Id IN ({buildingIdsParam})";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        connection.Open();
-
-                        // Convert buildingIds to a comma-separated string for SQL IN clause
-                        string buildingIdsParam = string.Join(",", buildingIds);
-
-                        string query = $"SELECT Room_Id FROM rooms WHERE Building_Id IN ({buildingIdsParam})";
-
-                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            using (MySqlDataReader reader = command.ExecuteReader())
+                            while (reader.Read())
                             {
-                                while (reader.Read())
-                                {
-                                    int roomId = reader.GetInt32("Room_Id");
-                                    roomIds.Add(roomId); // Add each Room_Id to the list
-                                }
+                                int roomId = reader.GetInt32("Room_Id");
+                                roomIds.Add(roomId); // Add each Room_Id to the list
                             }
                         }
                     }
-
-                    return roomIds;
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("error room id fetcher");
-                    throw;
-                } // Return the list of Room_Id values
+
+                return roomIds; // Return the list of Room_Id values
             }
         }
 
@@ -1005,62 +922,51 @@ namespace Info_module.Pages.TableMenus
 
             public List<(int RoomId, string Day, TimeSpan StartTime, TimeSpan EndTime)> AssignDateTimes(int selectedRoom, int subjectId, int employeeId_num)
             {
-                try
+                List<(int, string, TimeSpan, TimeSpan)> scheduleList = new List<(int, string, TimeSpan, TimeSpan)>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<(int, string, TimeSpan, TimeSpan)> scheduleList = new List<(int, string, TimeSpan, TimeSpan)>();
+                    connection.Open();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
+                    // Query to get Units from the subjects table
+                    string subjectQuery = "SELECT Units FROM subjects WHERE Subject_Id = @subjectId";
+                    MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
+                    subjectCommand.Parameters.AddWithValue("@subjectId", subjectId);
 
-                        // Query to get Units from the subjects table
-                        string subjectQuery = "SELECT Units FROM subjects WHERE Subject_Id = @subjectId";
-                        MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
-                        subjectCommand.Parameters.AddWithValue("@subjectId", subjectId);
+                    int units = Convert.ToInt32(subjectCommand.ExecuteScalar());
 
                     // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
                     string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
                     MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
                     availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
 
-                        // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
-                        string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
-                        MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
-                        availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
+                    // Get the Start_Time from the result
+                    TimeSpan startTime = (TimeSpan)availabilityCommand.ExecuteScalar();
+                    string[] days = { "Monday", "Wednesday" }; // Use Monday and Wednesday as default days
 
-                        // Get the Start_Time from the result
-                        TimeSpan startTime = (TimeSpan)availabilityCommand.ExecuteScalar();
-                        string[] days = { "Monday", "Wednesday" }; // Use Monday and Wednesday as default days
-
-                        if (units == 1)
-                        {
-                            // Assign a single 1-hour slot
-                            TimeSpan endTime = startTime.Add(TimeSpan.FromHours(1));
-                            scheduleList.Add((selectedRoom, days[0], startTime, endTime));
-                        }
-                        else if (units > 1)
-                        {
-                            // Calculate evenly split times
-                            TimeSpan partDuration = TimeSpan.FromHours(units / 2.0);
-
-                            // Assign first part
-                            TimeSpan endTime = startTime.Add(partDuration);
-                            scheduleList.Add((selectedRoom, days[0], startTime, endTime));
-
-                            // Move to the next day
-                            startTime = (TimeSpan)availabilityCommand.ExecuteScalar(); // Reset to the same Start_Time for the next day
-                            endTime = startTime.Add(partDuration);
-                            scheduleList.Add((selectedRoom, days[1], startTime, endTime));
-                        }
+                    if (units == 1)
+                    {
+                        // Assign a single 1-hour slot
+                        TimeSpan endTime = startTime.Add(TimeSpan.FromHours(1));
+                        scheduleList.Add((selectedRoom, days[0], startTime, endTime));
                     }
+                    else if (units > 1)
+                    {
+                        // Calculate evenly split times
+                        TimeSpan partDuration = TimeSpan.FromHours(units / 2.0);
 
-                    return scheduleList;
+                        // Assign first part
+                        TimeSpan endTime = startTime.Add(partDuration);
+                        scheduleList.Add((selectedRoom, days[0], startTime, endTime));
+
+                        // Move to the next day
+                        startTime = (TimeSpan)availabilityCommand.ExecuteScalar(); // Reset to the same Start_Time for the next day
+                        endTime = startTime.Add(partDuration);
+                        scheduleList.Add((selectedRoom, days[1], startTime, endTime));
+                    }
                 }
-                catch (Exception)
-                {
-                    MessageBox.Show("error date time assigner");
-                    throw;
-                }
+
+                return scheduleList;
             }
         }
 
@@ -1075,36 +981,27 @@ namespace Info_module.Pages.TableMenus
 
             public void InsertScheduleIntoDatabase(int subjectId, int employeeId, List<(int RoomId, string Day, TimeSpan StartTime, TimeSpan EndTime)> scheduleList)
             {
-                try
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    connection.Open();
+
+                    foreach (var schedule in scheduleList)
                     {
                         string query = @"INSERT INTO class (Subject_Id, Internal_Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
                                  VALUES (@SubjectId, @EmployeeId, @RoomId, @ClassDay, @StartTime, @EndTime)";
 
-                        foreach (var schedule in scheduleList)
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                            string query = @"INSERT INTO class (Subject_Id, Internal_Employee_Id, Room_Id, Class_Day, Start_Time, End_Time)
-                                 VALUES (@SubjectId, @EmployeeId, @RoomId, @ClassDay, @StartTime, @EndTime)";
+                            command.Parameters.AddWithValue("@SubjectId", subjectId);
+                            command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                            command.Parameters.AddWithValue("@RoomId", schedule.RoomId);
+                            command.Parameters.AddWithValue("@ClassDay", schedule.Day);
+                            command.Parameters.AddWithValue("@StartTime", schedule.StartTime);
+                            command.Parameters.AddWithValue("@EndTime", schedule.EndTime);
 
-                            using (MySqlCommand command = new MySqlCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@SubjectId", subjectId);
-                                command.Parameters.AddWithValue("@EmployeeId", employeeId);
-                                command.Parameters.AddWithValue("@RoomId", schedule.RoomId);
-                                command.Parameters.AddWithValue("@ClassDay", schedule.Day);
-                                command.Parameters.AddWithValue("@StartTime", schedule.StartTime);
-                                command.Parameters.AddWithValue("@EndTime", schedule.EndTime);
-
-                                command.ExecuteNonQuery();
-                            }
+                            command.ExecuteNonQuery();
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error class scheduler");
-                    throw;
                 }
             }
         }
@@ -1164,28 +1061,20 @@ namespace Info_module.Pages.TableMenus
 
             public bool IsStubCodeExistsForDay(int stubCode, string day)
             {
-                try
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
+                    connection.Open();
 
-                        // Query to check if the Stub_Code exists for the given day
-                        string query = "SELECT COUNT(*) FROM class WHERE Stub_Code = @StubCode AND Class_Day = @Day";
-                        MySqlCommand cmd = new MySqlCommand(query, connection);
-                        cmd.Parameters.AddWithValue("@StubCode", stubCode);
-                        cmd.Parameters.AddWithValue("@Day", day);
+                    // Query to check if the Stub_Code exists for the given day
+                    string query = "SELECT COUNT(*) FROM class WHERE Stub_Code = @StubCode AND Class_Day = @Day";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@StubCode", stubCode);
+                    cmd.Parameters.AddWithValue("@Day", day);
 
-                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
 
-                        // Return true if a record with the same Stub_Code exists for the day, otherwise false
-                        return count > 0;
-                    }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(" error timeslot generator");
-                    throw;
+                    // Return true if a record with the same Stub_Code exists for the day, otherwise false
+                    return count > 0;
                 }
             }
 
@@ -1273,74 +1162,61 @@ namespace Info_module.Pages.TableMenus
 
             private void RemoveOccupiedSlotsByRoom(ref List<(TimeSpan startTime, TimeSpan endTime)> availableSlots, string day, int selectedRoom)
             {
-                try
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    connection.Open();
+
+                    // Query to find the occupied time slots for the room on the given day
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Room_Id = @RoomId AND Class_Day = @Day";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@RoomId", selectedRoom);
+                    cmd.Parameters.AddWithValue("@Day", day);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        connection.Open();
-
-                        // Query to find the occupied time slots for the room on the given day
-                        string query = "SELECT Start_Time, End_Time FROM class WHERE Room_Id = @RoomId AND Class_Day = @Day";
-                        MySqlCommand cmd = new MySqlCommand(query, connection);
-                        cmd.Parameters.AddWithValue("@RoomId", selectedRoom);
-                        cmd.Parameters.AddWithValue("@Day", day);
-
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                TimeSpan startTime = (TimeSpan)reader["Start_Time"];
-                                TimeSpan endTime = (TimeSpan)reader["End_Time"];
+                            TimeSpan startTime = (TimeSpan)reader["Start_Time"];
+                            TimeSpan endTime = (TimeSpan)reader["End_Time"];
 
-                                // Remove occupied slots from availableSlots
-                                availableSlots.RemoveAll(slot => slot.startTime < endTime && slot.endTime > startTime);
-                            }
+                            // Remove occupied slots from availableSlots
+                            availableSlots.RemoveAll(slot => slot.startTime < endTime && slot.endTime > startTime);
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error remove occupied slots by room");
-                    throw;
                 }
             }
 
             private void RemoveOccupiedSlotsByEmployee(ref List<(TimeSpan startTime, TimeSpan endTime)> availableSlots, string day)
             {
-                try
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
+                    connection.Open();
+
                     // Query to find the occupied time slots for the employee on the given day
                     string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
                     cmd.Parameters.AddWithValue("@Day", day);
 
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                TimeSpan startTime = (TimeSpan)reader["Start_Time"];
-                                TimeSpan endTime = (TimeSpan)reader["End_Time"];
+                            TimeSpan startTime = (TimeSpan)reader["Start_Time"];
+                            TimeSpan endTime = (TimeSpan)reader["End_Time"];
 
-                                // Remove occupied slots from availableSlots
-                                availableSlots.RemoveAll(slot => slot.startTime < endTime && slot.endTime > startTime);
-                            }
+                            // Remove occupied slots from availableSlots
+                            availableSlots.RemoveAll(slot => slot.startTime < endTime && slot.endTime > startTime);
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error remove occupied slots by employee");
-                    throw;
                 }
             }
 
             private List<(TimeSpan startTime, TimeSpan endTime)> CheckInstructorAvailability(List<(TimeSpan startTime, TimeSpan endTime)> availableSlots)
             {
-                try
+                List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = new List<(TimeSpan startTime, TimeSpan endTime)>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
 
@@ -1348,41 +1224,27 @@ namespace Info_module.Pages.TableMenus
                     string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        connection.Open();
-
-                        // Query to find the availability for the employee (instructor_availability table)
-                        string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
-                        MySqlCommand cmd = new MySqlCommand(query, connection);
-                        cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
-
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
-                            {
-                                TimeSpan availableStartTime = (TimeSpan)reader["Start_Time"];
-                                TimeSpan availableEndTime = (TimeSpan)reader["End_Time"];
+                            TimeSpan availableStartTime = (TimeSpan)reader["Start_Time"];
+                            TimeSpan availableEndTime = (TimeSpan)reader["End_Time"];
 
-                                // Keep slots that fall within the instructor's availability
-                                foreach (var slot in availableSlots)
+                            // Keep slots that fall within the instructor's availability
+                            foreach (var slot in availableSlots)
+                            {
+                                if (slot.startTime >= availableStartTime && slot.endTime <= availableEndTime)
                                 {
-                                    if (slot.startTime >= availableStartTime && slot.endTime <= availableEndTime)
-                                    {
-                                        filteredSlots.Add(slot);
-                                    }
+                                    filteredSlots.Add(slot);
                                 }
                             }
                         }
                     }
+                }
 
-                    return filteredSlots;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error check instructor availability");
-                    throw;
-                }
+                return filteredSlots;
             }
         }
 
@@ -1403,12 +1265,10 @@ namespace Info_module.Pages.TableMenus
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
-                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
-
-                    using (MySqlConnection conn = new MySqlConnection(connectionString))
+                    try
                     {
-                        try
+                        conn.Open();
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
                             cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
@@ -1423,11 +1283,10 @@ namespace Info_module.Pages.TableMenus
                             Console.WriteLine("Class successfully inserted.");
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error insert class");
-                    throw;
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                    }
                 }
             }
         }
@@ -1457,49 +1316,41 @@ namespace Info_module.Pages.TableMenus
 
             public string GetSubjectMode(int subjectId_num)
             {
-                try
+                string mode = string.Empty;
+
+                // Query to get Online_Capable from the subjects table
+                string query = "SELECT Online_Capable FROM subjects WHERE Subject_Id = @SubjectId";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    string mode = string.Empty;
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@SubjectId", subjectId_num);
 
-                    // Query to get Online_Capable from the subjects table
-                    string query = "SELECT Online_Capable FROM subjects WHERE Subject_Id = @SubjectId";
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    try
                     {
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@SubjectId", subjectId_num);
+                        connection.Open();
+                        var result = command.ExecuteScalar();
 
-                        try
+                        if (result != null)
                         {
-                            connection.Open();
-                            var result = command.ExecuteScalar();
+                            int onlineCapable = Convert.ToInt32(result);
 
-                            if (result != null)
-                            {
-                                int onlineCapable = Convert.ToInt32(result);
-
-                                // If Online_Capable is 0, return "Face_To_Face", if 1, return "Online"
-                                mode = (onlineCapable == 0) ? "Face_To_Face" : "Online";
-                            }
-                            else
-                            {
-                                mode = "Subject not found";
-                            }
+                            // If Online_Capable is 0, return "Face_To_Face", if 1, return "Online"
+                            mode = (onlineCapable == 0) ? "Face_To_Face" : "Online";
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            // Handle exceptions
-                            mode = "Error: " + ex.Message;
+                            mode = "Subject not found";
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions
+                        mode = "Error: " + ex.Message;
+                    }
+                }
 
-                    return mode;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get subject mode");
-                    throw;
-                }
+                return mode;
             }
         }
 
@@ -1522,60 +1373,47 @@ namespace Info_module.Pages.TableMenus
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
+                    connection.Open();
 
-                    // Updated SQL query to include only records with Status = 'Waiting'
-                    string query = "SELECT ID, Subject_Id FROM subject_load WHERE Internal_Employee_Id = @EmployeeId AND Status = 'Waiting'";
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
-                        connection.Open();
+                        cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
 
-                        using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-                            cmd.Parameters.AddWithValue("@EmployeeId", employeeId);
+                            Dictionary<string, int> subjectCount = new Dictionary<string, int>();
 
-                            using (MySqlDataReader reader = cmd.ExecuteReader())
+                            while (reader.Read())
                             {
-                                Dictionary<string, int> subjectCount = new Dictionary<string, int>();
+                                string subjectId = reader["Subject_Id"].ToString();
 
-                                while (reader.Read())
+                                if (subjectCount.ContainsKey(subjectId))
                                 {
-                                    string subjectId = reader["Subject_Id"].ToString();
-
-                                    if (subjectCount.ContainsKey(subjectId))
-                                    {
-                                        subjectCount[subjectId]++;
-                                    }
-                                    else
-                                    {
-                                        subjectCount[subjectId] = 1;
-                                    }
+                                    subjectCount[subjectId]++;
                                 }
-
-                                foreach (var subject in subjectCount)
+                                else
                                 {
-                                    for (int i = 0; i < subject.Value; i++)
-                                    {
-                                        employeeSubjectPairs.Add((employeeId, subject.Key));
-                                    }
+                                    subjectCount[subjectId] = 1;
+                                }
+                            }
+
+                            foreach (var subject in subjectCount)
+                            {
+                                for (int i = 0; i < subject.Value; i++)
+                                {
+                                    employeeSubjectPairs.Add((employeeId, subject.Key));
                                 }
                             }
                         }
                     }
+                }
 
-                    return employeeSubjectPairs;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get subjects by employee id");
-                    throw;
-                }
+                return employeeSubjectPairs;
             }
 
             public void UpdateSubjectStatus(string employeeId, string subjectId)
             {
-                try
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
 
@@ -1583,30 +1421,18 @@ namespace Info_module.Pages.TableMenus
 
                     using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
                     {
-                        connection.Open();
+                        updateCmd.Parameters.AddWithValue("@EmployeeId", employeeId);
+                        updateCmd.Parameters.AddWithValue("@SubjectId", subjectId);
 
-                        string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Internal_Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
-
-                        using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
+                        try
                         {
-                            updateCmd.Parameters.AddWithValue("@EmployeeId", employeeId);
-                            updateCmd.Parameters.AddWithValue("@SubjectId", subjectId);
-
-                            try
-                            {
-                                updateCmd.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("An error occurred while updating status: " + ex.Message);
-                            }
+                            updateCmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("An error occurred while updating status: " + ex.Message);
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error update subject status");
-                    throw;
                 }
             }
         }
@@ -1662,44 +1488,36 @@ namespace Info_module.Pages.TableMenus
             // Method to fetch the Units value from the database based on subjectId_num
             private int GetUnitsFromDatabase()
             {
-                try
+                int units = 0;
+
+                // Query to fetch the Units value
+                string query = "SELECT Units FROM subjects WHERE Subject_Id = @SubjectId";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    int units = 0;
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@SubjectId", subjectId_num);
 
-                    // Query to fetch the Units value
-                    string query = "SELECT Units FROM subjects WHERE Subject_Id = @SubjectId";
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    try
                     {
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@SubjectId", subjectId_num);
+                        connection.Open();
+                        MySqlDataReader reader = command.ExecuteReader();
 
-                        try
+                        if (reader.Read())
                         {
-                            connection.Open();
-                            MySqlDataReader reader = command.ExecuteReader();
-
-                            if (reader.Read())
-                            {
-                                units = Convert.ToInt32(reader["Units"]);
-                            }
-
-                            reader.Close();
+                            units = Convert.ToInt32(reader["Units"]);
                         }
-                        catch (Exception ex)
-                        {
-                            // Handle exceptions (log, rethrow, etc.)
-                            Console.WriteLine("Error: " + ex.Message);
-                        }
+
+                        reader.Close();
                     }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions (log, rethrow, etc.)
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
 
-                    return units;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error get units from database");
-                    throw;
-                }
+                return units;
             }
         }
 
@@ -1724,57 +1542,43 @@ namespace Info_module.Pages.TableMenus
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    // Create a list to store the updated slots
-                    List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> updatedSlots = new List<(TimeSpan, TimeSpan, string, int)>();
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+                    connection.Open();
 
-                    // SQL query to get the instructor's availability
-                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@EmployeeId", employeeId_num);
-                        connection.Open();
+                        // Create a list to hold the instructor's available times
+                        List<(TimeSpan startTime, TimeSpan endTime)> instructorSlots = new List<(TimeSpan, TimeSpan)>();
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            // Create a list to hold the instructor's available times
-                            List<(TimeSpan startTime, TimeSpan endTime)> instructorSlots = new List<(TimeSpan, TimeSpan)>();
+                            TimeSpan startTime = reader.GetTimeSpan(0);
+                            TimeSpan endTime = reader.GetTimeSpan(1);
+                            instructorSlots.Add((startTime, endTime));
+                        }
 
-                            while (reader.Read())
+                        // Check each available slot against the instructor's availability
+                        foreach (var slot in availableSlots)
+                        {
+                            int additionalNumber = slot.additionalNumber;
+
+                            foreach (var instructorSlot in instructorSlots)
                             {
-                                TimeSpan startTime = reader.GetTimeSpan(0);
-                                TimeSpan endTime = reader.GetTimeSpan(1);
-                                instructorSlots.Add((startTime, endTime));
-                            }
-
-                            // Check each available slot against the instructor's availability
-                            foreach (var slot in availableSlots)
-                            {
-                                int additionalNumber = slot.additionalNumber;
-
-                                foreach (var instructorSlot in instructorSlots)
+                                if (slot.startTime >= instructorSlot.startTime && slot.endTime <= instructorSlot.endTime)
                                 {
-                                    if (slot.startTime >= instructorSlot.startTime && slot.endTime <= instructorSlot.endTime)
-                                    {
-                                        additionalNumber += 5;
-                                        break; // No need to check further once we find a match
-                                    }
+                                    additionalNumber += 5;
+                                    break; // No need to check further once we find a match
                                 }
-
-                                // Add the updated slot to the new list
-                                updatedSlots.Add((slot.startTime, slot.endTime, slot.day, additionalNumber));
                             }
+
+                            // Add the updated slot to the new list
+                            updatedSlots.Add((slot.startTime, slot.endTime, slot.day, additionalNumber));
                         }
                     }
+                }
 
-                    return updatedSlots;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("error instructor availability checker");
-                    throw;
-                }
+                return updatedSlots;
             }
         }
 
@@ -2118,9 +1922,9 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
-        private void assign_btn_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            string employeeId = EmployeeId.ToString();
+            string employeeId = employeeId_txt.Text;
 
             // Initialize the SubjectLoader with the connection string
             SubjectLoader subjectLoader = new SubjectLoader(connectionString);
@@ -2163,6 +1967,8 @@ namespace Info_module.Pages.TableMenus
             // Indicate that processing is finished
             Console.WriteLine("Finished processing all pairs.");
         }
+
+
 
 
         private void assingAll_btn_Click(object sender, RoutedEventArgs e)
