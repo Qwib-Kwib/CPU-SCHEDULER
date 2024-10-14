@@ -21,10 +21,10 @@
                 <ColumnDefinition Width="40*"/>
                 <ColumnDefinition Width="60*"/>
             </Grid.ColumnDefinitions>
-            <Viewbox Stretch="Fill" Margin="0,0,0,35">
+            <Viewbox Stretch="Fill">
                 <Grid Height="330" Width="308">
                     <Grid Margin="0,0,0,165" Height="165" Width="300">
-                        <Viewbox Margin="10,0,10,0" Stretch="Fill">
+                        <Viewbox Margin="10,0,10,23" Stretch="Fill">
                             <Grid Height="155" Width="280">
                                 <Viewbox Margin="0,21,0,21" Stretch="Fill">
                                     <DataGrid x:Name="instructor_data" Height="272" Width="752" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionChanged="instructor_data_SelectionChanged">
@@ -72,8 +72,8 @@
                             </Grid>
                         </Viewbox>
                     </Grid>
-                    <Grid Margin="0,170,0,0" Height="160" Width="300">
-                        <Viewbox Margin="10,0,10,10" Stretch="Fill">
+                    <Grid Margin="4,147,4,41" Width="300">
+                        <Viewbox Margin="10,0,10,0" Stretch="Fill">
                             <Grid Height="150" Width="280">
                                 <TextBlock TextWrapping="Wrap" Text="Instructors Subject" Margin="5,0,127,132"/>
                                 <Viewbox Margin="5,23,5,20" Stretch="Fill">
@@ -97,6 +97,8 @@
                             </Grid>
                         </Viewbox>
                     </Grid>
+                    <Button x:Name="assign_btn" Margin="188,296,46,9" Content="Assign" Height="25" Click="assign_btn_Click"/>
+                    <Button x:Name="assingAll_btn" Content="Assign All" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" Height="24" Width="74" Click="assingAll_btn_Click"/>
                 </Grid>
             </Viewbox>
             <Viewbox Grid.Column="1" Stretch="Fill">
@@ -127,8 +129,6 @@
                 </Grid>
 
             </Viewbox>
-            <Button x:Name="assingAll_btn" Content="Assign All" HorizontalAlignment="Left" Margin="46,315,0,0" VerticalAlignment="Top" Height="25" Width="74" Click="assingAll_btn_Click"/>
-            <Button x:Name="assign_btn" Margin="186,315,60,10" Content="Assign" Height="25" Click="assign_btn_Click"/>
 
         </Grid>
     </Grid>
