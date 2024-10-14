@@ -1922,7 +1922,7 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void assign_btn_Click(object sender, RoutedEventArgs e)
         {
             string employeeId = employeeId_txt.Text;
 
