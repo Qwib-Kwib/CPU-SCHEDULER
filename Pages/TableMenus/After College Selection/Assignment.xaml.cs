@@ -71,7 +71,7 @@ namespace Info_module.Pages.TableMenus
                     // Updated query to show all instructors, without filtering by department
                     string query = @"
             SELECT i.Internal_Employee_Id, 
-                   i.Internal_Employee_Id AS EmployeeId,
+                   i.Employee_Id AS EmployeeId,
                    d.Dept_Code AS Department,
                    CONCAT(i.Lname, ', ', i.Fname, ' ', IFNULL(i.Mname, '')) AS FullName
             FROM instructor i
@@ -100,8 +100,13 @@ namespace Info_module.Pages.TableMenus
 
             if (instructor_data.SelectedItem is DataRowView selectedRow)
             {
+                // Get the Internal_Employee_Id from the selected row
                 EmployeeId = (int)selectedRow["Internal_Employee_Id"];
 
+                // Set the value of the employee_id textbox
+                employee_id.Text = EmployeeId.ToString();
+
+                // Load instructor subjects for the selected employee
                 LoadInstructorSubjects(EmployeeId);
             }
         }
