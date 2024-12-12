@@ -119,28 +119,29 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                     connection.Open();
 
                     string query = @"
-            SELECT 
-                Curriculum_Id, 
-                Curriculum_Revision, 
-                Curriculum_Description, 
-                CONCAT(Year_Effective_In, '-', Year_Effective_Out) AS Year_Effective,
-                CASE 
-                    WHEN Status = 1 THEN 'Active' 
-                    ELSE 'Inactive' 
-                END AS Status
-            FROM curriculum";
+                SELECT 
+                    Curriculum_Id, 
+                    Curriculum_Revision, 
+                    Curriculum_Description, 
+                    CONCAT(Year_Effective_In, '-', Year_Effective_Out) AS Year_Effective,
+                    CASE 
+                        WHEN Status = 1 THEN 'Active' 
+                        ELSE 'Inactive' 
+                    END AS Status
+                FROM curriculum
+                WHERE Dept_Id = @departmentID";
 
                     if (selectedStatus != "All")
                     {
-                        // Add a status filter to the query
-                        query += " WHERE Status = @statusFilter";
+                        query += " AND Status = @statusFilter";
                     }
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
+                        command.Parameters.AddWithValue("@departmentID", DepartmentId);
+
                         if (selectedStatus != "All")
                         {
-                            // Set status filter: 1 for Active, 0 for Inactive
                             int statusFilter = selectedStatus == "Active" ? 1 : 0;
                             command.Parameters.AddWithValue("@statusFilter", statusFilter);
                         }

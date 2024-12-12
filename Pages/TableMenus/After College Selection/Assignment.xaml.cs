@@ -28,9 +28,9 @@ namespace Info_module.Pages.TableMenus
 
         public int DepartmentId { get; set; }
 
-        public int EmployeeId { get; set; } 
+        public int CurriculumId { get; set; } 
 
-        public int SubjectId { get; set; }
+        public int BlockSectionId { get; set; }
 
         //public static readonly string ConnectionString = @"Server=26.182.137.35;Database=universitydb;User ID=test;Password=;";
         private const string connectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
@@ -47,7 +47,7 @@ namespace Info_module.Pages.TableMenus
         {
             var app = (App)Application.Current;
             app.LoadUI(TopBarFrame, "Assignment Menu", TopBar_BackButtonClicked);
-            LoadInstructors();
+            LoadCurriculum();
             LoadDepartmentitems();
             loadSchedule();
         }
@@ -107,15 +107,14 @@ namespace Info_module.Pages.TableMenus
         }
 
 
-
         #endregion
 
-        //Instructor
+        //Curriculum
         #region Instructor
 
-        private DataTable instructorDataTable; // Store the loaded data
+        private DataTable curriculumDataTable; // Store the loaded data
 
-        private void LoadInstructors(string filter = "No Assignments")
+        private void LoadCurriculum(string filter = "No Assignments")
         {
             try
             {
@@ -123,117 +122,88 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    // Base query to load instructors with relevant subject status
+                    // Base query to load curriculum with block section assignment status
                     string query = @"
-            SELECT i.Internal_Employee_Id, 
-                   i.Employee_Id AS EmployeeId,
-                   d.Dept_Code AS Department,
-                   CONCAT(i.Lname, ', ', i.Fname, ' ', IFNULL(i.Mname, '')) AS FullName
-            FROM instructor i
-            JOIN departments d ON i.Dept_Id = d.Dept_Id
-            WHERE i.Status = 1";
+                SELECT 
+                    c.Curriculum_Id AS Curriculum_Id, 
+                    c.Curriculum_Revision AS Curriculum_Revision,
+                    c.Curriculum_Description AS Curriculum_Description,
+                    d.Dept_Code AS Department,
+                    CONCAT(c.Year_Effective_In, '-', c.Year_Effective_Out) AS Year_Effective,
+                    SUM(CASE WHEN bs.assigned = 1 THEN 1 ELSE 0 END) AS AssignedCount,
+                    SUM(CASE WHEN bs.assigned = 0 THEN 1 ELSE 0 END) AS UnassignedCount
+                FROM curriculum c
+                JOIN departments d ON c.Dept_Id = d.Dept_Id
+                LEFT JOIN block_section bs ON bs.curriculumId = c.Curriculum_Id
+                WHERE c.Status = 1
+                GROUP BY c.Curriculum_Id";
 
-                    // Apply the filter logic based on subject load status
+                    // Apply filter logic to the aggregated counts
                     switch (filter)
                     {
                         case "No Assignments":
-                            // Only instructors with "waiting" subjects, but no "assigned" subjects
-                            query += @" AND EXISTS (
-                                    SELECT 1 
-                                    FROM subject_load s 
-                                    WHERE s.Internal_Employee_Id = i.Internal_Employee_Id 
-                                      AND s.Status = 'waiting')
-                                AND NOT EXISTS (
-                                    SELECT 1 
-                                    FROM subject_load s 
-                                    WHERE s.Internal_Employee_Id = i.Internal_Employee_Id 
-                                      AND s.Status = 'assigned')";
+                            query += " HAVING AssignedCount = 0 AND UnassignedCount > 0";
                             break;
 
                         case "Partial Assignments":
-                            // Instructors who have both "waiting" and "assigned" subjects
-                            query += @" AND EXISTS (
-                                    SELECT 1 
-                                    FROM subject_load s 
-                                    WHERE s.Internal_Employee_Id= i.Internal_Employee_Id 
-                                      AND s.Status = 'waiting')
-                                AND EXISTS (
-                                    SELECT 1 
-                                    FROM subject_load s 
-                                    WHERE s.Internal_Employee_Id = i.Internal_Employee_Id 
-                                      AND s.Status = 'assigned')";
+                            query += " HAVING AssignedCount > 0 AND UnassignedCount > 0";
                             break;
 
                         case "Complete Assignments":
-                            // Only instructors with "assigned" subjects and no "waiting" subjects
-                            query += @" AND EXISTS (
-                                        SELECT 1 
-                                        FROM subject_load s 
-                                        WHERE s.Internal_Employee_Id = i.Internal_Employee_Id 
-                                            AND s.Status = 'assigned')
-                                    AND NOT EXISTS (
-                                        SELECT 1 
-                                        FROM subject_load s 
-                                        WHERE s.Internal_Employee_Id = i.Internal_Employee_Id 
-                                        AND s.Status = 'waiting')";
+                            query += " HAVING UnassignedCount = 0 AND AssignedCount > 0";
                             break;
 
                         case "all":
                         default:
-                            // No additional filter, show all instructors with subject load
-                            query += @" AND EXISTS (
-                                    SELECT 1 
-                                    FROM subject_load s 
-                                    WHERE s.Internal_Employee_Id = i.Internal_Employee_Id)";
+                            // No additional filter, show all curricula with block section assignments
+                            // No filter is required in this case
                             break;
                     }
 
                     MySqlCommand command = new MySqlCommand(query, connection);
-
                     MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
-                    instructorDataTable = new DataTable(); // Initialize the DataTable
-                    dataAdapter.Fill(instructorDataTable); // Fill the DataTable
+
+                    curriculumDataTable = new DataTable(); // Initialize the DataTable
+                    dataAdapter.Fill(curriculumDataTable); // Fill the DataTable
 
                     // Bind the resulting data to the DataGrid
-                    instructor_data.ItemsSource = instructorDataTable.DefaultView;
+                    curriculum_data.ItemsSource = curriculumDataTable.DefaultView;
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Error loading instructor details: " + ex.Message);
+                MessageBox.Show("Error loading curriculum details: " + ex.Message);
             }
         }
 
 
 
-        private void instructor_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+
+
+
+        private void curriculum_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-            if (instructor_data.SelectedItem is DataRowView selectedRow)
+            if (curriculum_data.SelectedItem is DataRowView selectedRow) 
             {
-                // Get the Internal_Employee_Id from the selected row
-                EmployeeId = (int)selectedRow["Internal_Employee_Id"];
-                employeeId_txt.Text = (string)selectedRow["EmployeeId"];
-                loadScheduleByInstructor(EmployeeId);
-
-
-                // Set the value of the employee_id textbox
-                employeeId_txt.Text = EmployeeId.ToString();
-
-                // Load instructor subjects for the selected employee
-                LoadInstructorSubjects(EmployeeId);
+                CurriculumId = (int)selectedRow["Curriculum_Id"];
+                curriculum_Id_txt.Text = CurriculumId.ToString();
+                LoadBlockSection(CurriculumId);
             }
+
         }
 
-        private void instructorSubject_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void blockSections_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (instructorSubject_data.SelectedItem is DataRow selectedRow) 
+            if (blockSections_data.SelectedItem is DataRowView selectedRow)
             {
-                SubjectId = (int)selectedRow["Instructor_Subject_Id"];
+                BlockSectionId = (int)selectedRow["assignment_BlockSection_Id"];
             }
+
         }
 
-        
+
+
 
         private void collegiate_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -252,9 +222,9 @@ namespace Info_module.Pages.TableMenus
                 }
 
                 // Use DataView to filter the DataTable
-                if (instructorDataTable != null)
+                if (curriculumDataTable != null)
                 {
-                    DataView view = new DataView(instructorDataTable);
+                    DataView view = new DataView(curriculumDataTable);
 
                     if (selectedDeptCode != "All") // If the selected value is not "All"
                     {
@@ -265,61 +235,69 @@ namespace Info_module.Pages.TableMenus
                         view.RowFilter = string.Empty; // Show all if "All" is selected
                     }
 
-                    instructor_data.ItemsSource = view; // Bind the filtered view to the DataGrid
+                    curriculum_data.ItemsSource = view; // Bind the filtered view to the DataGrid
                 }
             }
             else
             {
                 // If nothing is selected, reset the DataGrid to show all data
-                instructor_data.ItemsSource = instructorDataTable.DefaultView;
+                curriculum_data.ItemsSource = curriculumDataTable.DefaultView;
             }
         }
 
         private void instructorAssignment_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (instructorAssignment_cmbx.SelectedItem is ComboBoxItem selectedItem)
+            if (curriculumAssignment_cmbx.SelectedItem is ComboBoxItem selectedItem)
             {
                 string selectedFilter = selectedItem.Content.ToString();
-                LoadInstructors(selectedFilter); // Pass the filter to the LoadClasses method
+                LoadCurriculum(selectedFilter); // Pass the filter to the LoadClasses method
             }
         }
 
         #endregion
 
-        #region //SUbject
+        #region Block Section
 
-        private void LoadInstructorSubjects(int internalEmployeeId)
+        private void LoadBlockSection(int curriculumId)
         {
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
+
+                    // Query to retrieve block section details with assigned status as text
                     string query = @"
-                    SELECT sl.ID AS SubjectLoadId, 
-                        s.Subject_Code, 
-                        s.Subject_Title, 
-                        sl.Max_Student, 
-                        sl.Status
-                    FROM subject_load sl
-                    JOIN subjects s ON sl.Subject_Id = s.Subject_Id
-                    WHERE sl.Internal_Employee_Id = @internalEmployeeId"; // Change this line to filter by Employee_Id
+                SELECT 
+                    blockSectionId AS assignment_BlockSection_Id, 
+                    blockSectionName AS assignment_BlockSection_Name, 
+                    year_level AS assignment_BlockSection_Year, 
+                    semester AS assignment_BlockSection_Semester, 
+                    CASE 
+                        WHEN assigned = 0 THEN 'Waiting' 
+                        WHEN assigned = 1 THEN 'Assigned' 
+                        ELSE 'Unknown' 
+                    END AS Assigned
+                FROM block_section
+                WHERE curriculumId = @curriculumId";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@internalEmployeeId", internalEmployeeId);
+                    command.Parameters.AddWithValue("@curriculumId", curriculumId);
 
                     MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     dataAdapter.Fill(dataTable);
 
-                    instructorSubject_data.ItemsSource = dataTable.DefaultView;
+                    // Bind the DataTable to the DataGrid
+                    blockSections_data.ItemsSource = dataTable.DefaultView;
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show("Error loading instructor subjects: " + ex.Message);
+                MessageBox.Show("Error loading Block Sections: " + ex.Message);
             }
         }
+
 
         private void subjectFilter_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -329,18 +307,18 @@ namespace Info_module.Pages.TableMenus
                 string selectedStatus = selectedItem.Tag.ToString(); // Get the tag for filtering
 
                 // Use DataView to filter the DataTable
-                if (instructorSubject_data.ItemsSource is DataView view)
+                if (blockSections_data.ItemsSource is DataView view)
                 {
                     if (selectedStatus != "All") // If the selected value is not "All"
                     {
-                        view.RowFilter = $"Status = '{selectedStatus}'"; // Adjust 'Status' based on your actual column name
+                        view.RowFilter = $"Assigned = '{selectedStatus}'"; // Adjust 'Status' based on your actual column name
                     }
                     else
                     {
                         view.RowFilter = string.Empty; // Show all if "All" is selected
                     }
 
-                    instructorSubject_data.ItemsSource = view; // Bind the filtered view to the DataGrid
+                    blockSections_data.ItemsSource = view; // Bind the filtered view to the DataGrid
                 }
             }
         }
@@ -383,51 +361,6 @@ namespace Info_module.Pages.TableMenus
                 LEFT JOIN rooms r ON c.Room_Id = r.Room_Id";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
-                    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
-                    DataTable dataTable = new DataTable();
-                    dataAdapter.Fill(dataTable);
-
-                    // Bind the resulting data to the DataGrid
-                    schedule_data.ItemsSource = dataTable.DefaultView;
-                }
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show("Error loading class details: " + ex.Message);
-            }
-        }
-
-        private void loadScheduleByInstructor(int EmployeeId)
-        {
-            string employeeId = EmployeeId.ToString();
-            try
-            {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
-                {
-                    connection.Open();
-                    // Query to load data from the class table
-                    string query = @"
-                SELECT c.Class_Id,
-                       c.Subject_Id,
-                       c.Internal_Employee_Id,
-                       c.Room_Id,
-                       c.Stub_Code,
-                       c.Class_Mode,
-                       c.Class_Day,
-                       c.Start_Time,
-                       c.End_Time,
-                       s.Subject_Code AS SubjectCode,
-                       CONCAT(i.Lname, ', ', i.Fname) AS InstructorName,
-                       r.Room_Code AS RoomCode
-                FROM class c
-                LEFT JOIN subjects s ON c.Subject_Id = s.Subject_Id
-                LEFT JOIN instructor i ON c.Internal_Employee_Id = i.Internal_Employee_Id
-                LEFT JOIN rooms r ON c.Room_Id = r.Room_Id
-                Where c.Internal_Employee_Id = @EmployeeId";
-
-
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
                     MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     dataAdapter.Fill(dataTable);
@@ -1924,50 +1857,7 @@ namespace Info_module.Pages.TableMenus
 
         private void assign_btn_Click(object sender, RoutedEventArgs e)
         {
-            string employeeId = employeeId_txt.Text;
-
-            // Initialize the SubjectLoader with the connection string
-            SubjectLoader subjectLoader = new SubjectLoader(connectionString);
-            List<(string employeeId, string subjectId)> employeeSubjectPairs = subjectLoader.GetSubjectsByEmployeeId(employeeId);
-
-            if (employeeSubjectPairs.Count == 0)
-            {
-                MessageBox.Show("No subjects with status 'Waiting' found.");
-                return;
-            }
-
-            // Message box to show the pairs with 'Waiting' status
-            MessageBox.Show("Processing Pairs with 'Waiting' status: " + string.Join(", ", employeeSubjectPairs.Select(p => $"({p.employeeId}, {p.subjectId})")));
-
-            // Loop through each pair in the list
-            foreach (var pair in employeeSubjectPairs)
-            {
-                string currentEmployeeId = pair.employeeId;
-                string subjectId = pair.subjectId;
-
-                try
-                {
-                    // Create a new instance of DataProcessor with the current pair
-                    DataProcessor processor = new DataProcessor(subjectId, currentEmployeeId);
-                    processor.ProcessData();  // Call the ProcessData method
-
-                    // Output to show successful processing (optional)
-                    Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {subjectId}) successfully.");
-
-                    // Now update the status to 'Assigned' for this pair
-                    subjectLoader.UpdateSubjectStatus(currentEmployeeId, subjectId);
-                }
-                catch (ArgumentException ex)
-                {
-                    // Handle any ArgumentExceptions thrown by DataProcessor
-                    Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {subjectId}): {ex.Message}");
-                }
-            }
-
-            // Indicate that processing is finished
-            Console.WriteLine("Finished processing all pairs.");
         }
-
 
 
 
@@ -1979,10 +1869,5 @@ namespace Info_module.Pages.TableMenus
 
 
         #endregion
-
-        private void debug_btn_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
     }
 }

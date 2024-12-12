@@ -27,32 +27,28 @@
                         <Viewbox Margin="10,0,10,23" Stretch="Fill">
                             <Grid Height="155" Width="280">
                                 <Viewbox Margin="0,21,0,21" Stretch="Fill">
-                                    <DataGrid x:Name="instructor_data" Height="272" Width="752" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionChanged="instructor_data_SelectionChanged">
+                                    <DataGrid x:Name="curriculum_data" Height="272" Width="752" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionChanged="curriculum_data_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <!-- Internal Employee ID, hidden -->
-                                            <DataGridTextColumn Header="Internal Id" Binding="{Binding Internal_Employee_Id}" Visibility="Hidden" CanUserReorder="False" CanUserResize="False" IsReadOnly="True"/>
-
-                                            <!-- Employee ID column -->
-                                            <DataGridTextColumn Header="Employee Id" Binding="{Binding EmployeeId}" Width="*" CanUserReorder="False" CanUserResize="False" IsReadOnly="True"/>
-
-                                            <!-- Department Code column -->
-                                            <DataGridTextColumn Header="Department Code" Binding="{Binding Department}" Width="*" CanUserReorder="False" CanUserResize="False" IsReadOnly="True"/>
-
-                                            <!-- Full Name column -->
-                                            <DataGridTextColumn Header="Name" Binding="{Binding FullName}" Width="*" CanUserReorder="False" CanUserResize="False" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="ID" Binding="{Binding Curriculum_Id}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Department" Binding="{Binding Department}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Curriculum Revision" Binding="{Binding Curriculum_Revision}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
+                                            <DataGridTextColumn Header="Curriculum Description" Binding="{Binding Curriculum_Description}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
+                                            <DataGridTextColumn Header="Year Effective" Binding="{Binding Year_Effective}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
+                                            <DataGridTextColumn Header="Assigned" Binding="{Binding AssignedCount}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
+                                            <DataGridTextColumn Header="Unassigned" Binding="{Binding UnassignedCount}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
                                         </DataGrid.Columns>
                                     </DataGrid>
 
                                 </Viewbox>
-                                <TextBlock x:Name="test_txt" TextWrapping="Wrap" Text="Instructors" Margin="0,0,113,139"/>
+                                <TextBlock x:Name="test_txt" TextWrapping="Wrap" Text="Curriculum" Margin="0,0,113,139"/>
                                 <Viewbox HorizontalAlignment="Left" Height="10" Margin="0,139,0,0" VerticalAlignment="Top" Width="88" Stretch="Fill">
                                     <Grid Height="19" Width="236">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="7*"/>
                                             <RowDefinition Height="12*"/>
                                         </Grid.RowDefinitions>
-                                        <TextBox x:Name="employeeId_txt" IsReadOnly="True" Height="18" Margin="70,0,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2"/>
-                                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Employee Id:" VerticalAlignment="Top" Height="19" Width="68" Grid.RowSpan="2"/>
+                                        <TextBox x:Name="curriculum_Id_txt" IsReadOnly="True" Height="18" Margin="70,0,3,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Curriculum Id:" VerticalAlignment="Top" Height="19" Width="68" Grid.RowSpan="2"/>
                                     </Grid>
                                 </Viewbox>
                                 <Viewbox HorizontalAlignment="Left" Height="10" Margin="90,139,0,0" VerticalAlignment="Top" Width="91" Stretch="Fill">
@@ -62,7 +58,7 @@
                                     </Grid>
                                 </Viewbox>
                                 <Viewbox HorizontalAlignment="Left" Margin="202,139,0,0" VerticalAlignment="Top" Width="68" Stretch="Fill" Height="10">
-                                    <ComboBox x:Name="instructorAssignment_cmbx" Height="24" Width="166" SelectedIndex="0" SelectionChanged="instructorAssignment_cmbx_SelectionChanged">
+                                    <ComboBox x:Name="curriculumAssignment_cmbx" Height="24" Width="166" SelectedIndex="0" SelectionChanged="instructorAssignment_cmbx_SelectionChanged">
                                         <ComboBoxItem Content="No Assignments"/>
                                         <ComboBoxItem Content="Partial Assignments"/>
                                         <ComboBoxItem Content="Complete Assignments"/>
@@ -75,15 +71,15 @@
                     <Grid Margin="4,147,4,41" Width="300">
                         <Viewbox Margin="10,0,10,0" Stretch="Fill">
                             <Grid Height="150" Width="280">
-                                <TextBlock TextWrapping="Wrap" Text="Instructors Subject" Margin="5,0,127,132"/>
+                                <TextBlock TextWrapping="Wrap" Text="Block Sections" Margin="5,0,127,132"/>
                                 <Viewbox Margin="5,23,5,20" Stretch="Fill">
-                                    <DataGrid x:Name="instructorSubject_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="274" Width="568" SelectionChanged="instructorSubject_data_SelectionChanged">
+                                    <DataGrid x:Name="blockSections_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="274" Width="568" SelectionChanged="blockSections_data_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="ID" IsReadOnly="True" Binding="{Binding Instructor_Subject_Id}" Visibility="Hidden"/>
-                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Code" IsReadOnly="True" Binding="{Binding Subject_Code}"/>
-                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Name" IsReadOnly="True" Binding="{Binding Subject_Title}" MinWidth="150"/>
-                                            <DataGridTextColumn Header="Max Student" CanUserReorder="False" IsReadOnly="True" Binding="{Binding Max_Student}"/>
-                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Status" IsReadOnly="True" Binding="{Binding Status}"/>
+                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="BLock Section Id" IsReadOnly="True" Binding="{Binding assignment_BlockSection_Id}"/>
+                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Block Section Name" IsReadOnly="True" Binding="{Binding assignment_BlockSection_Name}"/>
+                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Year" IsReadOnly="True" Binding="{Binding assignment_BlockSection_Year}" MinWidth="150"/>
+                                            <DataGridTextColumn Header="Semester" CanUserReorder="False" IsReadOnly="True" Binding="{Binding assignment_BlockSection_Semester}"/>
+                                            <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Assigned" IsReadOnly="True" Binding="{Binding Assigned}"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Viewbox>

@@ -67,7 +67,7 @@
                         <TextBlock x:Name="test_txt" HorizontalAlignment="Left" Margin="10,95,0,0" TextWrapping="Wrap" Text="Curriculum ID" VerticalAlignment="Top" Grid.RowSpan="2"/>
                         <Button x:Name="Add_btn" Content="Add" Margin="10,168,175,35" Width="70" Height="20" Click="Add_btn_Click" Grid.Row="1"/>
                         <Button x:Name="Edit_btn" Content="Update" Margin="92,168,93,35" Width="70" Height="20" Click="Edit_btn_Click" Grid.Row="1"/>
-                        <Button x:Name="subject_btn" Content="Configure Subject" Margin="75,193,75,10" Grid.Row="1" Click="subject_btn_Click"/>
+                        <Button x:Name="subject_btn" Content="Configure Curriculum" Margin="75,193,75,10" Grid.Row="1" Click="subject_btn_Click" FontSize="10"/>
                         <TextBox x:Name="curriculumRevision_txt" Margin="9,52,33,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="20" Grid.Row="1"/>
                         <TextBlock HorizontalAlignment="Left" Margin="10,36,0,0" TextWrapping="Wrap" Text="Curriculum Revision" VerticalAlignment="Top" Grid.Row="1"/>
                         <TextBox x:Name="curriculumDescription_txt" HorizontalAlignment="Center" Margin="0,88,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="235" Height="35" Grid.Row="1"/>
