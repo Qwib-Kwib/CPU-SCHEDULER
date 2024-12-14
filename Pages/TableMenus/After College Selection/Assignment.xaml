@@ -90,6 +90,7 @@
                                         <ComboBoxItem Content="Assigned" Tag="assigned"/>
                                     </ComboBox>
                                 </Viewbox>
+                                <TextBox x:Name="blocksection_Id_txt" IsReadOnly="True" Height="10" Margin="5,135,162,0" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
                             </Grid>
                         </Viewbox>
                     </Grid>
@@ -110,7 +111,6 @@
                                 <DataGridTextColumn Header="Employee ID" Binding="{Binding Internal_Employee_Id}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                 <DataGridTextColumn Header="Room ID" Binding="{Binding Room_Id}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                 <DataGridTextColumn Header="Stub Code" Binding="{Binding Stub_Code}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Class Mode" Binding="{Binding Class_Mode}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Class Day" Binding="{Binding Class_Day}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Start Time" Binding="{Binding Start_Time}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="End Time" Binding="{Binding End_Time}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>

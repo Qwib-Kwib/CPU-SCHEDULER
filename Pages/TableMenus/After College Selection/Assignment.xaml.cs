@@ -28,7 +28,7 @@ namespace Info_module.Pages.TableMenus
 
         public int DepartmentId { get; set; }
 
-        public int CurriculumId { get; set; } 
+        public int CurriculumId { get; set; }
 
         public int BlockSectionId { get; set; }
 
@@ -184,7 +184,7 @@ namespace Info_module.Pages.TableMenus
 
         private void curriculum_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (curriculum_data.SelectedItem is DataRowView selectedRow) 
+            if (curriculum_data.SelectedItem is DataRowView selectedRow)
             {
                 CurriculumId = (int)selectedRow["Curriculum_Id"];
                 curriculum_Id_txt.Text = CurriculumId.ToString();
@@ -198,6 +198,7 @@ namespace Info_module.Pages.TableMenus
             if (blockSections_data.SelectedItem is DataRowView selectedRow)
             {
                 BlockSectionId = (int)selectedRow["assignment_BlockSection_Id"];
+                blocksection_Id_txt.Text = BlockSectionId.ToString();
             }
 
         }
@@ -348,7 +349,6 @@ namespace Info_module.Pages.TableMenus
                        c.Internal_Employee_Id,
                        c.Room_Id,
                        c.Stub_Code,
-                       c.Class_Mode,
                        c.Class_Day,
                        c.Start_Time,
                        c.End_Time,
@@ -554,7 +554,7 @@ namespace Info_module.Pages.TableMenus
                 this.connectionString = connectionString;
             }
 
-            public List<int> FindRooms(string subjectId, List<(int, string)> roomList_test)
+            public List<int> FindRooms(int subjectId, List<(int, string)> roomList_test)
             {
                 List<int> matchingRoomIds = new List<int>();
 
@@ -609,7 +609,7 @@ namespace Info_module.Pages.TableMenus
                 // Loop through the room list and find rooms with Room_Type containing 'Laboratory' or 'AVR'
                 foreach (var room in roomList_test)
                 {
-                    if (room.Item2.Contains("LAB") || room.Item2.Contains("AVR"))
+                    if (room.Item2.Contains("LAB"))
                     {
                         matchingRoomIds.Add(room.Item1);
                     }
@@ -843,66 +843,6 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
-
-        public class DateTimeAssigner
-        {
-            private string connectionString;
-
-            public DateTimeAssigner(string connectionString)
-            {
-                this.connectionString = connectionString;
-            }
-
-            public List<(int RoomId, string Day, TimeSpan StartTime, TimeSpan EndTime)> AssignDateTimes(int selectedRoom, int subjectId, int employeeId_num)
-            {
-                List<(int, string, TimeSpan, TimeSpan)> scheduleList = new List<(int, string, TimeSpan, TimeSpan)>();
-
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    // Query to get Units from the subjects table
-                    string subjectQuery = "SELECT Units FROM subjects WHERE Subject_Id = @subjectId";
-                    MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
-                    subjectCommand.Parameters.AddWithValue("@subjectId", subjectId);
-
-                    int units = Convert.ToInt32(subjectCommand.ExecuteScalar());
-
-                    // Query to get the Start_Time using Internal_Employee_Id from instructor_availability table
-                    string availabilityQuery = "SELECT Start_Time FROM instructor_availability WHERE Internal_Employee_Id = @employeeId";
-                    MySqlCommand availabilityCommand = new MySqlCommand(availabilityQuery, connection);
-                    availabilityCommand.Parameters.AddWithValue("@employeeId", employeeId_num);
-
-                    // Get the Start_Time from the result
-                    TimeSpan startTime = (TimeSpan)availabilityCommand.ExecuteScalar();
-                    string[] days = { "Monday", "Wednesday" }; // Use Monday and Wednesday as default days
-
-                    if (units == 1)
-                    {
-                        // Assign a single 1-hour slot
-                        TimeSpan endTime = startTime.Add(TimeSpan.FromHours(1));
-                        scheduleList.Add((selectedRoom, days[0], startTime, endTime));
-                    }
-                    else if (units > 1)
-                    {
-                        // Calculate evenly split times
-                        TimeSpan partDuration = TimeSpan.FromHours(units / 2.0);
-
-                        // Assign first part
-                        TimeSpan endTime = startTime.Add(partDuration);
-                        scheduleList.Add((selectedRoom, days[0], startTime, endTime));
-
-                        // Move to the next day
-                        startTime = (TimeSpan)availabilityCommand.ExecuteScalar(); // Reset to the same Start_Time for the next day
-                        endTime = startTime.Add(partDuration);
-                        scheduleList.Add((selectedRoom, days[1], startTime, endTime));
-                    }
-                }
-
-                return scheduleList;
-            }
-        }
-
         public class ClassScheduler
         {
             private string connectionString;
@@ -1011,12 +951,38 @@ namespace Info_module.Pages.TableMenus
                 }
             }
 
+            private List<string> GetAvailableDaysForInstructor()
+            {
+                List<string> availableDays = new List<string>();
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Query to get all available days for the specified instructor
+                    string query = "SELECT Day_Of_Week FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string dayOfWeek = reader["Day_Of_Week"].ToString();
+                            availableDays.Add(dayOfWeek);
+                        }
+                    }
+                }
+
+                return availableDays;
+            }
+
             public List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> GenerateAvailableTimeSlots(TimeSpan interval, string days, int selectedRoom, int stubCode)
             {
                 List<(TimeSpan, TimeSpan, string, int)> availableSlots = new List<(TimeSpan, TimeSpan, string, int)>();
                 List<string> dayList = new List<string>();
 
-                // Populate dayList based on the input 'days' (e.g., MTWTHF, TTH, MWF)
+                // Populate dayList based on the input 'days'
                 switch (days)
                 {
                     case "MTWTHF":
@@ -1032,41 +998,135 @@ namespace Info_module.Pages.TableMenus
                         return availableSlots;
                 }
 
-                // Loop through each day to find available slots
+                // Flag to keep track if a valid day was found
+                // Flag to keep track if a valid day was found
+                bool foundDayWithSlots = false;
+
+                // Generate slots for the available days
                 foreach (var day in dayList)
                 {
-                    // Check if the Stub_Code already exists for this day
                     if (IsStubCodeExistsForDay(stubCode, day))
                     {
-                        // If Stub_Code exists, skip to the next day
-                        continue;
+                        // If there is only one day in the list, use the current day instead of skipping
+                        if (dayList.Count == 1)
+                        {
+                            foundDayWithSlots = true;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
 
-                    // Otherwise, proceed with generating the time slots
                     List<(TimeSpan startTime, TimeSpan endTime)> dayTimeSlots = GetTimeSlotsForDay(interval, day);
-
-                    // Remove slots occupied by Room_Id
+                    AdjustForRestPeriods(ref dayTimeSlots, day);
                     RemoveOccupiedSlotsByRoom(ref dayTimeSlots, day, selectedRoom);
-
-                    // Remove slots occupied by Internal_Employee_Id
                     RemoveOccupiedSlotsByEmployee(ref dayTimeSlots, day);
+                    List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(dayTimeSlots, day);
 
-                    // Check instructor availability (Internal_Employee_Id in instructor_availability)
-                    List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(dayTimeSlots);
-
-                    // If any slots are available within the instructor's availability, add them
                     if (filteredSlots.Count > 0)
                     {
                         foreach (var slot in filteredSlots)
                         {
-                            availableSlots.Add((slot.startTime, slot.endTime, day, 1)); // Adds 1 as the additionalNumber
+                            availableSlots.Add((slot.startTime, slot.endTime, day, 1));
                         }
 
-                        break; // Stop if available slots are found for the current day
+                        foundDayWithSlots = true;
+                        break;
                     }
                 }
 
+                // If no day with available slots was found and there is only one day, try the single day
+                if (!foundDayWithSlots && dayList.Count == 1)
+                {
+                    string singleDay = dayList[0];
+                    List<(TimeSpan startTime, TimeSpan endTime)> singleDayTimeSlots = GetTimeSlotsForDay(interval, singleDay);
+                    AdjustForRestPeriods(ref singleDayTimeSlots, singleDay);
+                    RemoveOccupiedSlotsByRoom(ref singleDayTimeSlots, singleDay, selectedRoom);
+                    RemoveOccupiedSlotsByEmployee(ref singleDayTimeSlots, singleDay);
+                    List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(singleDayTimeSlots, singleDay);
+
+                    if (filteredSlots.Count > 0)
+                    {
+                        foreach (var slot in filteredSlots)
+                        {
+                            availableSlots.Add((slot.startTime, slot.endTime, singleDay, 1));
+                        }
+                    }
+                }
                 return availableSlots;
+            }
+
+
+            private void AdjustForRestPeriods(ref List<(TimeSpan startTime, TimeSpan endTime)> dayTimeSlots, string day)
+            {
+                List<(TimeSpan startTime, TimeSpan endTime)> employeeTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>();
+
+                // Query to find the occupied time slots for the employee on the given day
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Internal_Employee_Id = @EmployeeId AND Class_Day = @Day";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+                    cmd.Parameters.AddWithValue("@Day", day);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            TimeSpan startTime = (TimeSpan)reader["Start_Time"];
+                            TimeSpan endTime = (TimeSpan)reader["End_Time"];
+                            employeeTimeBlocks.Add((startTime, endTime));
+                        }
+                    }
+                }
+
+                // Determine break duration based on the day
+                TimeSpan breakDuration = (day == "Monday" || day == "Wednesday" || day == "Friday")
+                    ? TimeSpan.FromHours(1)  // 1 hour break
+                    : TimeSpan.FromHours(1.5);  // 1 hour 30 minutes for Tuesday and Thursday
+
+                // Adjust the time slots if consecutive blocks exceed two hours
+                for (int i = 0; i < employeeTimeBlocks.Count - 1; i++)
+                {
+                    var currentBlock = employeeTimeBlocks[i];
+                    var nextBlock = employeeTimeBlocks[i + 1];
+
+                    // Check if the consecutive blocks exceed two hours
+                    if (nextBlock.startTime - currentBlock.endTime <= TimeSpan.FromHours(2))
+                    {
+                        // Move all time slots that follow this time block by the breakDuration
+                        TimeSpan previousEnd = currentBlock.endTime;
+
+                        for (int j = i + 1; j < dayTimeSlots.Count; j++)
+                        {
+                            var originalSlot = dayTimeSlots[j];
+
+                            // Adjust start time only if it's after the previous block's end time
+                            if (originalSlot.startTime >= previousEnd)
+                            {
+                                TimeSpan newStartTime = originalSlot.startTime.Add(breakDuration);
+                                TimeSpan newEndTime = originalSlot.endTime.Add(breakDuration);
+
+                                // Update the slot
+                                dayTimeSlots[j] = (newStartTime, newEndTime);
+
+                                // Update previousEnd for the next iteration
+                                previousEnd = newEndTime;
+                            }
+                        }
+
+                        // Remove any slots between 17:30:00 and 17:40:00
+                        dayTimeSlots.RemoveAll(slot => slot.startTime >= new TimeSpan(17, 30, 0) && slot.endTime <= new TimeSpan(17, 40, 0));
+
+                        // Remove any slots that exceed 21:40:00
+                        dayTimeSlots.RemoveAll(slot => slot.endTime > new TimeSpan(21, 40, 0));
+
+                        break;  // Apply the rest period adjustment only once per day
+                    }
+                }
             }
 
             private List<(TimeSpan startTime, TimeSpan endTime)> GetTimeSlotsForDay(TimeSpan interval, string day)
@@ -1145,7 +1205,7 @@ namespace Info_module.Pages.TableMenus
                 }
             }
 
-            private List<(TimeSpan startTime, TimeSpan endTime)> CheckInstructorAvailability(List<(TimeSpan startTime, TimeSpan endTime)> availableSlots)
+            private List<(TimeSpan startTime, TimeSpan endTime)> CheckInstructorAvailability(List<(TimeSpan startTime, TimeSpan endTime)> availableSlots, string day)
             {
                 List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = new List<(TimeSpan startTime, TimeSpan endTime)>();
 
@@ -1153,26 +1213,31 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    // Query to find the availability for the employee (instructor_availability table)
-                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
+                    // Query to find the availability for the employee on the specific day
+                    string query = "SELECT Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId AND Day_Of_Week = @Day";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+                    cmd.Parameters.AddWithValue("@Day", day);
+
+                    TimeSpan availableStartTime = new TimeSpan(7, 0, 0); // Default start time: 7:00 AM
+                    TimeSpan availableEndTime = new TimeSpan(17, 30, 0); // Default end time: 5:30 PM
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            TimeSpan availableStartTime = (TimeSpan)reader["Start_Time"];
-                            TimeSpan availableEndTime = (TimeSpan)reader["End_Time"];
+                            // Override default values if availability exists
+                            availableStartTime = (TimeSpan)reader["Start_Time"];
+                            availableEndTime = (TimeSpan)reader["End_Time"];
+                        }
+                    }
 
-                            // Keep slots that fall within the instructor's availability
-                            foreach (var slot in availableSlots)
-                            {
-                                if (slot.startTime >= availableStartTime && slot.endTime <= availableEndTime)
-                                {
-                                    filteredSlots.Add(slot);
-                                }
-                            }
+                    // Filter available slots based on the determined availability
+                    foreach (var slot in availableSlots)
+                    {
+                        if (slot.startTime >= availableStartTime && slot.endTime <= availableEndTime)
+                        {
+                            filteredSlots.Add(slot);
                         }
                     }
                 }
@@ -1193,8 +1258,12 @@ namespace Info_module.Pages.TableMenus
 
             public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId)
             {
-                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
-                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
+                //Original with Class Mode
+                //string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
+                //         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
+
+                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Stub_Code)
+                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Stub_Code);";
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
@@ -1209,7 +1278,8 @@ namespace Info_module.Pages.TableMenus
                             cmd.Parameters.AddWithValue("@Start_Time", startTime);
                             cmd.Parameters.AddWithValue("@End_Time", endTime);
                             cmd.Parameters.AddWithValue("@Class_Day", day);
-                            cmd.Parameters.AddWithValue("@Class_Mode", mode); // Insert mode
+                            //Removed Class Mode
+                            //cmd.Parameters.AddWithValue("@Class_Mode", mode); // Insert mode
                             cmd.Parameters.AddWithValue("@Stub_Code", stubCode); // Insert stubCode
 
                             cmd.ExecuteNonQuery();
@@ -1368,6 +1438,95 @@ namespace Info_module.Pages.TableMenus
                     }
                 }
             }
+
+            public List<(string employeeId, string subjectId)> GetSubjectsByEmployeeIdAndSubjectId(int subjectId)
+            {
+                List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
+
+                string query = "SELECT Internal_Employee_Id, Subject_Id FROM subject_load WHERE Subject_Id = @SubjectId AND Status = 'Waiting'";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@SubjectId", subjectId);
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string employeeId = reader["Internal_Employee_Id"].ToString();
+                                string subjectIdString = reader["Subject_Id"].ToString();
+                                employeeSubjectPairs.Add((employeeId, subjectIdString));
+                            }
+                        }
+                    }
+                }
+
+                return employeeSubjectPairs;
+            }
+        }
+
+        public class EmployeeIdRetriever
+        {
+            private readonly string connectionString;
+
+            public EmployeeIdRetriever(string connectionString)
+            {
+                this.connectionString = connectionString;
+            }
+
+            public List<int> GetUniqueEmployeeIds()
+            {
+                List<int> employeeIds = new List<int>();
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT DISTINCT Internal_Employee_Id FROM subject_load";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            employeeIds.Add(reader.GetInt32(0)); // Use GetInt32 to retrieve the integer value
+                        }
+                    }
+                }
+
+                return employeeIds;
+            }
+        }
+
+        // Helper method to retrieve SubjectIds by BlockSectionId
+        private List<int> GetSubjectIdsByBlockSectionId(int blockSectionId)
+        {
+            List<int> subjectIds = new List<int>();
+
+            string query = "SELECT subjectId FROM subject_list WHERE blockSectionId = @BlockSectionId";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@BlockSectionId", blockSectionId);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            subjectIds.Add(reader.GetInt32("subjectId"));
+                        }
+                    }
+                }
+            }
+
+            return subjectIds;
         }
 
         public class SubjectHours
@@ -1382,34 +1541,34 @@ namespace Info_module.Pages.TableMenus
                 this.connectionString = connectionString;
             }
 
-            // Method to get the Units attribute from the 'subjects' table and return a List of TimeSpans
+            // Method to get the hours attribute from the 'subjects' table and return a List of TimeSpans
             public List<TimeSpan> GetSubjectHours()
             {
-                int units = GetUnitsFromDatabase();
+                int hours = GetUnitsFromDatabase();
                 List<TimeSpan> timeSpans = new List<TimeSpan>();
 
-                // Apply the time creation rules based on the units value
-                if (units == 1)
+                // Apply the time creation rules based on the hours value
+                if (hours == 1)
                 {
                     timeSpans.Add(TimeSpan.FromHours(1)); // 1:00:00
                 }
-                else if (units == 2)
+                else if (hours == 2)
                 {
                     timeSpans.Add(TimeSpan.FromHours(2)); // 2:00:00
                 }
-                else if (units == 3)
+                else if (hours == 3)
                 {
                     timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
                     timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
                 }
-                else if (units % 2 == 0) // Even number of units > 2
+                else if (hours % 2 == 0) // Even number of hours > 2
                 {
-                    timeSpans.Add(TimeSpan.FromHours(units / 2)); // Split into two equal parts
-                    timeSpans.Add(TimeSpan.FromHours(units / 2));
+                    timeSpans.Add(TimeSpan.FromHours(hours / 2)); // Split into two equal parts
+                    timeSpans.Add(TimeSpan.FromHours(hours / 2));
                 }
-                else // Odd number of units > 3
+                else // Odd number of hours > 3
                 {
-                    int lower = units / 2;
+                    int lower = hours / 2;
                     int higher = lower + 1;
                     timeSpans.Add(TimeSpan.FromHours(higher)); // Higher part
                     timeSpans.Add(TimeSpan.FromHours(lower)); // Lower part
@@ -1418,13 +1577,13 @@ namespace Info_module.Pages.TableMenus
                 return timeSpans;
             }
 
-            // Method to fetch the Units value from the database based on subjectId_num
+            // Method to fetch the hours value from the database based on subjectId_num
             private int GetUnitsFromDatabase()
             {
-                int units = 0;
+                int hours = 0;
 
-                // Query to fetch the Units value
-                string query = "SELECT Units FROM subjects WHERE Subject_Id = @SubjectId";
+                // Query to fetch the hours value
+                string query = "SELECT Hours FROM subjects WHERE Subject_Id = @SubjectId";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -1438,7 +1597,7 @@ namespace Info_module.Pages.TableMenus
 
                         if (reader.Read())
                         {
-                            units = Convert.ToInt32(reader["Units"]);
+                            hours = Convert.ToInt32(reader["Hours"]);
                         }
 
                         reader.Close();
@@ -1450,7 +1609,7 @@ namespace Info_module.Pages.TableMenus
                     }
                 }
 
-                return units;
+                return hours;
             }
         }
 
@@ -1629,60 +1788,139 @@ namespace Info_module.Pages.TableMenus
                         .Select(id => roomCodeByIdentifier[id])
                         .ToList();
 
-                    // Create a new list to store Room_Id and Room_Floor                
                     List<(int, string)> roomList_test = new List<(int, string)>();
 
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    try
                     {
-                        connection.Open();
-
-                        // Query to get Room_Id and Room_Type from rooms table where Room_Id is in the list roomList_2
-                        string query = @"SELECT Room_Id, Room_Type FROM rooms 
-                     WHERE Room_Id IN (" + string.Join(",", roomList_2) + ")";
-
-                        MySqlCommand command = new MySqlCommand(query, connection);
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        using (MySqlConnection connection = new MySqlConnection(connectionString))
                         {
-                            while (reader.Read())
-                            {
-                                int roomId = reader.GetInt32("Room_Id");
-                                string RoomType = reader.GetString("Room_Type");
+                            connection.Open();
 
-                                // Add Room_Id and Room_Floor to the list
-                                roomList_test.Add((roomId, RoomType));
+                            // Query to get Room_Id and Room_Type from rooms table where Room_Id is in the list roomList_2
+                            string query = @"SELECT Room_Id, Room_Type FROM rooms 
+                         WHERE Room_Id IN (" + string.Join(",", roomList_2) + ")";
+
+                            MySqlCommand command = new MySqlCommand(query, connection);
+
+                            using (MySqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    int roomId = reader.GetInt32("Room_Id");
+                                    string roomType = reader.GetString("Room_Type");
+
+                                    // Add Room_Id and Room_Type to the list
+                                    roomList_test.Add((roomId, roomType));
+                                }
                             }
+                        }
+
+                        // Display the list after retrieving the data
+                        if (roomList_test.Count > 0)
+                        {
+                            string resultLab = "Room List:\n";
+                            foreach (var room in roomList_test)
+                            {
+                                resultLab += $"Room ID: {room.Item1}, Room Type: {room.Item2}\n";
+                            }
+                            // Also write the result to the console
+                            Console.WriteLine(resultLab);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No rooms found.");
+                            Console.WriteLine("No rooms found.");
                         }
                     }
-                    //------------------------------------------------------------------------------------------------------------------------------------
-                    //Filtering floors by lecture or lab
-                    RoomFinder roomFinder = new RoomFinder(connectionString);
-                    // Call the method to find matching Room_Id values based on the subjectId and roomList_test
-                    List<int> matchingRoomIds = roomFinder.FindRooms(subjectId, roomList_test);
-
-                    List<(int, int)> roomList_3 = new List<(int, int)>();
-
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    catch (MySqlException ex)
                     {
-                        connection.Open();
+                        // Handle SQL exceptions such as connection issues or query errors
+                        MessageBox.Show("Error Getting Room Type May Not Exist: " + ex.Message);
+                        Console.WriteLine("Database error: " + ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle general exceptions
+                        MessageBox.Show("Error Getting Room Type May Not Exist: " + ex.Message);
+                        Console.WriteLine("An error occurred: " + ex.Message);
+                    }
 
-                        // Query to get Room_Id and Room_Floor from rooms table where Room_Id is in the list roomList_2
-                        string query = @"SELECT Room_Id, Room_Floor FROM rooms 
-                     WHERE Room_Id IN (" + string.Join(",", matchingRoomIds) + ")";
+                    //------------------------------------------------------------------------------------------------------------------------------------
+                    List<int> matchingRoomIds = new List<int>(); // Declare the list outside the try-catch block
+                    List<(int, int)> roomList_3 = new List<(int, int)>(); // Declare roomList_3 outside the try-catch block
 
-                        MySqlCommand command = new MySqlCommand(query, connection);
+                    try
+                    {
+                        RoomFinder roomFinder = new RoomFinder(connectionString);
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        // Call the method to find matching Room_Id values based on the subjectId and roomList_test
+                        matchingRoomIds = roomFinder.FindRooms(subjectId_num, roomList_test);
+                    }
+                    catch (MySqlException ex)
+                    {
+                        MessageBox.Show("Error Getting Room Type May Not Exist: " + ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error Getting Room Type May Not Exist: " + ex.Message);
+                    }
+
+                    // Now check for matching room IDs
+                    if (matchingRoomIds.Count > 0)
+                    {
+                        // Construct a message with all matching room IDs
+                        string message = "Matching rooms found:\n";
+                        foreach (int roomId in matchingRoomIds)
                         {
-                            while (reader.Read())
-                            {
-                                int roomId = reader.GetInt32("Room_Id");
-                                int roomFloor = reader.GetInt32("Room_Floor");
+                            message += roomId + "\n";
+                        }
 
-                                // Add Room_Id and Room_Floor to the list
-                                roomList_3.Add((roomId, roomFloor));
+                        // Show the message in a message box
+                        Console.WriteLine(message, "Matching Rooms");
+
+                        // Proceed to retrieve room floor information
+                        try
+                        {
+                            using (MySqlConnection connection = new MySqlConnection(connectionString))
+                            {
+                                connection.Open();
+
+                                // Query to get Room_Id and Room_Floor from rooms table where Room_Id is in the list matchingRoomIds
+                                string query = @"SELECT Room_Id, Room_Floor FROM rooms 
+                             WHERE Room_Id IN (" + string.Join(",", matchingRoomIds) + ")";
+
+                                MySqlCommand command = new MySqlCommand(query, connection);
+
+                                using (MySqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        int roomId = reader.GetInt32("Room_Id");
+                                        int roomFloor = reader.GetInt32("Room_Floor");
+
+                                        // Add Room_Id and Room_Floor to the list
+                                        roomList_3.Add((roomId, roomFloor));
+                                    }
+                                }
                             }
                         }
+                        catch (MySqlException ex)
+                        {
+                            // Handle SQL exceptions such as connection issues or query errors
+                            MessageBox.Show("Error Getting a Lecture or Laboratory Room Type may not exist for this subject or employee: " + ex.Message);
+                            Console.WriteLine("Database error: " + ex.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle general exceptions
+                            MessageBox.Show("Error Getting a Lecture or Laboratory Room Type may not exist for this subject or employee: " + ex.Message);
+                            Console.WriteLine("An error occurred: " + ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        // Show a message if no rooms were found
+                        MessageBox.Show("No matching rooms found subject may not have a viable lecture or laboratory room.", "Info");
                     }
                     //------------------------------------------------------------------------------------------------------------------------------------
                     //Filtering Floors if there is a disability
@@ -1737,7 +1975,7 @@ namespace Info_module.Pages.TableMenus
                     RoomWeightSorter sorter = new RoomWeightSorter();
                     List<int> sortedRoomIds = sorter.SortByWeightDescending(transformedList);
                     //------------------------------------------------------------------------------------------------------------------------------------
-                    //Units to hours conversion
+                    //hours to hours conversion
                     SubjectHours subjectHours = new SubjectHours(subjectId_num, connectionString);
 
                     // Get the list of TimeSpan objects
@@ -1750,7 +1988,7 @@ namespace Info_module.Pages.TableMenus
                         result += $"{span.Hours:D2}:{span.Minutes:D2}:{span.Seconds:D2}\n";
                     }
                     // Show the result in a message box
-                    MessageBox.Show(result, "Subject Hours");
+                    Console.WriteLine(result, "Subject Hours");
 
                     //------------------------------------------------------------------------------------------------------------------------------------
                     //Length of time for each subject
@@ -1758,7 +1996,6 @@ namespace Info_module.Pages.TableMenus
 
                     foreach (var item in resultDays)
                     {
-                        MessageBox.Show($"{item.Item1} -> {item.Item2}");
                         Console.WriteLine($"{item.Item1} -> {item.Item2}");
                     }
                     //------------------------------------------------------------------------------------------------------------------------------------
@@ -1794,57 +2031,78 @@ namespace Info_module.Pages.TableMenus
                     // Process each (TimeSpan, string) pair individually
                     foreach (var (interval, days) in resultDays)
                     {
-                        // Include stubCode in the call to GenerateAvailableTimeSlots
-                        List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> currentSlots = generator.GenerateAvailableTimeSlots(interval, days, selectedRoom, stubCode);
-
-                        var checker = new InstructorAvailabilityChecker(connectionString);
-                        List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots = checker.CheckAvailability(currentSlots, employeeId_num);
-
-                        // Prepare the message for this specific (TimeSpan, string) pair
-                        string message = $"Available slots for {days}:\n\n";
-
-                        // Check if there are any available slots
-                        if (availableSlots.Count == 0)
+                        bool slotsFound = false; // Flag to check if any slots were found for this interval
+                        foreach (int currentRoom in sortedRoomIds) // Rename to 'currentRoom' to avoid conflict with outer scope
                         {
-                            message = $"No available time slots for {days}.";
-                            MessageBox.Show(message, "Time Slots");
-                            continue; // Skip to the next interval
-                        }
+                            // Include stubCode in the call to GenerateAvailableTimeSlots
+                            List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> currentSlots = generator.GenerateAvailableTimeSlots(interval, days, currentRoom, stubCode);
 
-                        // Use try-catch to handle potential errors when finding maxAdditionalNumber
-                        try
-                        {
-                            // Find the maximum additionalNumber from availableSlots
-                            var maxAdditionalNumber = availableSlots.Max(slot => slot.additionalNumber);
+                            var checker = new InstructorAvailabilityChecker(connectionString);
+                            List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> availableSlots = checker.CheckAvailability(currentSlots, employeeId_num);
 
-                            // Filter slots that have the maximum additionalNumber
-                            var highestSlots = availableSlots.Where(slot => slot.additionalNumber == maxAdditionalNumber).ToList();
+                            // Prepare the message for this specific (TimeSpan, string) pair
+                            string message = $"Available slots for {days} in Room {currentRoom}:\n\n";
 
-                            // Check if there are any highest slots to insert
-                            if (highestSlots.Count > 0)
+                            // Check if there are any available slots
+                            if (availableSlots.Count == 0)
                             {
-                                // Select the first highest slot for insertion
-                                var highestSlot = highestSlots.First();
-                                message += $"{highestSlot.day}: {highestSlot.startTime.ToString(@"hh\:mm")} - {highestSlot.endTime.ToString(@"hh\:mm")}\n";
-
-                                // Insert the highest slot into the class, including the mode
-                                var classInserter = new ClassInserter(connectionString);
-                                classInserter.InsertClass(highestSlot.startTime, highestSlot.endTime, highestSlot.day, mode, stubCode, employeeId_num, subjectId_num, selectedRoom);
+                                // Move to the next room if no available slots are found
+                                message = $"No available time slots for {days} in Room {currentRoom}. Trying next room...\n";
+                                Console.WriteLine(message, "Time Slots");
+                                continue; // Try the next room in sortedRoomIds
                             }
-                            else
+
+                            // If available slots are found, set the flag and break out of the loop
+                            slotsFound = true;
+
+                            // Use try-catch to handle potential errors when finding maxAdditionalNumber
+                            try
                             {
-                                message += $"No highest slots available for insertion for {days}.";
+                                // Find the maximum additionalNumber from availableSlots
+                                var maxAdditionalNumber = availableSlots.Max(slot => slot.additionalNumber);
+
+                                //============================================================================================================
+                                // Area to add weights for time
+
+                                // Filter slots that have the maximum additionalNumber
+                                var highestSlots = availableSlots.Where(slot => slot.additionalNumber == maxAdditionalNumber).ToList();
+
+                                // Check if there are any highest slots to insert
+                                if (highestSlots.Count > 0)
+                                {
+                                    // Select the first highest slot for insertion
+                                    var highestSlot = highestSlots.First();
+                                    message += $"{highestSlot.day}: {highestSlot.startTime.ToString(@"hh\:mm")} - {highestSlot.endTime.ToString(@"hh\:mm")}\n";
+
+                                    // Insert the highest slot into the class, including the mode
+                                    var classInserter = new ClassInserter(connectionString);
+                                    classInserter.InsertClass(highestSlot.startTime, highestSlot.endTime, highestSlot.day, mode, stubCode, employeeId_num, subjectId_num, currentRoom);
+                                }
+                                else
+                                {
+                                    message += $"No highest slots available for insertion for {days}.";
+                                }
                             }
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Handle the error if availableSlots is empty or if maxAdditionalNumber cannot be calculated
-                            MessageBox.Show("Unable to calculate maximum available slots. Please check the schedules.", "Error");
-                            continue; // Skip to the next interval
+                            catch (InvalidOperationException)
+                            {
+                                // Handle the error if availableSlots is empty or if maxAdditionalNumber cannot be calculated
+                                MessageBox.Show("Unable to calculate maximum available slots. Please check the schedules.", "Error");
+                                continue; // Skip to the next interval
+                            }
+
+                            // Show the message for this specific list
+                            Console.WriteLine(message, "Available Time Slots");
+
+                            // Break out of the room loop as we found available slots for this interval
+                            break;
                         }
 
-                        // Show the message for this specific list
-                        MessageBox.Show(message, "Available Time Slots");
+                        // If no slots were found after trying all rooms, output a message
+                        if (!slotsFound)
+                        {
+                            MessageBox.Show($"No available time slots for subject:{subjectId_num} in any of the specified rooms or employee:{employeeId_num} schedule full.");
+                            Console.WriteLine($"No available time slots for {days} in any of the specified rooms.", "Time Slots");
+                        }
                     }
                     //------------------------------------------------------------------------------------------------------------------------------------
                 }
@@ -1857,13 +2115,202 @@ namespace Info_module.Pages.TableMenus
 
         private void assign_btn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                // Retrieve the blockSectionId from the textbox
+                int blockSectionId = int.Parse(blocksection_Id_txt.Text);
+
+                // Retrieve the list of SubjectIds associated with the given blockSectionId from the subject_list table
+                List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
+
+                if (subjectIds.Count == 0)
+                {
+                    MessageBox.Show($"No subjects found for Block Section ID: {blockSectionId}.");
+                    return;
+                }
+
+                // Initialize the SubjectLoader
+                SubjectLoader subjectLoader = new SubjectLoader(connectionString);
+
+                // Loop through each SubjectId
+                foreach (int subjectId in subjectIds)
+                {
+                    // Retrieve subjects with 'Waiting' status for the current SubjectId
+                    List<(string employeeId, string subjectId)> employeeSubjectPairs = subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(subjectId);
+
+                    if (employeeSubjectPairs.Count == 0)
+                    {
+                        Console.WriteLine($"No subjects with status 'Waiting' found for Subject ID: {subjectId}.");
+                        continue;
+                    }
+
+                    // Display a message box to show the pairs with 'Waiting' status
+                    MessageBox.Show("Processing Pairs with 'Waiting' status for Subject ID " + subjectId + ": "
+                        + string.Join(", ", employeeSubjectPairs.Select(p => $"({p.employeeId}, {p.subjectId})")));
+
+                    // Process each pair
+                    foreach (var pair in employeeSubjectPairs)
+                    {
+                        string currentEmployeeId = pair.employeeId;
+                        string currentSubjectId = pair.subjectId;
+
+                        try
+                        {
+                            // Process data for the pair
+                            DataProcessor processor = new DataProcessor(currentSubjectId, currentEmployeeId);
+                            processor.ProcessData();
+
+                            // Output to show successful processing
+                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectId}) successfully.");
+
+                            // Update the status to 'Assigned'
+                            subjectLoader.UpdateSubjectStatus(currentEmployeeId, currentSubjectId);
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            // Handle exceptions
+                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectId}): {ex.Message}");
+                        }
+                    }
+                }
+
+                // Indicate processing completion
+                MessageBox.Show("Finished processing all subject IDs.");
+                Console.WriteLine("Finished processing all subject IDs.");
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
         }
 
 
 
         private void assingAll_btn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                // Retrieve the CurriculumId from the textbox
+                int curriculumId = int.Parse(curriculum_Id_txt.Text);
 
+                // Retrieve all BlockSectionIds associated with the given CurriculumId
+                List<int> blockSectionIds = GetBlockSectionIdsByCurriculumId(curriculumId);
+
+                if (blockSectionIds.Count == 0)
+                {
+                    MessageBox.Show($"No Block Sections found for Curriculum ID: {curriculumId}.");
+                    return;
+                }
+
+                // Loop through each BlockSectionId and process it like the previous button
+                foreach (int blockSectionId in blockSectionIds)
+                {
+                    ProcessBlockSection(blockSectionId);
+                }
+
+                // Indicate processing completion
+                MessageBox.Show("Finished processing all Block Sections.");
+                Console.WriteLine("Finished processing all Block Sections.");
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
+        }
+
+        // Helper method to retrieve BlockSectionIds by CurriculumId
+        private List<int> GetBlockSectionIdsByCurriculumId(int curriculumId)
+        {
+            List<int> blockSectionIds = new List<int>();
+
+            string query = "SELECT blockSectionId FROM block_section WHERE CurriculumId = @CurriculumId";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@CurriculumId", curriculumId);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            blockSectionIds.Add(reader.GetInt32("blockSectionId"));
+                        }
+                    }
+                }
+            }
+
+            return blockSectionIds;
+        }
+
+        // Method to process a single BlockSectionId using the previous button logic
+        private void ProcessBlockSection(int blockSectionId)
+        {
+            try
+            {
+                // Retrieve the list of SubjectIds associated with the given BlockSectionId
+                List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
+
+                if (subjectIds.Count == 0)
+                {
+                    Console.WriteLine($"No subjects found for Block Section ID: {blockSectionId}.");
+                    return;
+                }
+
+                // Initialize the SubjectLoader
+                SubjectLoader subjectLoader = new SubjectLoader(connectionString);
+
+                // Loop through each SubjectId
+                foreach (int subjectId in subjectIds)
+                {
+                    // Retrieve subjects with 'Waiting' status for the current SubjectId
+                    List<(string employeeId, string subjectId)> employeeSubjectPairs = subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(subjectId);
+
+                    if (employeeSubjectPairs.Count == 0)
+                    {
+                        Console.WriteLine($"No subjects with status 'Waiting' found for Subject ID: {subjectId}.");
+                        continue;
+                    }
+
+                    // Display a message box to show the pairs with 'Waiting' status
+                    MessageBox.Show("Processing Pairs with 'Waiting' status for Block Section ID " + blockSectionId + ", Subject ID " + subjectId + ": "
+                        + string.Join(", ", employeeSubjectPairs.Select(p => $"({p.employeeId}, {p.subjectId})")));
+
+                    // Process each pair
+                    foreach (var pair in employeeSubjectPairs)
+                    {
+                        string currentEmployeeId = pair.employeeId;
+                        string currentSubjectId = pair.subjectId;
+
+                        try
+                        {
+                            // Process data for the pair
+                            DataProcessor processor = new DataProcessor(currentSubjectId, currentEmployeeId);
+                            processor.ProcessData();
+
+                            // Output to show successful processing
+                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectId}) successfully.");
+
+                            // Update the status to 'Assigned'
+                            subjectLoader.UpdateSubjectStatus(currentEmployeeId, currentSubjectId);
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            // Handle exceptions
+                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectId}): {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while processing Block Section ID: {blockSectionId}: {ex.Message}");
+            }
         }
 
 

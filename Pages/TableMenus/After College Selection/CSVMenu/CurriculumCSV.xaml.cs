@@ -1125,11 +1125,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                             
                             // Check if Block Section exists, add if it doesn't
                             int blockSectionId = GetOrInsertBlockSection(connection, blockSection, yearLevel, semester); 
-                            if (blockSectionId == 0) 
-                            { 
-                                // Skipping due to duplicate block section
-                                continue; 
-                            } // Proceed with further processing here if needed // ...
+                            ProcessSubject(row, connection, blockSectionId);
+                            LoadCurriculum();
                         }
                     }
                     else
@@ -1285,22 +1282,28 @@ SELECT LAST_INSERT_ID();";
                 }
             }
         }
+
         private int GetOrInsertBlockSection(MySqlConnection connection, string blockSection, int yearLevel, int semester)
         {
-            // Check if block section exists
-            string checkQuery = "SELECT blockSectionId FROM block_section WHERE blockSectionName = @BlockSection AND year_level = @YearLevel AND Semester = @Semester;";
+            
+
+                // Check if block section exists
+                string checkQuery = "SELECT blockSectionId FROM block_section WHERE blockSectionName = @BlockSection AND year_level = @YearLevel AND Semester = @Semester;";
             using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection))
             {
                 checkCmd.Parameters.AddWithValue("@BlockSection", blockSection);
                 checkCmd.Parameters.AddWithValue("@YearLevel", yearLevel);
                 checkCmd.Parameters.AddWithValue("@Semester", semester);
+
                 object result = checkCmd.ExecuteScalar();
 
                 if (result != null && result != DBNull.Value)
                 {
-                    return 0; // Block section exists, return 0 to indicate skipping
+                    return Convert.ToInt32(result); // Return the existing BlockSectionId
                 }
             }
+            
+
 
             // Insert new block section if not exists
             string insertQuery = @"

@@ -31,7 +31,8 @@
                             <RowDefinition Height="9*"/>
                             <RowDefinition Height="9*"/>
                             <RowDefinition Height="9*"/>
-                            <RowDefinition Height="18*"/>
+                            <RowDefinition Height="9*"/>
+                            <RowDefinition Height="9*"/>
                             <RowDefinition Height="9*"/>
                             <RowDefinition Height="9*"/>
                             <RowDefinition Height="9*"/>
@@ -73,16 +74,16 @@
                             </Button.Background>
                             <TextBlock TextWrapping="Wrap" Text="Instructor" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
-                        <Button x:Name="Student_btn" Width="240" Click="Student_btn_Click" Grid.Row="5">
+                        <Button x:Name="assignment_btn" Width="240" Click="assignment_btn_Click" Grid.Row="5">
                             <Button.BorderBrush>
                                 <SolidColorBrush Color="#FF707070" Opacity="0"/>
                             </Button.BorderBrush>
                             <Button.Background>
                                 <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
                             </Button.Background>
-                            <TextBlock TextWrapping="Wrap" Text="Student" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                            <TextBlock TextWrapping="Wrap" Text="Assignment" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
-                        <Button x:Name="Settings_btn" Width="240" Click="Settings_btn_Click" Grid.Row="7">
+                        <Button x:Name="Settings_btn" Width="240" Click="Settings_btn_Click" Grid.Row="8">
                             <Button.BorderBrush>
                                 <SolidColorBrush Color="#FF707070" Opacity="0"/>
                             </Button.BorderBrush>
@@ -91,7 +92,7 @@
                             </Button.Background>
                             <TextBlock TextWrapping="Wrap" Text="Settings" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
-                        <Button x:Name="LogOut_btn" Width="240" Grid.Row="8" Click="LogOut_btn_Click">
+                        <Button x:Name="LogOut_btn" Width="240" Grid.Row="8" Click="LogOut_btn_Click" Margin="0,30,0,30" Grid.RowSpan="3">
                             <Button.BorderBrush>
                                 <SolidColorBrush Color="#FF707070" Opacity="0"/>
                             </Button.BorderBrush>
@@ -100,7 +101,7 @@
                             </Button.Background>
                             <TextBlock TextWrapping="Wrap" Text="Log-out" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
-                        <Button x:Name="Back_btn" Width="240" Click="Back_btn_Click" Grid.Row="9">
+                        <Button x:Name="Back_btn" Width="240" Click="Back_btn_Click" Grid.Row="10">
                             <Button.BorderBrush>
                                 <SolidColorBrush Color="#FF707070" Opacity="0"/>
                             </Button.BorderBrush>
@@ -108,6 +109,15 @@
                                 <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
                             </Button.Background>
                             <TextBlock TextWrapping="Wrap" Text="Back" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                        </Button>
+                        <Button x:Name="___CSV_guide_btn" Width="240" Click="___CSV_guide_btn_Click" Grid.Row="7" Margin="0,0,0,0">
+                            <Button.BorderBrush>
+                                <SolidColorBrush Color="#FF707070" Opacity="0"/>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
+                            </Button.Background>
+                            <TextBlock TextWrapping="Wrap" Text=".CSV Guides" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
                     </Grid>
                 </Viewbox>

@@ -88,9 +88,9 @@ namespace Info_module.Pages
             MainWindow.MainFrameInstance.IsHitTestVisible = true;
         }
 
-        private void Student_btn_Click(object sender, RoutedEventArgs e)
+        private void assignment_btn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.MainFrameInstance.Navigate(new CollegeSelection("Student"));
+            MainWindow.MainFrameInstance.Navigate(new Assignment());
             // Hide the SideFrame
             MainWindow.SideFrameInstance.Visibility = Visibility.Collapsed;
             MainWindow.SideFrameInstance.IsHitTestVisible = false;
@@ -134,6 +134,11 @@ namespace Info_module.Pages
             // Optionally bring the MainFrame to the foreground (if necessary)
             MainWindow.MainFrameInstance.Visibility = Visibility.Visible;
             MainWindow.MainFrameInstance.IsHitTestVisible = true;
+
+        }
+
+        private void ___CSV_guide_btn_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }
