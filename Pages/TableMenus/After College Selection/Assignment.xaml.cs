@@ -389,6 +389,7 @@ namespace Info_module.Pages.TableMenus
         #region //algorithm
 
         //------------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------
         public class MatchMinimum
         {
             public Dictionary<int, int> CalculateMatchCounts(List<(int, int)> roomList, List<int> parameter)
@@ -1260,14 +1261,10 @@ namespace Info_module.Pages.TableMenus
                 this.connectionString = connectionString;
             }
 
-            public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId)
+            public void InsertClass(TimeSpan startTime, TimeSpan endTime, string day, string mode, int stubCode, int employeeId, int subjectId, int roomId, int blockSectionId)
             {
-                //Original with Class Mode
-                //string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Class_Mode, Stub_Code)
-                //         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Class_Mode, @Stub_Code);";
-
-                string query = @"INSERT INTO class (Internal_Employee_Id, Subject_Id, Room_Id, Start_Time, End_Time, Class_Day, Stub_Code)
-                         VALUES (@Internal_Employee_Id, @Subject_Id, @Room_Id, @Start_Time, @End_Time, @Class_Day, @Stub_Code);";
+                string query = @"INSERT INTO class (internal_employee_id, subject_id, room_id, start_time, end_time, class_day, class_mode, stub_code, block_section_id)
+                         VALUES (@internal_employee_id, @subject_id, @room_id, @start_time, @end_time, @class_day, @class_mode, @stub_code, @block_section_id);";
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
@@ -1276,15 +1273,15 @@ namespace Info_module.Pages.TableMenus
                         conn.Open();
                         using (MySqlCommand cmd = new MySqlCommand(query, conn))
                         {
-                            cmd.Parameters.AddWithValue("@Internal_Employee_Id", employeeId);
-                            cmd.Parameters.AddWithValue("@Subject_Id", subjectId);
-                            cmd.Parameters.AddWithValue("@Room_Id", roomId);
-                            cmd.Parameters.AddWithValue("@Start_Time", startTime);
-                            cmd.Parameters.AddWithValue("@End_Time", endTime);
-                            cmd.Parameters.AddWithValue("@Class_Day", day);
-                            //Removed Class Mode
-                            //cmd.Parameters.AddWithValue("@Class_Mode", mode); // Insert mode
-                            cmd.Parameters.AddWithValue("@Stub_Code", stubCode); // Insert stubCode
+                            cmd.Parameters.AddWithValue("@internal_employee_id", employeeId);
+                            cmd.Parameters.AddWithValue("@subject_id", subjectId);
+                            cmd.Parameters.AddWithValue("@room_id", roomId);
+                            cmd.Parameters.AddWithValue("@start_time", startTime);
+                            cmd.Parameters.AddWithValue("@end_time", endTime);
+                            cmd.Parameters.AddWithValue("@class_day", day);
+                            cmd.Parameters.AddWithValue("@class_mode", mode);
+                            cmd.Parameters.AddWithValue("@stub_code", stubCode);
+                            cmd.Parameters.AddWithValue("@block_section_id", blockSectionId);
 
                             cmd.ExecuteNonQuery();
                             Console.WriteLine("Class successfully inserted.");
@@ -1297,6 +1294,7 @@ namespace Info_module.Pages.TableMenus
                 }
             }
         }
+
 
         public class RoomWeightSorter
         {
@@ -1418,58 +1416,94 @@ namespace Info_module.Pages.TableMenus
                 return employeeSubjectPairs;
             }
 
-            public void UpdateSubjectStatus(string employeeId, string subjectId)
+            // Updated method to update both subject_load and block_subject_list
+            public void UpdateSubjectStatus(int subjectId, int blockSectionId, int limit)
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (var connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-
-                    string updateQuery = "UPDATE subject_load SET Status = 'Assigned' WHERE Internal_Employee_Id = @EmployeeId AND Subject_Id = @SubjectId";
-
-                    using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection))
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        updateCmd.Parameters.AddWithValue("@EmployeeId", employeeId);
-                        updateCmd.Parameters.AddWithValue("@SubjectId", subjectId);
-
                         try
                         {
-                            updateCmd.ExecuteNonQuery();
+                            // Update block_subject_list
+                            string queryBlockSubject = @"UPDATE block_subject_list 
+                     SET status = 'assigned' 
+                     WHERE subjectId = @subjectId 
+                       AND blockSectionId = @blockSectionId 
+                       AND status = 'waiting' 
+                     LIMIT @limit";
+
+                            using (var commandBlockSubject = new MySqlCommand(queryBlockSubject, connection, transaction))
+                            {
+                                commandBlockSubject.Parameters.AddWithValue("@subjectId", subjectId);
+                                commandBlockSubject.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                commandBlockSubject.Parameters.AddWithValue("@limit", limit);
+
+                                int rowsAffectedBlockSubject = commandBlockSubject.ExecuteNonQuery();
+                                Console.WriteLine($"Updated {rowsAffectedBlockSubject} rows in block_subject_list for Subject_Id: {subjectId}, BlockSectionId: {blockSectionId}.");
+                            }
+
+                            // Update subject_load
+                            string querySubjectLoad = @"UPDATE subject_load 
+                     SET Status = 'assigned' 
+                     WHERE Subject_Id = @subjectId 
+                       AND Status = 'waiting' 
+                     LIMIT @limit";
+
+                            using (var commandSubjectLoad = new MySqlCommand(querySubjectLoad, connection, transaction))
+                            {
+                                commandSubjectLoad.Parameters.AddWithValue("@subjectId", subjectId);
+                                commandSubjectLoad.Parameters.AddWithValue("@limit", limit);
+
+                                int rowsAffectedSubjectLoad = commandSubjectLoad.ExecuteNonQuery();
+                                Console.WriteLine($"Updated {rowsAffectedSubjectLoad} rows in subject_load for Subject_Id: {subjectId}.");
+                            }
+
+                            // Commit transaction
+                            transaction.Commit();
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("An error occurred while updating status: " + ex.Message);
+                            // Rollback transaction in case of error
+                            transaction.Rollback();
+                            Console.WriteLine("Transaction failed: " + ex.Message);
+                            throw;
                         }
                     }
                 }
             }
 
+
+            // Existing method to retrieve subjects with 'Waiting' status
             public List<(string employeeId, string subjectId)> GetSubjectsByEmployeeIdAndSubjectId(int subjectId)
             {
-                List<(string, string)> employeeSubjectPairs = new List<(string, string)>();
+                List<(string employeeId, string subjectId)> results = new List<(string, string)>();
 
-                string query = "SELECT Internal_Employee_Id, Subject_Id FROM subject_load WHERE Subject_Id = @SubjectId AND Status = 'Waiting'";
-
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (var connection = new MySqlConnection(connectionString))
                 {
-                    connection.Open();
+                    string query = @"SELECT Internal_Employee_Id, Subject_Id 
+                             FROM subject_load 
+                             WHERE Subject_Id = @subjectId AND Status = 'waiting'";
 
-                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    using (var command = new MySqlCommand(query, connection))
                     {
-                        cmd.Parameters.AddWithValue("@SubjectId", subjectId);
+                        command.Parameters.AddWithValue("@subjectId", subjectId);
+                        connection.Open();
 
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
                                 string employeeId = reader["Internal_Employee_Id"].ToString();
-                                string subjectIdString = reader["Subject_Id"].ToString();
-                                employeeSubjectPairs.Add((employeeId, subjectIdString));
+                                string subId = reader["Subject_Id"].ToString();
+                                results.Add((employeeId, subId));
                             }
                         }
                     }
                 }
 
-                return employeeSubjectPairs;
+                return results;
             }
         }
 
@@ -1510,7 +1544,7 @@ namespace Info_module.Pages.TableMenus
         {
             List<int> subjectIds = new List<int>();
 
-            string query = "SELECT subjectId FROM subject_list WHERE blockSectionId = @BlockSectionId";
+            string query = "SELECT subjectId FROM block_subject_list WHERE blockSectionId = @BlockSectionId";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -1684,12 +1718,16 @@ namespace Info_module.Pages.TableMenus
             private string employeeId;
             private int employeeId_num;
             private int subjectId_num;
+            private int blockSectionId;
+            private string connectionString;
 
             // Constructor that accepts subjectId and employeeId as variables
-            public DataProcessor(string subjectId, string employeeId)
+            public DataProcessor(string subjectId, string employeeId, int blockSectionId, string connectionString)
             {
                 this.subjectId = subjectId;
                 this.employeeId = employeeId;
+                this.blockSectionId = blockSectionId;
+                this.connectionString = connectionString;
 
                 // Parse employeeId and subjectId to integers
                 if (int.TryParse(employeeId, out employeeId_num) && int.TryParse(subjectId, out subjectId_num))
@@ -1702,6 +1740,7 @@ namespace Info_module.Pages.TableMenus
                     throw new ArgumentException("Both employeeId and subjectId must be valid integers.");
                 }
             }
+
             // Method to process the data or perform some operation
             public void ProcessData()
             {
@@ -2080,7 +2119,7 @@ namespace Info_module.Pages.TableMenus
 
                                     // Insert the highest slot into the class, including the mode
                                     var classInserter = new ClassInserter(connectionString);
-                                    classInserter.InsertClass(highestSlot.startTime, highestSlot.endTime, highestSlot.day, mode, stubCode, employeeId_num, subjectId_num, currentRoom);
+                                    classInserter.InsertClass(highestSlot.startTime, highestSlot.endTime, highestSlot.day, mode, stubCode, employeeId_num, subjectId_num, currentRoom, blockSectionId);
                                 }
                                 else
                                 {
@@ -2117,6 +2156,8 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
+
+
         private void assign_btn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2124,7 +2165,7 @@ namespace Info_module.Pages.TableMenus
                 // Retrieve the blockSectionId from the textbox
                 int blockSectionId = int.Parse(blocksection_Id_txt.Text);
 
-                // Retrieve the list of SubjectIds associated with the given blockSectionId from the subject_list table
+                // Retrieve the list of SubjectIds associated with the given blockSectionId
                 List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
 
                 if (subjectIds.Count == 0)
@@ -2136,51 +2177,57 @@ namespace Info_module.Pages.TableMenus
                 // Initialize the SubjectLoader
                 SubjectLoader subjectLoader = new SubjectLoader(connectionString);
 
-                // Loop through each SubjectId
-                foreach (int subjectId in subjectIds)
-                {
-                    // Retrieve subjects with 'Waiting' status for the current SubjectId
-                    List<(string employeeId, string subjectId)> employeeSubjectPairs = subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(subjectId);
+                // Group SubjectIds and their counts based on the subject_list table
+                var subjectIdCounts = subjectIds
+                    .GroupBy(sid => sid)
+                    .ToDictionary(g => g.Key, g => g.Count());
 
-                    if (employeeSubjectPairs.Count == 0)
+                foreach (var entry in subjectIdCounts)
+                {
+                    int currentSubjectId = entry.Key;
+                    int requiredCount = entry.Value; // Number of times this subjectId should be updated
+
+                    // Retrieve subjects with 'Waiting' status for the current SubjectId
+                    List<(string employeeId, string subjectId)> waitingSubjects =
+                        subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(currentSubjectId);
+
+                    if (waitingSubjects.Count == 0)
                     {
-                        Console.WriteLine($"No subjects with status 'Waiting' found for Subject ID: {subjectId}.");
+                        Console.WriteLine($"No 'Waiting' subjects found for Subject ID: {currentSubjectId}.");
                         continue;
                     }
 
-                    // Display a message box to show the pairs with 'Waiting' status
-                    MessageBox.Show("Processing Pairs with 'Waiting' status for Subject ID " + subjectId + ": "
-                        + string.Join(", ", employeeSubjectPairs.Select(p => $"({p.employeeId}, {p.subjectId})")));
+                    // Limit processing to the required count
+                    int countToProcess = Math.Min(requiredCount, waitingSubjects.Count);
 
-                    // Process each pair
-                    foreach (var pair in employeeSubjectPairs)
+                    for (int i = 0; i < countToProcess; i++)
                     {
+                        var pair = waitingSubjects[i];
                         string currentEmployeeId = pair.employeeId;
-                        string currentSubjectId = pair.subjectId;
+                        string currentSubjectIdToProcess = pair.subjectId;
 
                         try
                         {
                             // Process data for the pair
-                            DataProcessor processor = new DataProcessor(currentSubjectId, currentEmployeeId);
+                            DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
                             processor.ProcessData();
 
                             // Output to show successful processing
-                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectId}) successfully.");
-
-                            // Update the status to 'Assigned'
-                            subjectLoader.UpdateSubjectStatus(currentEmployeeId, currentSubjectId);
+                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
                         }
                         catch (ArgumentException ex)
                         {
-                            // Handle exceptions
-                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectId}): {ex.Message}");
+                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
                         }
                     }
+
+                    // Update only the processed rows' status to 'Assigned'
+                    subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess);
                 }
 
                 // Indicate processing completion
-                MessageBox.Show("Finished processing all subject IDs.");
-                Console.WriteLine("Finished processing all subject IDs.");
+                MessageBox.Show("Finished processing all subjects.");
+                Console.WriteLine("Finished processing all subjects.");
             }
             catch (Exception ex)
             {
@@ -2189,62 +2236,23 @@ namespace Info_module.Pages.TableMenus
             }
         }
 
-
-
-        private void assingAll_btn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Retrieve the CurriculumId from the textbox
-                int curriculumId = int.Parse(curriculum_Id_txt.Text);
-
-                // Retrieve all BlockSectionIds associated with the given CurriculumId
-                List<int> blockSectionIds = GetBlockSectionIdsByCurriculumId(curriculumId);
-
-                if (blockSectionIds.Count == 0)
-                {
-                    MessageBox.Show($"No Block Sections found for Curriculum ID: {curriculumId}.");
-                    return;
-                }
-
-                // Loop through each BlockSectionId and process it like the previous button
-                foreach (int blockSectionId in blockSectionIds)
-                {
-                    ProcessBlockSection(blockSectionId);
-                }
-
-                // Indicate processing completion
-                MessageBox.Show("Finished processing all Block Sections.");
-                Console.WriteLine("Finished processing all Block Sections.");
-            }
-            catch (Exception ex)
-            {
-                // Handle errors
-                MessageBox.Show($"An error occurred: {ex.Message}");
-            }
-        }
-
-        // Helper method to retrieve BlockSectionIds by CurriculumId
+        // Method to fetch blockSectionIds by Curriculum_Id
         private List<int> GetBlockSectionIdsByCurriculumId(int curriculumId)
         {
             List<int> blockSectionIds = new List<int>();
 
-            string query = "SELECT blockSectionId FROM block_section WHERE CurriculumId = @CurriculumId";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            string query = "SELECT blockSectionId FROM block_section WHERE curriculumId = @CurriculumId AND status = 1";
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CurriculumId", curriculumId);
 
-                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                conn.Open();
+                using (MySqlDataReader reader = cmd.ExecuteReader())
                 {
-                    cmd.Parameters.AddWithValue("@CurriculumId", curriculumId);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            blockSectionIds.Add(reader.GetInt32("blockSectionId"));
-                        }
+                        blockSectionIds.Add(reader.GetInt32(0));
                     }
                 }
             }
@@ -2252,73 +2260,96 @@ namespace Info_module.Pages.TableMenus
             return blockSectionIds;
         }
 
-        // Method to process a single BlockSectionId using the previous button logic
-        private void ProcessBlockSection(int blockSectionId)
+
+        private void assingAll_btn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Retrieve the list of SubjectIds associated with the given BlockSectionId
-                List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
+                // Retrieve the Curriculum_Id from the textbox
+                int curriculumId = int.Parse(curriculum_Id_txt.Text);
 
-                if (subjectIds.Count == 0)
+                // Retrieve the list of blockSectionIds associated with the given Curriculum_Id
+                List<int> blockSectionIds = GetBlockSectionIdsByCurriculumId(curriculumId);
+
+                if (blockSectionIds.Count == 0)
                 {
-                    Console.WriteLine($"No subjects found for Block Section ID: {blockSectionId}.");
+                    MessageBox.Show($"No block sections found for Curriculum ID: {curriculumId}.");
                     return;
                 }
 
                 // Initialize the SubjectLoader
                 SubjectLoader subjectLoader = new SubjectLoader(connectionString);
 
-                // Loop through each SubjectId
-                foreach (int subjectId in subjectIds)
+                foreach (int blockSectionId in blockSectionIds)
                 {
-                    // Retrieve subjects with 'Waiting' status for the current SubjectId
-                    List<(string employeeId, string subjectId)> employeeSubjectPairs = subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(subjectId);
+                    // Retrieve the list of SubjectIds associated with the current blockSectionId
+                    List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
 
-                    if (employeeSubjectPairs.Count == 0)
+                    if (subjectIds.Count == 0)
                     {
-                        Console.WriteLine($"No subjects with status 'Waiting' found for Subject ID: {subjectId}.");
+                        Console.WriteLine($"No subjects found for Block Section ID: {blockSectionId}.");
                         continue;
                     }
 
-                    // Display a message box to show the pairs with 'Waiting' status
-                    MessageBox.Show("Processing Pairs with 'Waiting' status for Block Section ID " + blockSectionId + ", Subject ID " + subjectId + ": "
-                        + string.Join(", ", employeeSubjectPairs.Select(p => $"({p.employeeId}, {p.subjectId})")));
+                    // Group SubjectIds and their counts based on the subject_list table
+                    var subjectIdCounts = subjectIds
+                        .GroupBy(sid => sid)
+                        .ToDictionary(g => g.Key, g => g.Count());
 
-                    // Process each pair
-                    foreach (var pair in employeeSubjectPairs)
+                    foreach (var entry in subjectIdCounts)
                     {
-                        string currentEmployeeId = pair.employeeId;
-                        string currentSubjectId = pair.subjectId;
+                        int currentSubjectId = entry.Key;
+                        int requiredCount = entry.Value; // Number of times this subjectId should be updated
 
-                        try
+                        // Retrieve subjects with 'Waiting' status for the current SubjectId
+                        List<(string employeeId, string subjectId)> waitingSubjects =
+                            subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(currentSubjectId);
+
+                        if (waitingSubjects.Count == 0)
                         {
-                            // Process data for the pair
-                            DataProcessor processor = new DataProcessor(currentSubjectId, currentEmployeeId);
-                            processor.ProcessData();
-
-                            // Output to show successful processing
-                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectId}) successfully.");
-
-                            // Update the status to 'Assigned'
-                            subjectLoader.UpdateSubjectStatus(currentEmployeeId, currentSubjectId);
+                            Console.WriteLine($"No 'Waiting' subjects found for Subject ID: {currentSubjectId}.");
+                            continue;
                         }
-                        catch (ArgumentException ex)
+
+                        // Limit processing to the required count
+                        int countToProcess = Math.Min(requiredCount, waitingSubjects.Count);
+
+                        for (int i = 0; i < countToProcess; i++)
                         {
-                            // Handle exceptions
-                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectId}): {ex.Message}");
+                            var pair = waitingSubjects[i];
+                            string currentEmployeeId = pair.employeeId;
+                            string currentSubjectIdToProcess = pair.subjectId;
+
+                            try
+                            {
+                                // Process data for the pair
+                                DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
+                                processor.ProcessData();
+
+                                // Output to show successful processing
+                                Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
+                            }
                         }
+
+                        // Update only the processed rows' status to 'Assigned'
+                        subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess);
                     }
                 }
+
+                // Indicate processing completion
+                MessageBox.Show("Finished processing all subjects.");
+                Console.WriteLine("Finished processing all subjects.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while processing Block Section ID: {blockSectionId}: {ex.Message}");
+                // Handle errors
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
-        }
-
-
-
+        }       
         #endregion
     }
 }

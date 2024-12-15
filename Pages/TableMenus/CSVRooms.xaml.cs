@@ -54,7 +54,7 @@ namespace Info_module.Pages.TableMenus
         {
             selectedStatus = 0;
             var app = (App)Application.Current;
-            app.LoadUI(TopBarFrame, "Configuration Menu", TopBar_BackButtonClicked);
+            app.LoadUI(TopBarFrame, "Rooms Menu", TopBar_BackButtonClicked);
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))

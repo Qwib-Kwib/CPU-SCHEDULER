@@ -122,7 +122,7 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                            <DataGridTextColumn Binding="{Binding Serving_Department}" Header="Serving Department" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Serving_Department}" Header="Serving College" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Type}" Header="Subject Type" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Lecture_Lab}" Header="LEC/LAB" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>

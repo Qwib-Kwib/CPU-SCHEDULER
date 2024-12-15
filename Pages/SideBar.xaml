@@ -45,7 +45,7 @@
                             <Button.Background>
                                 <SolidColorBrush Color="#FFDDDDDD" Opacity="0"/>
                             </Button.Background>
-                            <TextBlock TextWrapping="Wrap" Text="Department" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
+                            <TextBlock TextWrapping="Wrap" Text="Colleges" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
                         <Button x:Name="Building_btn" Width="240" Click="Building_btn_Click" Grid.Row="2">
                             <Button.BorderBrush>
@@ -110,7 +110,7 @@
                             </Button.Background>
                             <TextBlock TextWrapping="Wrap" Text="Back" Margin="-117,0,15,0" Foreground="AntiqueWhite" FontFamily="Segoe UI Semilight"/>
                         </Button>
-                        <Button x:Name="___CSV_guide_btn" Width="240" Click="___CSV_guide_btn_Click" Grid.Row="7" Margin="0,0,0,0">
+                        <Button x:Name="___CSV_guide_btn" Width="240" Click="___CSV_guide_btn_Click" Grid.Row="7" Margin="0,0,0,0" Visibility="Collapsed">
                             <Button.BorderBrush>
                                 <SolidColorBrush Color="#FF707070" Opacity="0"/>
                             </Button.BorderBrush>

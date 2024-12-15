@@ -247,27 +247,64 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 {
                     curriculumId_txt.Text = "";
                     connection.Open();
-                    string query = @"INSERT INTO curriculum (Course_Id, Curriculum_Revision, Curriculum_Description, Year_Effective_In, Year_Effective_Out)
-                             VALUES (@Course_Id, @Curriculum_Revision, @Curriculum_Description, @Year_Effective_In, @Year_Effective_Out)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+
+                    // Insert new curriculum and retrieve the Curriculum_Id
+                    string insertCurriculumQuery = @"
+                INSERT INTO curriculum (Dept_id, Curriculum_Revision, Curriculum_Description, Year_Effective_In, Year_Effective_Out)
+                VALUES (@Dept_id, @Curriculum_Revision, @Curriculum_Description, @Year_Effective_In, @Year_Effective_Out);
+                SELECT LAST_INSERT_ID();";
+
+                    int newCurriculumId = 0;
+
+                    using (MySqlCommand command = new MySqlCommand(insertCurriculumQuery, connection))
                     {
-                        command.Parameters.AddWithValue("@Course_Id", DepartmentId);
+                        command.Parameters.AddWithValue("@Dept_id", DepartmentId);
                         command.Parameters.AddWithValue("@Curriculum_Revision", curriculumRevision_txt.Text);
                         command.Parameters.AddWithValue("@Curriculum_Description", curriculumDescription_txt.Text);
                         command.Parameters.AddWithValue("@Year_Effective_In", yearEffectiveIn_txt.Text);
                         command.Parameters.AddWithValue("@Year_Effective_Out", yearEffectiveOut_txt.Text);
-                        command.ExecuteNonQuery();
+
+                        // Execute and retrieve the new Curriculum_Id
+                        newCurriculumId = Convert.ToInt32(command.ExecuteScalar());
+                    }
+
+                    // Check if Curriculum_Id was retrieved successfully
+                    if (newCurriculumId > 0)
+                    {
+                        // Insert semesters for 1st, 2nd, Summer semesters for each year (up to 4th year)
+                        string insertSemesterQuery = @"
+                    INSERT INTO semester (curriculum_id, year_level, semester) 
+                    VALUES (@Curriculum_Id, @Year_Level, @Semester)";
+
+                        using (MySqlCommand semesterCommand = new MySqlCommand(insertSemesterQuery, connection))
+                        {
+                            // Loop through each year (1 to 4) and each semester for the year
+                            for (int year = 1; year <= 4; year++)
+                            {
+                                foreach (string sem in new string[] { "1", "2", "Summer" })
+                                {
+                                    semesterCommand.Parameters.Clear();
+                                    semesterCommand.Parameters.AddWithValue("@Curriculum_Id", newCurriculumId);
+                                    semesterCommand.Parameters.AddWithValue("@Year_Level", year);
+                                    semesterCommand.Parameters.AddWithValue("@Semester", sem);
+                                    semesterCommand.ExecuteNonQuery();
+                                }
+                            }
+                        }
                     }
                 }
+
+                // Reload curriculum data and clear the input fields
                 LoadCurriculum();
                 ClearTextboxes();
-                MessageBox.Show("Curriculum added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Curriculum and its semesters were successfully added.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show("Error adding curriculum: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void Edit_btn_Click(object sender, RoutedEventArgs e)
         {

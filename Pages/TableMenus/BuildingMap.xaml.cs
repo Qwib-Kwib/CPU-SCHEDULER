@@ -117,10 +117,132 @@ namespace Info_module.Pages.TableMenus
 
 		}
 
-        private void buildingMenu_btn_Click(object sender, RoutedEventArgs e)
+		private void leb_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+
+		}
+
+		private void lhb_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+
+		}
+
+		private void rob_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+		}
+
+		private void jhn_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+		}
+
+		private void ldt_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+
+		}
+
+		private void ug_bldg_click(object sender, RoutedEventArgs e)
+		{
+			Button clickedButton = sender as Button;
+			if (clickedButton != null && clickedButton.Tag != null)
+			{
+
+				// XAML Tag to int function, which is then used to open a specific set of details in another page
+				int buildingId = Convert.ToInt32(clickedButton.Tag);
+				CSVRooms rooms = new CSVRooms(buildingId);
+				NavigationService.Navigate(rooms);
+
+			}
+
+			else
+			{
+				MessageBox.Show("Error");
+			}
+
+		}
+
+
+
+		private void buildingMenu_btn_Click(object sender, RoutedEventArgs e)
         {
 			NavigationService.Navigate(new BuildingMenu());
 
         }
-    }
+
+
+	}
 }

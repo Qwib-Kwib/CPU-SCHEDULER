@@ -64,7 +64,7 @@
 
                                         <!-- Visible columns bound to respective fields -->
                                         <DataGridTextColumn Header="Employee Id" Binding="{Binding Employee_Id}" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="Department" Binding="{Binding Department}" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="College" Binding="{Binding Department}" IsReadOnly="True"/>
                                         <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" IsReadOnly="True"/>
                                         <DataGridTextColumn Header="Middle Name" Binding="{Binding MiddleName}" IsReadOnly="True"/>
                                         <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" IsReadOnly="True"/>

@@ -47,7 +47,7 @@
                             <RowDefinition Height="70*"/>
                         </Grid.RowDefinitions>
                         <Viewbox MaxHeight="80">
-                            <TextBlock TextWrapping="Wrap" Text="Department" Height="15"/>
+                            <TextBlock TextWrapping="Wrap" Text="Colleges" Height="16"/>
                         </Viewbox>
                         <Image Source="/Images/mortarboard.png" Margin="35,10,35,10" Grid.Row="1"/>
                     </Grid>

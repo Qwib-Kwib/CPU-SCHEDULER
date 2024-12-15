@@ -93,6 +93,7 @@
                             <ContentPresenter />
                         </ControlTemplate>
                     </Button.Template>
+                    
                     <Path Height="63" Canvas.Left="364.583" Stretch="Fill" Canvas.Top="232.707" Width="70" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Path.Style>
                             <Style TargetType="Path">
@@ -142,7 +143,212 @@
 
                 </Button>
 
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Tag="2" Canvas.Left="175.608" Canvas.Top="411.784" Click="en_bldg_click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Path Height="115" Canvas.Left="175.828" Stretch="Fill" Canvas.Top="411.598" Width="118" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                        <Path.Data>
+                            <PathGeometry Figures="M280.03043,230.0757 L266.1615,246.91942 277.25805,258.39997 274.57342,261.5258 287.28068,272.19892 290.32663,267.99092 303.63503,278.43292 317.94468,260.78393 z"/>
+                        </Path.Data>
+                    </Path>
 
+                </Button>
+
+                <!-- new set -->
+
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="265.58" Canvas.Top="229.395" Click="lhb_bldg_click" Tag="3">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Path Height="50" Canvas.Left="266.161" Stretch="Fill" Canvas.Top="230.076" Width="52" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                        <Path.Data>
+                            <PathGeometry Figures="M280.03043,230.0757 L266.1615,246.91942 277.25805,258.39997 274.57342,261.5258 287.28068,272.19892 290.32663,267.99092 303.63503,278.43292 317.94468,260.78393 z"/>
+                        </Path.Data>
+                    </Path>
+
+                </Button>
+
+
+
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="213.75" Canvas.Top="208.263" Click="leb_bldg_click" Tag="7">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Path Height="65" Canvas.Left="214.31" Stretch="Fill" Canvas.Top="208.486" Width="64" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                        <Path.Data>
+                            <PathGeometry Figures="M259.25373,208.486 L214.3094,257.57908 230.27831,272.33413 277.10337,223.12721 z"/>
+                        </Path.Data>
+                    </Path>
+
+                </Button>
+
+
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="428.993" Canvas.Top="488.884" Click="ldt_bldg_click" Tag="8">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Path Height="106" Canvas.Left="429.213" Stretch="Fill" Canvas.Top="488.971" Width="106" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                        <Path.Data>
+                            <PathGeometry Figures="M474.97003,488.97139 L429.213,547.27884 489.59642,594.44715 533.03001,537.19836 z"/>
+                        </Path.Data>
+                    </Path>
+                </Button>
+
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="325.531" Canvas.Top="288.409" Click="rob_bldg_click" Tag="9">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Path Height="62" Canvas.Left="325.42" Stretch="Fill" Canvas.Top="287.889" Width="66" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                        <Path.Data>
+                            <PathGeometry Figures="M347.41919,287.88911 L325.42001,314.66991 366.79101,348.85898 390.68386,320.2546 z"/>
+                        </Path.Data>
+                    </Path>
+
+                </Button>
+
+
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Canvas.Left="252.181" Canvas.Top="704.51" Click="ug_bldg_click" Tag="15">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Path Height="134" Canvas.Left="253.153" Stretch="Fill" Canvas.Top="704.549" Width="129" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+
+                        <Path.Data>
+                            <PathGeometry Figures="M309.29847,705.77168 L286.39623,731.64872 280.63925,726.49162 265.64199,744.83252 272.09563,750.50777 254.52851,775.68036 253.4491,789.71382 260.65639,800.9592 299.57547,833.43507 312.90886,838.93416 324.34909,838.67978 329.59322,835.39914 348.85294,810.24754 355.78979,814.25721 361.51445,807.33141 362.71099,800.40561 359.6863,797.854 377.27286,778.89917 379.79975,767.23465 378.99975,754.84111 356.88573,734.0637 359.73915,727.1379 351.17888,719.11855 345.11536,725.31532 327.28147,708.54759 320.14791,704.53791 z"/>
+                        </Path.Data>
+                    </Path>
+                </Button>
+
+                <Button Canvas.Left="568.353" Canvas.Top="505.368" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Top" Click="jhn_bldg_click" Tag="13">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Path Height="37" Canvas.Left="567.423" Stretch="Fill" Canvas.Top="505.183" Width="39" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <!-- When Mouse is Over -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="Yellow"/>
+                                    </Trigger>
+                                    <!-- When Mouse Leaves -->
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+
+                        <Path.Data>
+                            <PathGeometry Figures="M588.42885,512.72908 L578.44367,505.18314 567.43916,518.21976 572.94693,523.43672 568.79364,527.27857 583.05931,538.69864 587.84463,533.86106 592.72024,538.65472 605.9886,525.36703 595.84757,518.30269 600.70447,513.59313 592.82347,507.95848 z"/>
+                        </Path.Data>
+                    </Path>
+
+                </Button>
 
             </Canvas>
 

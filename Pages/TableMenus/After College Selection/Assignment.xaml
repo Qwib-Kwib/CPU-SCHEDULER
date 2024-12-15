@@ -30,7 +30,7 @@
                                     <DataGrid x:Name="curriculum_data" Height="272" Width="752" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" CanUserResizeRows="False" SelectionChanged="curriculum_data_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="ID" Binding="{Binding Curriculum_Id}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
-                                            <DataGridTextColumn Header="Department" Binding="{Binding Department}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="College" Binding="{Binding Department}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
                                             <DataGridTextColumn Header="Curriculum Revision" Binding="{Binding Curriculum_Revision}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
                                             <DataGridTextColumn Header="Curriculum Description" Binding="{Binding Curriculum_Description}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
                                             <DataGridTextColumn Header="Year Effective" Binding="{Binding Year_Effective}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
@@ -53,7 +53,7 @@
                                 </Viewbox>
                                 <Viewbox HorizontalAlignment="Left" Height="10" Margin="90,139,0,0" VerticalAlignment="Top" Width="91" Stretch="Fill">
                                     <Grid Height="22" Width="181">
-                                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Collegiate:" VerticalAlignment="Center"/>
+                                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="College:" VerticalAlignment="Center"/>
                                         <ComboBox x:Name="collegiate_cmbx" HorizontalAlignment="Left" Margin="61,0,0,0" VerticalAlignment="Center" Width="120" SelectionChanged="collegiate_cmbx_SelectionChanged"/>
                                     </Grid>
                                 </Viewbox>

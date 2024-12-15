@@ -30,7 +30,7 @@ namespace Info_module.Pages.TableMenus
         {
             InitializeComponent();
             TopBar topBar = new TopBar();
-            topBar.txtPageTitle.Text = "Department Menu";
+            topBar.txtPageTitle.Text = "Colleges Menu";
             topBar.Visibility = Visibility.Visible;
             topBar.BackButtonClicked += TopBar_BackButtonClicked;
             TopBarFrame.Navigate(topBar);
