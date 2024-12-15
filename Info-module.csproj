@@ -201,6 +201,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumConfiguration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumCSV.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -218,6 +222,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TableMenus\After College Selection\Assignment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -265,6 +273,9 @@
     <Compile Include="Pages\SideBar.xaml.cs">
       <DependentUpon>SideBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumConfiguration.xaml.cs">
+      <DependentUpon>CurriculumConfiguration.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumCSV.xaml.cs">
       <DependentUpon>CurriculumCSV.xaml</DependentUpon>
     </Compile>
@@ -279,6 +290,9 @@
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\Assignment.xaml.cs">
       <DependentUpon>Assignment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\BlockSection.xaml.cs">
+      <DependentUpon>BlockSection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\BuildingMap.xaml.cs">
       <DependentUpon>BuildingMap.xaml</DependentUpon>

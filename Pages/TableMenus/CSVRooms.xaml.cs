@@ -52,6 +52,7 @@ namespace Info_module.Pages.TableMenus
 
         private void LoadUI()
         {
+            selectedStatus = 0;
             var app = (App)Application.Current;
             app.LoadUI(TopBarFrame, "Configuration Menu", TopBar_BackButtonClicked);
             try

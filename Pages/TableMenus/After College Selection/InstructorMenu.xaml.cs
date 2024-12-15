@@ -409,40 +409,32 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 {
                     connection.Open();
 
-                    string query = @"
-                SELECT s.Subject_Id, s.Subject_Code, s.Subject_Title
-                FROM subjects s
-                WHERE s.Dept_Id = @Dept_Id
-                AND s.Status = 1"; // Filter for active subjects only (optional)
+                    // Step 1: Get all subjects for the given department
+                    string subjectQuery = @"
+                SELECT Subject_Id, Subject_Code
+                FROM subjects
+                WHERE Dept_Id = @Dept_Id";
 
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    MySqlCommand subjectCommand = new MySqlCommand(subjectQuery, connection);
+                    subjectCommand.Parameters.AddWithValue("@Dept_Id", DepartmentId);
+
+                    List<Subject> subjects = new List<Subject>();
+                    using (MySqlDataReader subjectReader = subjectCommand.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@Dept_Id", DepartmentId);
-
-                        List<Subject> subjects = new List<Subject>();
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (subjectReader.Read())
                         {
-                            while (reader.Read())
+                            subjects.Add(new Subject
                             {
-                                subjects.Add(new Subject
-                                {
-                                    SubjectId = reader.GetInt32("Subject_Id"),
-                                    SubjectCode = reader.GetString("Subject_Code"),
-                                });
-                            }
-                        }
-
-                        if (subjects.Count > 0)
-                        {
-                            subjectCode_cmbx.ItemsSource = subjects;
-                            subjectCode_cmbx.DisplayMemberPath = "SubjectCode";
-                            subjectCode_cmbx.SelectedValuePath = "SubjectId";
-                        }
-                        else
-                        {
-                            MessageBox.Show("No active subjects found for the given department.");
+                                SubjectId = subjectReader.GetInt32("Subject_Id"),
+                                SubjectCode = subjectReader.GetString("Subject_Code"),
+                            });
                         }
                     }
+
+                    // Step 2: Bind the results to the ComboBox
+                    subjectCode_cmbx.ItemsSource = subjects;
+                    subjectCode_cmbx.DisplayMemberPath = "SubjectCode"; // You can display SubjectCode or SubjectName
+                    subjectCode_cmbx.SelectedValuePath = "SubjectId";
                 }
             }
             catch (MySqlException ex)
@@ -450,6 +442,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 MessageBox.Show("Error loading subjects: " + ex.Message);
             }
         }
+
 
         private void subjectCode_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -487,77 +480,134 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
 
         private void subjectAdd_btn_Click(object sender, RoutedEventArgs e)
         {
-            try
+            //int internalEmployeeId = InternalEmployeeId;
+            //int subjectId = Convert.ToInt32(subjectCode_cmbx.SelectedValue);
+            //int quantity = Convert.ToInt32(quantity_txtbx.Text);
+            int subjectId_num = Convert.ToInt32(subjectCode_cmbx.SelectedValue);// From a textbox
+            int employeeId_num = InternalEmployeeId; // From a textbox
+            int loadQuantity = Convert.ToInt32(quantity_txt.Text); // From the load_quantity textbox
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                conn.Open();
+
+                // Step 1: Get Subject_Id and Subject_Code from 'subjects' table
+                string getSubjectQuery = "SELECT Subject_Id, Subject_Code FROM subjects WHERE Subject_Id = @subjectId";
+                MySqlCommand subjectCmd = new MySqlCommand(getSubjectQuery, conn);
+                subjectCmd.Parameters.AddWithValue("@subjectId", subjectId_num);
+
+                int subjectId = 0;
+                string subjectCode = string.Empty;
+                bool subjectExists = false;
+
+                using (MySqlDataReader reader = subjectCmd.ExecuteReader())
                 {
-                    conn.Open();
+                    if (reader.Read())
+                    {
+                        subjectId = reader.GetInt32("Subject_Id");
+                        subjectCode = reader.GetString("Subject_Code");
+                        subjectExists = true;
+                    }
+                }
 
-                    // Get subject ID and employee ID from input fields
-                    int subjectId = Convert.ToInt32(subjectCode_cmbx.SelectedValue);
-                    int employeeId = InternalEmployeeId; // Assuming InternalEmployeeId is set elsewhere
+                if (!subjectExists)
+                {
+                    MessageBox.Show("Invalid Subject_Id provided.");
+                    return;
+                }
 
-                    // Insert into subject_load
-                    string insertQuery = "INSERT INTO subject_load (Internal_Employee_Id, Subject_Id, Subject_Code) VALUES (@employeeId, @subjectId, (SELECT Subject_Code FROM subjects WHERE Subject_Id = @subjectId))";
+                // Step 2: Get Employee_Id from 'instructor' table
+                string getEmployeeQuery = "SELECT Internal_Employee_Id FROM instructor WHERE Internal_Employee_Id = @employeeId";
+                MySqlCommand employeeCmd = new MySqlCommand(getEmployeeQuery, conn);
+                employeeCmd.Parameters.AddWithValue("@employeeId", employeeId_num);
 
+                int employeeId = 0;
+                bool employeeExists = false;
+
+                using (MySqlDataReader reader = employeeCmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        employeeId = reader.GetInt32("Internal_Employee_Id");
+                        employeeExists = true;
+                    }
+                }
+
+                if (!employeeExists)
+                {
+                    MessageBox.Show("Invalid Employee_Id provided.");
+                    return;
+                }
+
+                // Step 3: Insert into subject_load, repeat based on loadQuantity
+                string insertQuery = "INSERT INTO subject_load (Internal_Employee_Id, Subject_Id, Subject_Code) VALUES (@employeeId, @subjectId, @subjectCode)";
+
+                for (int i = 0; i < loadQuantity; i++) // Loop to insert multiple times
+                {
                     MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn);
                     insertCmd.Parameters.AddWithValue("@employeeId", employeeId);
                     insertCmd.Parameters.AddWithValue("@subjectId", subjectId);
+                    insertCmd.Parameters.AddWithValue("@subjectCode", subjectCode);
 
-                    int rowsAffected = insertCmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    try
                     {
-                        // Success
-                        LoadInstructorSubjects(employeeId);
-                        MessageBox.Show("Subject Load inserted successfully!");
+                        insertCmd.ExecuteNonQuery();
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // Handle potential errors (e.g., invalid subject ID or employee ID)
-                        MessageBox.Show("Failed to insert Subject Load. Please check the provided subject ID and employee ID.");
+                        MessageBox.Show("Error inserting Subject Load: " + ex.Message);
+                        return; // Exit if there's an error
                     }
                 }
+                LoadInstructorSubjects(employeeId);
+                MessageBox.Show($"{loadQuantity} Subject Load(s) inserted successfully!");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error inserting Subject Load: " + ex.Message);
-            }
+
+
+
         }
 
 
         private void subjectDelete_btn_Click(object sender, RoutedEventArgs e)
         {
-            int employeeId_num = InternalEmployeeId; // Assuming this holds the current employee's ID
-
+            int employeeId_num = InternalEmployeeId;  // Assuming this holds the current employee's ID
             if (instrutorSubject_data.SelectedItem is DataRowView selectedRow)
             {
                 try
                 {
                     string subjectCode = selectedRow["Subject_Code"].ToString();
+                    int quantityToDelete = 1;  // Default value
+
+                    // Retrieve the value from the quantity TextBox, if available
+                    if (int.TryParse(quantity_txt.Text, out int parsedQuantity))
+                    {
+                        quantityToDelete = parsedQuantity;
+                    }
 
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
 
-                        // Query to delete the row for the selected subject code, excluding rows where status is "assigned"
+                        // Query to delete rows for the selected subject code, excluding rows where status is "assigned"
                         string query = @"
                     DELETE FROM subject_load
-                    WHERE Subject_Code = @subjectCode
-                    AND Internal_Employee_Id = @employeeId
-                    AND Status <> 'assigned'";
+                    WHERE Subject_Code = @subjectCode 
+                    AND Internal_Employee_Id = @employeeId 
+                    AND Status <> 'assigned'
+                    LIMIT @quantityToDelete";
 
                         using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
                             command.Parameters.AddWithValue("@subjectCode", subjectCode);
                             command.Parameters.AddWithValue("@employeeId", employeeId_num);
+                            command.Parameters.AddWithValue("@quantityToDelete", quantityToDelete);
 
                             int rowsAffected = command.ExecuteNonQuery();
 
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Subject deleted from instructor successfully.");
-                                LoadInstructorSubjects(employeeId_num); // Refresh the subjects after deletion
+                                MessageBox.Show($"{rowsAffected} subject(s) deleted from instructor successfully.");
+                                LoadInstructorSubjects(employeeId_num);  // Refresh the subjects after deletion
                             }
                             else
                             {
@@ -589,7 +639,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                     // Query to retrieve subject count, subject code, and subject title, grouped by subject code and title
                     string query = @"
                 SELECT sl.ID AS instructorSubject_Id,
-                       COUNT(sl.Subject_Id) AS Subject_Count, 
+                       COUNT(sl.Subject_Id) AS Load_Quantity, 
                        sl.Subject_Code, 
                        s.Subject_Title
                 FROM subject_load sl
@@ -611,6 +661,12 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
 
                         // Bind the DataTable to the DataGrid (instrutorSubject_data)
                         instrutorSubject_data.ItemsSource = subjectTable.DefaultView;
+
+                        // Optional: Show a message if no subjects are found
+                        if (subjectTable.Rows.Count == 0)
+                        {
+                            MessageBox.Show("No subjects found for this instructor.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                 }
             }
@@ -618,7 +674,12 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             {
                 MessageBox.Show("Error loading instructor subjects: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        } 
+        }
+
+        private void Quantity_txtbx_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = App.IsTextNumeric(e.Text);
+        }
 
         private void instrutorSubject_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -627,7 +688,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             {
                 // Find the Subject_Id based on the selected Subject_Code from the DataGrid
                 string selectedSubjectCode = selectedRow["Subject_Code"].ToString();
-           
+
 
                 // Loop through ComboBox items to find the matching Subject_Id
                 foreach (Subject subject in subjectCode_cmbx.Items)

@@ -227,7 +227,6 @@ namespace Info_module.Pages.TableMenus
 
                     departmentId = Convert.ToInt32(selectedRow["Department_ID"]);
                     LoadAndDisplayImage(departmentId);
-                    LoadCoursesData(departmentId);
                 }
             }
         }

@@ -386,7 +386,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
 
 
 
-        private void subject_btn_Click(object sender, RoutedEventArgs e)
+        private void config_Curriculum_btn_Click(object sender, RoutedEventArgs e)
         {
             // Check if the Curriculum_Id textbox is empty
             if (string.IsNullOrWhiteSpace(curriculumId_txt.Text))
@@ -395,7 +395,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                 return;
             }
             int.TryParse(curriculumId_txt.Text, out int curriculumId);
-            NavigationService.Navigate(new CurriculumCSV(DepartmentId, curriculumId));
+            NavigationService.Navigate(new CurriculumConfiguration(DepartmentId, curriculumId));
         }
 
 

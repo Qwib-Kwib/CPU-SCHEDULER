@@ -110,7 +110,7 @@ namespace Info_module.Pages.TableMenus
         #endregion
 
         //Curriculum
-        #region Instructor
+        #region Curriculum
 
         private DataTable curriculumDataTable; // Store the loaded data
 
@@ -124,19 +124,20 @@ namespace Info_module.Pages.TableMenus
 
                     // Base query to load curriculum with block section assignment status
                     string query = @"
-                SELECT 
-                    c.Curriculum_Id AS Curriculum_Id, 
-                    c.Curriculum_Revision AS Curriculum_Revision,
-                    c.Curriculum_Description AS Curriculum_Description,
-                    d.Dept_Code AS Department,
-                    CONCAT(c.Year_Effective_In, '-', c.Year_Effective_Out) AS Year_Effective,
-                    SUM(CASE WHEN bs.assigned = 1 THEN 1 ELSE 0 END) AS AssignedCount,
-                    SUM(CASE WHEN bs.assigned = 0 THEN 1 ELSE 0 END) AS UnassignedCount
-                FROM curriculum c
-                JOIN departments d ON c.Dept_Id = d.Dept_Id
-                LEFT JOIN block_section bs ON bs.curriculumId = c.Curriculum_Id
-                WHERE c.Status = 1
-                GROUP BY c.Curriculum_Id";
+        SELECT 
+            c.Curriculum_Id AS Curriculum_Id, 
+            c.Curriculum_Revision AS Curriculum_Revision,
+            c.Curriculum_Description AS Curriculum_Description,
+            d.Dept_Code AS Department,
+            CONCAT(c.Year_Effective_In, '-', c.Year_Effective_Out) AS Year_Effective,
+            SUM(CASE WHEN bsl.status = 'assigned' THEN 1 ELSE 0 END) AS AssignedCount,
+            SUM(CASE WHEN bsl.status = 'waiting' THEN 1 ELSE 0 END) AS UnassignedCount
+        FROM curriculum c
+        JOIN departments d ON c.Dept_Id = d.Dept_Id
+        LEFT JOIN block_section bs ON bs.curriculumId = c.Curriculum_Id
+        LEFT JOIN block_subject_list bsl ON bsl.blockSectionId = bs.blockSectionId
+        WHERE c.Status = 1
+        GROUP BY c.Curriculum_Id";
 
                     // Apply filter logic to the aggregated counts
                     switch (filter)
@@ -175,6 +176,7 @@ namespace Info_module.Pages.TableMenus
                 MessageBox.Show("Error loading curriculum details: " + ex.Message);
             }
         }
+
 
 
 
@@ -267,20 +269,21 @@ namespace Info_module.Pages.TableMenus
                 {
                     connection.Open();
 
-                    // Query to retrieve block section details with assigned status as text
+                    // Query to retrieve block section details with assigned status based on all subject list statuses
                     string query = @"
-                SELECT 
-                    blockSectionId AS assignment_BlockSection_Id, 
-                    blockSectionName AS assignment_BlockSection_Name, 
-                    year_level AS assignment_BlockSection_Year, 
-                    semester AS assignment_BlockSection_Semester, 
-                    CASE 
-                        WHEN assigned = 0 THEN 'Waiting' 
-                        WHEN assigned = 1 THEN 'Assigned' 
-                        ELSE 'Unknown' 
-                    END AS Assigned
-                FROM block_section
-                WHERE curriculumId = @curriculumId";
+        SELECT 
+            bs.blockSectionId AS assignment_BlockSection_Id, 
+            bs.blockSectionName AS assignment_BlockSection_Name, 
+            bs.year_level AS assignment_BlockSection_Year, 
+            bs.semester AS assignment_BlockSection_Semester, 
+            CASE 
+                WHEN COUNT(bsl.subjectList_Id) = COUNT(CASE WHEN bsl.status = 'assigned' THEN 1 END) THEN 'Assigned'
+                ELSE 'Waiting'
+            END AS Assigned
+        FROM block_section bs
+        LEFT JOIN block_subject_list bsl ON bsl.blockSectionId = bs.blockSectionId
+        WHERE bs.curriculumId = @curriculumId
+        GROUP BY bs.blockSectionId, bs.blockSectionName, bs.year_level, bs.semester";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@curriculumId", curriculumId);
@@ -298,6 +301,7 @@ namespace Info_module.Pages.TableMenus
                 MessageBox.Show("Error loading Block Sections: " + ex.Message);
             }
         }
+
 
 
         private void subjectFilter_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)

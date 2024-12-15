@@ -151,6 +151,7 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Code" IsReadOnly="True" Binding="{Binding Subject_Code}"/>
                                         <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Name" IsReadOnly="True" Binding="{Binding Subject_Title}" MinWidth="150"/>
+                                        <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Load" IsReadOnly="True" Binding="{Binding Load_Quantity}" MinWidth="150"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Viewbox>
@@ -160,6 +161,8 @@
                             <TextBlock Margin="10,2,184,3" TextWrapping="Wrap" Text="Instructor Subjects" FontSize="14" Height="20"/>
                             <TextBox x:Name="subject_txt" HorizontalAlignment="Left" Margin="10,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="20" Grid.Row="2" IsEnabled="False"/>
                             <ComboBox x:Name="subjectCode_cmbx" ItemsSource="{Binding Subjects}" HorizontalAlignment="Left" Margin="97,5,0,0" Grid.Row="2" VerticalAlignment="Top" Width="153" RenderTransformOrigin="0.412,-0.05" Height="20" SelectionChanged="subjectCode_cmbx_SelectionChanged"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="10,52,0,0" Grid.Row="2" TextWrapping="Wrap" Text="Quantity:" VerticalAlignment="Top"/>
+                            <TextBox x:Name="quantity_txt" HorizontalAlignment="Left" Margin="70,53,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                         </Grid>
                     </Grid>
                     <Viewbox Stretch="Fill" Margin="576,324,20,10">

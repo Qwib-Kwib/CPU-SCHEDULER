@@ -101,6 +101,10 @@ namespace Info_module.Pages.TableMenus
             {
                 nextPage = new InstructorMenu(Department_Id);
             }
+            else if(SourceButton == "BlockSection")
+            {
+                nextPage = new BlockSection(Department_Id);
+            }
 
             // Navigate to the next page if it's not null
             if (nextPage != null)

@@ -21,6 +21,10 @@ namespace Info_module.Pages
     /// </summary>
     public partial class MainMenu : Page
     {
+
+        public int DepartmentId { get; set; }
+
+
         public MainMenu()
         {
             InitializeComponent();
@@ -70,6 +74,11 @@ namespace Info_module.Pages
         private void Assignment_btn_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new Assignment()) ;
+        }
+
+        private void BlockSection_btn_Click(object sender, RoutedEventArgs e)
+        {
+            NavigatefromMainMenu("BlockSection");
         }
     }
 }

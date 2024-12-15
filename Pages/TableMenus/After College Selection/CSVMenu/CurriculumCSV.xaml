@@ -86,7 +86,6 @@
                                 <DataGridTextColumn Binding="{Binding Lecture_Lab}" Header="LEC/LAB" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding Hours}" Header="Hours" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding Units}" Header="Units" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Status}" Header="Status" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Viewbox>
