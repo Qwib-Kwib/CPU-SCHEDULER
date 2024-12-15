@@ -364,6 +364,7 @@ namespace Info_module.Pages.TableMenus
 
                     MessageBox.Show($"Block Section '{blockSectionName}' and Subjects have been successfully created.");
                     LoadBlockSectionDataGrid(BlockSection_Curriculum_Selected_Id);
+                    Load_BlockSection_Grid();
                     ClearForms();
                 }
             }
@@ -556,7 +557,6 @@ namespace Info_module.Pages.TableMenus
         MessageBox.Show("Error loading block sections: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
-
         private void Load_BlockSection_Subjects(int blockSectionId)
         {
             try
@@ -816,16 +816,16 @@ namespace Info_module.Pages.TableMenus
 
                 // Safely retrieve and convert Status (use default value 0 if null)
                 int currentStatus = 0;
-                if (selectedRow["Status"] != DBNull.Value)
+                if (selectedRow["Block_Section_Status"] != DBNull.Value)
                 {
-                    if (int.TryParse(selectedRow["Status"].ToString(), out int parsedStatus))
+                    if (int.TryParse(selectedRow["Block_Section_Status"].ToString(), out int parsedStatus))
                     {
                         currentStatus = parsedStatus;
                     }
                     else
                     {
                         // If Status is a string like "Active" or "Inactive", convert accordingly
-                        currentStatus = selectedRow["Status"].ToString().ToLower() == "active" ? 1 : 0;
+                        currentStatus = selectedRow["Block_Section_Status"].ToString().ToLower() == "active" ? 1 : 0;
                     }
                 }
 

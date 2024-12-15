@@ -141,5 +141,18 @@ namespace Info_module.Pages
         {
 
         }
+
+        private void Report_btn_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.MainFrameInstance.Navigate(new report());
+            // Hide the SideFrame
+            MainWindow.SideFrameInstance.Visibility = Visibility.Collapsed;
+            MainWindow.SideFrameInstance.IsHitTestVisible = false;
+
+            // Optionally bring the MainFrame to the foreground (if necessary)
+            MainWindow.MainFrameInstance.Visibility = Visibility.Visible;
+            MainWindow.MainFrameInstance.IsHitTestVisible = true;
+
+        }
     }
 }

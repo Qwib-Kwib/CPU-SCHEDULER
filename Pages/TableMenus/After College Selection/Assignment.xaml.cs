@@ -108,7 +108,6 @@ namespace Info_module.Pages.TableMenus
 
 
         #endregion
-
         //Curriculum
         #region Curriculum
 
@@ -204,9 +203,6 @@ namespace Info_module.Pages.TableMenus
             }
 
         }
-
-
-
 
         private void collegiate_cmbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
