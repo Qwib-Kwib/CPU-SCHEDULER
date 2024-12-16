@@ -762,7 +762,10 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Subject added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        Load_Curriculum_Subject_Grid();
                         Load_SubjectTab_Subject_Grid();
+
                         ClearSubjectInputs(); // Optional: Clear input fields after successful addition
                     }
                     else
@@ -867,7 +870,10 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         if (rowsAffected > 0)
                         {
                             MessageBox.Show("Subject updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            Load_Curriculum_Subject_Grid();
                             Load_SubjectTab_Subject_Grid();
+
                             ClearSubjectInputs(); // Clear inputs after a successful update
                         }
                         else
@@ -950,6 +956,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 }
 
                 // Optional: Refresh the DataGrid after updating the status
+                Load_Curriculum_Subject_Grid();
                 Load_SubjectTab_Subject_Grid();
             }
             catch (MySqlException ex)
