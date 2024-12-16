@@ -332,7 +332,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
                     connection.Open();
 
                     string query = @"UPDATE curriculum 
-                             SET Course_Id = @Course_Id, 
+                             SET Dept_Id = @Course_Id, 
                                  Curriculum_Revision = @Curriculum_Revision, 
                                  Curriculum_Description = @Curriculum_Description, 
                                  Year_Effective_In = @Year_Effective_In, 

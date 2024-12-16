@@ -361,13 +361,14 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 int subjectId = curriculum_selected_subject_id;
                 int yearLevel;
 
+                
                 // Validate and override BlockSectionId if user input exists and is valid
                 if (!int.TryParse(curriculum_year_cmbx.SelectedValue?.ToString(), out yearLevel))
                 {
                     MessageBox.Show("Please select a valid year level.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
+                test_txt.Text = yearLevel.ToString();
                 // Check if semester is null or empty
                 string semester = curriculum_semester_cmbx.SelectedValue?.ToString();
                 if (string.IsNullOrEmpty(semester))
@@ -1030,7 +1031,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     DataTable dataTable = ReadSubjectCsvFile(filePath);
                     if (dataTable != null)
                     {
-                        curriculum_data.ItemsSource = dataTable.DefaultView;
+                        csv_curriculum_data.ItemsSource = dataTable.DefaultView;
 
                         // Show confirmation message after the CSV is uploaded and loaded successfully
                         MessageBox.Show("CSV file uploaded successfully.",

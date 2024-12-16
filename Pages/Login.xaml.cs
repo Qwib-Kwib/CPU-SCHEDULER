@@ -99,8 +99,12 @@ namespace Info_module.Pages
                 }
                 return builder.ToString();
             }
-        }   
+        }
 
+        private void network_btn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 }

@@ -52,5 +52,23 @@
                 </Grid>
             </Viewbox>
         </Grid>
+        <Button x:Name="network_btn" HorizontalAlignment="Left" Margin="10,264,0,0" Grid.Row="2" VerticalAlignment="Top" Height="45" Width="55" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="network_btn_Click">
+            <Image Height="42" Source="/Images/internet.png" Stretch="Fill" Width="45"/>
+        </Button>
+        <Viewbox Grid.Column="1" Grid.Row="2" Margin="25,900,25,-850" Stretch="Fill">
+            <Grid Background="White" Height="265" Width="330">
+                <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" Text="Configure Connection" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="70,73,0,0" TextWrapping="Wrap" Text="Server:" VerticalAlignment="Top"/>
+                <TextBox x:Name="server_txt" HorizontalAlignment="Left" Margin="111,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="54,115,0,0" TextWrapping="Wrap" Text="Database:" VerticalAlignment="Top"/>
+                <TextBox x:Name="database_txt" HorizontalAlignment="Left" Margin="111,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="66,151,0,0" TextWrapping="Wrap" Text="User Id:" VerticalAlignment="Top"/>
+                <TextBox x:Name="userId_txt" HorizontalAlignment="Left" Margin="111,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="53,189,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
+                <TextBox x:Name="password_txt1" HorizontalAlignment="Left" Margin="111,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="default_btn" Content="Default" HorizontalAlignment="Left" Margin="137,229,0,0" VerticalAlignment="Top"/>
+                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="73,229,0,0" VerticalAlignment="Top"/>
+            </Grid>
+        </Viewbox>
     </Grid>
 </Page>

@@ -197,7 +197,7 @@
                                 <Button x:Name="SubjectCSV_btn" Content="Subject CSV" RenderTransformOrigin="-0.177,0.501" Height="30" Width="160" Margin="30,70,30,222" Click="SubjectCSV_btn_Click"/>
                             </Grid>
                             <Viewbox x:Name="curriculum_viewbox_Copy" Margin="15,15,15,20" Stretch="Fill" Grid.Column="1">
-                                <DataGrid x:Name="curriculum_data1" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="970" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="curriculum_data_SelectionChanged">
+                                <DataGrid x:Name="csv_curriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="970" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="curriculum_data_SelectionChanged">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Binding="{Binding BlockSectionId}" Header="Block Section ID" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                         <DataGridTextColumn Binding="{Binding BlockSection}" Header="Block Section" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
