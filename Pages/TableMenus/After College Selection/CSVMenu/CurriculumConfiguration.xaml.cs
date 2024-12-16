@@ -361,15 +361,14 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 int subjectId = curriculum_selected_subject_id;
                 int yearLevel;
 
-                
-                // Validate and override BlockSectionId if user input exists and is valid
+                // Validate Year Level
                 if (!int.TryParse(curriculum_year_cmbx.SelectedValue?.ToString(), out yearLevel))
                 {
                     MessageBox.Show("Please select a valid year level.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                test_txt.Text = yearLevel.ToString();
-                // Check if semester is null or empty
+
+                // Validate Semester
                 string semester = curriculum_semester_cmbx.SelectedValue?.ToString();
                 if (string.IsNullOrEmpty(semester))
                 {
@@ -377,25 +376,24 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     return;
                 }
 
-                // Validate Subject ID (assume subjectId is assigned from selection)
+                // Validate Subject ID
                 if (subjectId <= 0)
                 {
-                    MessageBox.Show("Please enter a valid Subject ID.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please select a valid subject.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                // Check for duplicate entry in the database
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
 
-                    // First, retrieve the semester_id based on Year_Level, Semester, and Curriculum_Id
+                    // Get the Semester ID
                     string getSemesterIdQuery = @"
-                        SELECT semester_id 
-                        FROM semester 
-                        WHERE year_level = @yearLevel 
-                        AND semester = @semester 
-                        AND curriculum_id = @curriculumId";
+                SELECT semester_id 
+                FROM semester 
+                WHERE year_level = @yearLevel 
+                AND semester = @semester 
+                AND curriculum_id = @curriculumId";
 
                     MySqlCommand getSemesterIdCmd = new MySqlCommand(getSemesterIdQuery, connection);
                     getSemesterIdCmd.Parameters.AddWithValue("@yearLevel", yearLevel);
@@ -404,14 +402,20 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
                     object result = getSemesterIdCmd.ExecuteScalar();
 
+                    if (result == null)
+                    {
+                        MessageBox.Show("No semester found for the selected year, semester, and curriculum.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                     int semesterId = Convert.ToInt32(result);
 
-                    // Now check if the combination of semester_id and subject_id already exists in the semester_subject_list table
+                    // Check for duplicate entries
                     string checkQuery = @"
-                        SELECT COUNT(*) 
-                        FROM semester_subject_list
-                        WHERE semester_id = @semesterId AND subject_id = @subjectId";
+                SELECT COUNT(*) 
+                FROM semester_subject_list 
+                WHERE semester_id = @semesterId 
+                AND subject_id = @subjectId";
 
                     MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
                     checkCmd.Parameters.AddWithValue("@semesterId", semesterId);
@@ -425,40 +429,27 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                         return;
                     }
 
-                    // Insert new subject into the subject_list table
+                    // Insert into the semester_subject_list
                     string insertQuery = @"
                 INSERT INTO semester_subject_list (semester_id, subject_id) 
                 VALUES (@semester_id, @subject_id)";
 
                     MySqlCommand insertCmd = new MySqlCommand(insertQuery, connection);
-                    insertCmd.Parameters.AddWithValue("@blockSection_id", semesterId);
+                    insertCmd.Parameters.AddWithValue("@semester_id", semesterId);
                     insertCmd.Parameters.AddWithValue("@subject_id", subjectId);
 
                     int rowsAffected = insertCmd.ExecuteNonQuery();
 
-                    if (rowsAffected > 0)
-                    {
-                        MessageBox.Show("Subject successfully added to the block section.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to add subject to block section.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    MessageBox.Show(rowsAffected > 0 ? "Subject successfully added!" : "Failed to add subject.", "Result");
                 }
-
-                // Optionally, reload the list of subjects linked to the block section
                 LoadCurriculum();
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show("Database error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unexpected error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message);
             }
-
         }
+
 
 
         #endregion

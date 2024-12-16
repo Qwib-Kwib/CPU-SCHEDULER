@@ -34,56 +34,56 @@ namespace Info_module.Pages
             string password = password_txt.Password;
 
             string hashedPassword = HashPassword(password);
-            // Hash entered password
+            //// Hash entered password
 
-            //uncomment to bypass login
-            MainMenu mainMenu = new MainMenu();
-            NavigationService.Navigate(mainMenu);
-            //this...
+            ////uncomment to bypass login
+            //MainMenu mainMenu = new MainMenu();
+            //NavigationService.Navigate(mainMenu);
+            ////this...
 
 
-            ////comment this to bypass login
-            //try
-            //{
-            //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-            //    {
-            //        connection.Open();
+            //comment this to bypass login
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
 
-            //        string query = "SELECT Password FROM users WHERE Username = @Username";
-            //        using (MySqlCommand command = new MySqlCommand(query, connection))
-            //        {
-            //            command.Parameters.AddWithValue("@Username", username);
+                    string query = "SELECT Password FROM users WHERE Username = @Username";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Username", username);
 
-            //            object result = command.ExecuteScalar();
+                        object result = command.ExecuteScalar();
 
-            //            if (result != null && result != DBNull.Value)
-            //            {
-            //                string storedPasswordHash = result.ToString();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            string storedPasswordHash = result.ToString();
 
-            //                // Compare hashed passwords
-            //                if (hashedPassword == storedPasswordHash)
-            //                {
-            //                    // Passwords match, login successful
-            //                    MainMenu mainMenu = new MainMenu();
-            //                    NavigationService.Navigate(mainMenu);
-            //                }
-            //                else
-            //                {
-            //                    MessageBox.Show("Incorrect username or password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            //                }
-            //            }
-            //            else
-            //            {
-            //                MessageBox.Show("User not found.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (MySqlException ex)
-            //{
-            //    MessageBox.Show("Error connecting to database: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
-            ////this....
+                            // Compare hashed passwords
+                            if (hashedPassword == storedPasswordHash)
+                            {
+                                // Passwords match, login successful
+                                MainMenu mainMenu = new MainMenu();
+                                NavigationService.Navigate(mainMenu);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Incorrect username or password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("User not found.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error connecting to database: " + ex.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            //this....
         }
 
 
