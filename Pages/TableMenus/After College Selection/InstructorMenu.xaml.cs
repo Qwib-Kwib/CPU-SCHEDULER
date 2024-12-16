@@ -485,7 +485,22 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             //int quantity = Convert.ToInt32(quantity_txtbx.Text);
             int subjectId_num = Convert.ToInt32(subjectCode_cmbx.SelectedValue);// From a textbox
             int employeeId_num = InternalEmployeeId; // From a textbox
-            int loadQuantity = Convert.ToInt32(quantity_txt.Text); // From the load_quantity textbox
+
+            if (string.IsNullOrWhiteSpace(quantity_txt.Text))
+            {
+                MessageBox.Show("Please enter a quantity.");
+                return; // Stops the function
+            }
+
+            int loadQuantity;
+            if (!int.TryParse(quantity_txt.Text, out loadQuantity))
+            {
+                MessageBox.Show("Please enter a valid number.");
+                return; // Stops the function if it's not a number
+            }
+
+            // Continue with the function logic
+
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {

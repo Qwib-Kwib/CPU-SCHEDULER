@@ -66,9 +66,9 @@
                 <TextBox x:Name="userId_txt" HorizontalAlignment="Left" Margin="111,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 <TextBlock HorizontalAlignment="Left" Margin="53,189,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
                 <TextBox x:Name="password_txt1" HorizontalAlignment="Left" Margin="111,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <Button x:Name="default_btn" Content="Default" HorizontalAlignment="Left" Margin="137,229,0,0" VerticalAlignment="Top"/>
-                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="73,229,0,0" VerticalAlignment="Top"/>
-                <Button x:Name="save_btn" Content="Default" HorizontalAlignment="Left" Margin="194,229,0,0" VerticalAlignment="Top"/>
+                <Button x:Name="default_btn" Content="Default" HorizontalAlignment="Left" Margin="137,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="default_btn_Click"/>
+                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="73,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="cancel_btn_Click"/>
+                <Button x:Name="save_btn" Content="Save" HorizontalAlignment="Left" Margin="198,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="save_btn_Click"/>
             </Grid>
         </Viewbox>
     </Grid>

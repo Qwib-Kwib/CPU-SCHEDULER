@@ -19,6 +19,12 @@ namespace Info_module
         //public static readonly string ConnectionString = @"Server=26.182.137.35;Database=universitydb;User ID=test;Password=;";
 
         //local
+
+        string DefaultServer = "localhost";
+        string DefaultDatabase = "universitydb";
+        string DefaultUserId = "root";
+        string DefaultPassword = "";
+
         public static readonly string ConnectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
 
         public static bool IsTextNumeric(string str)

@@ -22,6 +22,7 @@ namespace Info_module.Pages
     /// </summary>
     public partial class Login : Page
     {
+
         string connectionString = App.ConnectionString;
         public Login()
         {
@@ -102,6 +103,21 @@ namespace Info_module.Pages
         }
 
         private void network_btn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cancel_btn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void default_btn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void save_btn_Click(object sender, RoutedEventArgs e)
         {
 
         }
