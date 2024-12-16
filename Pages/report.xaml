@@ -38,11 +38,11 @@
                     <Button x:Name="genereateReport_btn" Content="Generate Report" Margin="0,0,80,10" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="91" Click="genereateReport_btn_Click"/>
                     <Grid Margin="10,279,497,20">
                         <TextBox x:Name="curriculumId_txt" TextWrapping="Wrap" Margin="7,21,5,5" Height="25"/>
-                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Curriculum ID" VerticalAlignment="Top"/>
+                        <TextBlock x:Name="test_txt" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Curriculum ID" VerticalAlignment="Top"/>
                     </Grid>
                     <Grid Margin="120,0,0,20" Height="53" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="150">
                         <TextBox x:Name="curriculumRevision_txt" TextWrapping="Wrap" Margin="7,21,0,6" Height="25"/>
-                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Curriculum Revision" VerticalAlignment="Top"/>
+                        <TextBlock x:Name="test_txt1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Curriculum Revision" VerticalAlignment="Top"/>
                     </Grid>
                     <Viewbox HorizontalAlignment="Right" Height="22" Margin="0,0,20,60" VerticalAlignment="Bottom" Width="127" Stretch="Fill">
                         <Grid Height="22" Width="181">
@@ -50,11 +50,11 @@
                             <ComboBox x:Name="collegiate_cmbx" HorizontalAlignment="Left" Margin="61,0,0,0" VerticalAlignment="Center" Width="120" SelectionChanged="collegiate_cmbx_SelectionChanged"/>
                         </Grid>
                     </Viewbox>
-                    <Button x:Name="test_btn" Content="test" Margin="0,0,176,10" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="91" Click="test_btn_Click"/>
+                    <Button x:Name="test_btn" Content="test" Margin="0,0,176,10" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="91" Click="test_btn_Click" Visibility="Hidden"/>
                 </Grid>
             </Viewbox>
         </Grid>
-        <Grid x:Name="ClassData_grid" Margin="77,-514,163,344">
+        <Grid x:Name="ClassData_grid" Margin="142,-496,142,384">
             <DataGrid x:Name="schedule_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Class ID" Binding="{Binding Class_Id}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>

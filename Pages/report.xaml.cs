@@ -270,6 +270,11 @@ WHERE c.Status = @Status"; // Filter by status using a parameter
                     // Step 3: Add sample content to the Word document
                     //// Add Subject Revision and Description as header 1 and header 2
                     AddHeadersToDocument(wordDoc, CurriculumRevision, CurriculumDescription);
+
+                    // Add a new paragraph for spacing
+                    Word.Paragraph spacingPara = wordDoc.Content.Paragraphs.Add();
+                    spacingPara.Range.InsertParagraphAfter();
+
                     //// Add Body
                     AddAllYearAndSemester(wordDoc);
 
@@ -355,6 +360,10 @@ WHERE c.Status = @Status"; // Filter by status using a parameter
 
                     AddDataGridToWordTable(wordDoc, schedule_data); // Get data grid and put it into doc table
 
+                    // Add a new paragraph for spacing
+                    Word.Paragraph spacingPara = wordDoc.Content.Paragraphs.Add();
+                    spacingPara.Range.InsertParagraphAfter();
+
 
                 }
 
@@ -373,6 +382,10 @@ WHERE c.Status = @Status"; // Filter by status using a parameter
                     loadSchedule(blockSectionId);
                     AddDataGridToWordTable(wordDoc, schedule_data); // Get data grid and put it into doc table
 
+                    // Add a new paragraph for spacing
+                    Word.Paragraph spacingPara = wordDoc.Content.Paragraphs.Add();
+                    spacingPara.Range.InsertParagraphAfter();
+
                 }
 
                 // Add Summer
@@ -387,6 +400,10 @@ WHERE c.Status = @Status"; // Filter by status using a parameter
                     AddBlockSectionName(wordDoc, blockSectionName);
                     loadSchedule(blockSectionId);
                     AddDataGridToWordTable(wordDoc, schedule_data); // Get data grid and put it into doc table
+
+                    // Add a new paragraph for spacing
+                    Word.Paragraph spacingPara = wordDoc.Content.Paragraphs.Add();
+                    spacingPara.Range.InsertParagraphAfter();
 
                 }
             }
@@ -566,40 +583,42 @@ WHERE c.Status = @Status"; // Filter by status using a parameter
 
         private void test_btn_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                // Step 1: Prompt the user to select the file path
-                Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
-                {
-                    Title = "Save Report",
-                    Filter = "Word Document (*.docx)|*.docx",
-                    FileName = "Curriculum_Report.docx"
-                };
+            
 
-                if (saveFileDialog.ShowDialog() == true)
-                {
-                    string filePath = saveFileDialog.FileName;
+            //try
+            //{
+            //    // Step 1: Prompt the user to select the file path
+            //    Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            //    {
+            //        Title = "Save Report",
+            //        Filter = "Word Document (*.docx)|*.docx",
+            //        FileName = "Curriculum_Report.docx"
+            //    };
 
-                    // Step 2: Create a new Word application and document
-                    Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
-                    Word.Document wordDoc = wordApp.Documents.Add();
+            //    if (saveFileDialog.ShowDialog() == true)
+            //    {
+            //        string filePath = saveFileDialog.FileName;
+
+            //        // Step 2: Create a new Word application and document
+            //        Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
+            //        Word.Document wordDoc = wordApp.Documents.Add();
 
 
-                    loadSchedule(6);
-                    AddDataGridToWordTable(wordDoc, schedule_data);
+            //        loadSchedule(6);
+            //        AddDataGridToWordTable(wordDoc, schedule_data);
 
-                    // Step 4: Save the document to the specified file path
-                    wordDoc.SaveAs2(filePath);
-                    wordDoc.Close();
-                    wordApp.Quit();
+            //        // Step 4: Save the document to the specified file path
+            //        wordDoc.SaveAs2(filePath);
+            //        wordDoc.Close();
+            //        wordApp.Quit();
 
-                    MessageBox.Show($"Report successfully created at:\n{filePath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
+            //        MessageBox.Show($"Report successfully created at:\n{filePath}");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Error: " + ex.Message);
+            //}
 
         }
     }
