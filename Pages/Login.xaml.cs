@@ -130,8 +130,6 @@ namespace Info_module.Pages
             {
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
-                
-
             }
         }
     }

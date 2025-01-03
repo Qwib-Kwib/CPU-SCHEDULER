@@ -28,7 +28,7 @@ namespace Info_module.Pages.TableMenus
         public string PageTitle { get; set; }
         public int departmentId;
 
-        string connectionString = App.ConnectionString;
+        string connectionString;
 
         public DepartmentMenu()
         {
@@ -41,7 +41,6 @@ namespace Info_module.Pages.TableMenus
             PopulateBuildingCodes();
             LoadDepartmentsData();
 
-            departmentName_txt.Text = connectionString;
         }
 
         

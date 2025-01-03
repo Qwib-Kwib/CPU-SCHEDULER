@@ -169,6 +169,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\TableMenus\CollegeMenu\CollegeMenuEdit.xaml.cs">
+      <DependentUpon>CollegeMenuEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\CollegeMenu\CollegeMenuMain.xaml.cs">
+      <DependentUpon>CollegeMenuMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -250,6 +256,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TableMenus\CollegeMenu\CollegeMenuEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\CollegeMenu\CollegeMenuMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TableMenus\CollegeSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,7 +272,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\DepartmentMenu.xaml">
+    <Page Include="Pages\TableMenus\CollegeMenu\DepartmentMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -325,7 +339,7 @@
     <Compile Include="Pages\TableMenus\CSVRooms.xaml.cs">
       <DependentUpon>CSVRooms.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\TableMenus\DepartmentMenu.xaml.cs">
+    <Compile Include="Pages\TableMenus\CollegeMenu\DepartmentMenu.xaml.cs">
       <DependentUpon>DepartmentMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TopBar.xaml.cs">
