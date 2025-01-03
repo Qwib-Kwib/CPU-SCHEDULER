@@ -34,10 +34,7 @@ namespace Info_module
         public MainWindow()
         {
             InitializeComponent();
-            CollegeMenuMain login = new CollegeMenuMain();
-
-
-            MainFrame.Navigate(login);
+            MainFrame.Navigate(new Login());
             SideFrameInstance = SideFrame;
             MainFrameInstance = MainFrame;
         }

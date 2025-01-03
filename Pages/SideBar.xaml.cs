@@ -1,5 +1,6 @@
 ﻿using Info_module.Pages.TableMenus;
 using Info_module.Pages.TableMenus.After_College_Selection;
+using Info_module.Pages.TableMenus.CollegeMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace Info_module.Pages
 
         private void Department_btn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.MainFrameInstance.Navigate(new DepartmentMenu());
+            MainWindow.MainFrameInstance.Navigate(new CollegeMenuMain());
             // Hide the SideFrame
             MainWindow.SideFrameInstance.Visibility = Visibility.Collapsed;
             MainWindow.SideFrameInstance.IsHitTestVisible = false;

@@ -23,7 +23,7 @@ namespace Info_module.Pages.TableMenus.CollegeMenu
     public partial class CollegeMenuMain : Page
     {
         public string PageTitle { get; set; }
-        public int departmentId;
+        public int collegeId;
 
         string connectionString = App.ConnectionString;
 
@@ -77,6 +77,8 @@ namespace Info_module.Pages.TableMenus.CollegeMenu
                         query += " WHERE d.Status = 0";
                     }
                     // No WHERE clause for "All" to show all departments
+
+                    query += " ORDER BY d.Dept_Code ASC";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
 
@@ -141,7 +143,7 @@ namespace Info_module.Pages.TableMenus.CollegeMenu
                 if (selectedRow != null)
                 {
 
-                    departmentId = Convert.ToInt32(selectedRow["Department_ID"]);
+                    collegeId = Convert.ToInt32(selectedRow["Department_ID"]);
                 }
             }
         }
@@ -182,24 +184,70 @@ namespace Info_module.Pages.TableMenus.CollegeMenu
                     }
                     catch (MySqlException ex)
                     {
-                        MessageBox.Show("Error updating department status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Error updating College status: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Please select a department to change its status.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select a College to change its status.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void editDepartment_btn_Click(object sender, RoutedEventArgs e)
         {
+            if (collegeId == null || collegeId == 0)
+            {
+                MessageBox.Show("Please select a College ", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                dim_rectangle.Visibility = Visibility.Visible;
+
+                Window hostWindow = Window.GetWindow(this);
+
+                CollegeMenuEdit collegeMenuEditWindow = new CollegeMenuEdit(collegeId)
+                {
+                    Owner = hostWindow, // Set the current window as the owner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    
+                };
+                collegeMenuEditWindow.ShowDialog();
+            }
+            finally
+            {
+                // Hide the dim overlay when the dialog is closed
+                dim_rectangle.Visibility = Visibility.Collapsed;
+                collegeId = 0;
+                LoadDepartmentData();
+            }
 
         }
 
         private void addDepartment_btn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                dim_rectangle.Visibility = Visibility.Visible;
 
+                Window hostWindow = Window.GetWindow(this);
+
+                CollegeMenuAdd collegeMenuAddWindow = new CollegeMenuAdd
+                {
+                    Owner = hostWindow, // Set the current window as the owner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+
+                };
+                collegeMenuAddWindow.ShowDialog();
+            }
+            finally
+            {
+                // Hide the dim overlay when the dialog is closed
+                dim_rectangle.Visibility = Visibility.Collapsed;
+                LoadDepartmentData();
+            }
         }
     }
 }

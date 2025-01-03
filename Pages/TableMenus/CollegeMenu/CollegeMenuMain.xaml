@@ -30,7 +30,7 @@
                         <DataGridTextColumn Header="College ID" Binding="{Binding Department_ID}" Width="100" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                         <DataGridTextColumn Header="Building Code" Binding="{Binding Building_Code}" Width="100" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                         <DataGridTextColumn Header="College Code" Binding="{Binding Department_Code}" Width="120" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="College Name" Binding="{Binding Department_Name}" Width="500" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="College Name" Binding="{Binding Department_Name}" Width="400" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="500" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -68,6 +68,11 @@
                 </Grid>
             </Viewbox>
         </Grid>
+        <Rectangle x:Name="dim_rectangle" Stroke="Black" Grid.RowSpan="2" Visibility="Collapsed">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" Opacity="0.3"/>
+            </Rectangle.Fill>
+        </Rectangle>
 
 
     </Grid>

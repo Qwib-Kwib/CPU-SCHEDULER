@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus;
+using Info_module.Pages.TableMenus.CollegeMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,8 +48,8 @@ namespace Info_module.Pages
 
         private void btnMenuDepartment_Click(object sender, RoutedEventArgs e)
         {
-            DepartmentMenu departmentMenu = new DepartmentMenu();
-            NavigationService.Navigate(departmentMenu);
+            CollegeMenuMain collegeMenu = new CollegeMenuMain();
+            NavigationService.Navigate(collegeMenu);
 
         }
 
