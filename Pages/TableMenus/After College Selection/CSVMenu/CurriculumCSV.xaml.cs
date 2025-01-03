@@ -20,7 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CsvHelper.Configuration;
 
-using static Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
+using static Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu.InstructorMenuMain;
 using ZstdSharp.Unsafe;
 using System.Windows.Controls.Primitives;
 using Org.BouncyCastle.Security.Certificates;

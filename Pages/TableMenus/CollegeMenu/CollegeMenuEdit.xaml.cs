@@ -193,6 +193,25 @@ namespace Info_module.Pages.TableMenus.CollegeMenu
 
         private void Update_btn_Click(object sender, RoutedEventArgs e)
         {
+            // Validate required fields
+            if (buildingCode_cbx.SelectedValue == null)
+            {
+                MessageBox.Show("Please select a building code.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(deparmentCode_txt.Text))
+            {
+                MessageBox.Show("Please enter a department code.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(departmentName_txt.Text))
+            {
+                MessageBox.Show("Please enter a department name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(connectionString))

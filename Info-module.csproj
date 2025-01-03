@@ -169,6 +169,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuAdd.xaml.cs">
+      <DependentUpon>InstructorMenuAdd.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuEdit.xaml.cs">
+      <DependentUpon>InstructorMenuEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuMain.xaml.cs">
+      <DependentUpon>InstructorMenuMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\CollegeMenu\CollegeMenuAdd.xaml.cs">
       <DependentUpon>CollegeMenuAdd.xaml</DependentUpon>
     </Compile>
@@ -239,11 +248,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\Assignment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\Assignment.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuAdd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -320,9 +337,6 @@
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu.xaml.cs">
       <DependentUpon>CurriculumMenu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu.xaml.cs">
-      <DependentUpon>InstructorMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\Assignment.xaml.cs">
       <DependentUpon>Assignment.xaml</DependentUpon>

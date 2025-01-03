@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Info_module.Pages.TableMenus.CollegeMenu"
         mc:Ignorable="d"
                 ResizeMode="NoResize"
-        Title="CollegeMenuAdd" Height="500" Width="600">
+        Title="Add College" Height="500" Width="600">
     <Grid>
         <Viewbox Margin="10,0,10,0" Stretch="Fill">
             <Grid Height="484" Width="580">
@@ -15,7 +15,7 @@
                 <TextBlock TextWrapping="Wrap" Text="College Name:" Margin="10,105,390,349" Height="30" FontSize="20"/>
                 <TextBox x:Name="departmentName_txt" TextWrapping="Wrap" Margin="10,140,10,274" Height="70" FontSize="20"/>
                 <Button x:Name="Add_btn" Content="Add" Margin="330,424,130,10" Click="Add_btn_Click" Height="50" Width="120" FontSize="20"/>
-                <ComboBox x:Name="buildingCode_cbx" VerticalAlignment="Top" Margin="242,50,10,0" Height="30" FontSize="20"/>
+                <ComboBox x:Name="buildingCode_cbx" VerticalAlignment="Top" Margin="242,50,150,0" Height="30" FontSize="20"/>
                 <TextBlock TextWrapping="Wrap" Text="College Code:" Margin="10,10,390,444" FontSize="20" Height="30"/>
                 <Button x:Name="imageUpload_btn" Content="Upload Logo" HorizontalAlignment="Left" VerticalAlignment="Top" Height="56" FontSize="20" Width="130" Margin="24,303,0,0" Click="imageUpload_btn_Click"/>
                 <TextBlock TextWrapping="Wrap" Margin="24,226,456,228" FontSize="20" Height="30"><Run Text="Logo:"/><LineBreak/><Run/></TextBlock>

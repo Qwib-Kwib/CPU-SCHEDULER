@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus.After_College_Selection;
+using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
 using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
@@ -120,7 +121,7 @@ namespace Info_module.Pages.TableMenus
             }
             else if (SourceButton == "Instructor")
             {
-                nextPage = new InstructorMenu(Department_Id);
+                nextPage = new InstructorMenuMain(Department_Id);
             }
             else if(SourceButton == "BlockSection")
             {

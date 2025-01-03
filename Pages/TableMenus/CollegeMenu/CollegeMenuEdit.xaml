@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Info_module.Pages.TableMenus.CollegeMenu"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="CollegeMenuEdit" Height="500" Width="600">
+        Title="Edit College" Height="500" Width="600">
     <Grid>
         <Viewbox Margin="10,0,10,0" Stretch="Fill">
             <Grid Height="484" Width="580">

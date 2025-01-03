@@ -1,4 +1,5 @@
-﻿using Info_module.ViewModels;
+﻿using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
+using Info_module.ViewModels;
 using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.Cmp;
@@ -18,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu.InstructorMenuMain;
 
 namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 {
@@ -50,7 +52,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.MainFrame.Navigate(new InstructorMenu(DepartmentId));
+            mainWindow.MainFrame.Navigate(new InstructorMenuMain(DepartmentId));
         }
 
         private void LoadBuildingDetails() //change text block
@@ -86,7 +88,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new InstructorMenu(DepartmentId));
+            NavigationService.Navigate(new InstructorMenuMain(DepartmentId));
         }
 
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
@@ -289,7 +291,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
         private void back_btn_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new InstructorMenu(DepartmentId));
+            NavigationService.Navigate(new InstructorMenuMain(DepartmentId));
         }
 
         private void Instructor_data_SelectionChanged(object sender, SelectionChangedEventArgs e)
