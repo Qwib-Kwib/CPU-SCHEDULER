@@ -2,6 +2,7 @@
 using Info_module.Pages.TableMenus;
 using Info_module.Pages.TableMenus.After_College_Selection;
 using Info_module.Pages.TableMenus.After_College_Selection.CSVMenu;
+using Info_module.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Info_module
 {
@@ -32,12 +34,21 @@ namespace Info_module
         {
             InitializeComponent();
             Login login = new Login();
-            
 
 
             MainFrame.Navigate(login);
             SideFrameInstance = SideFrame;
             MainFrameInstance = MainFrame;
+        }
+
+        private void HostWindowInteractionAttempt(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void HostWindowInteractionAttempt(object sender, KeyEventArgs e)
+        {
+
         }
     }
 }

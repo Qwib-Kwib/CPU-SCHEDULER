@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Info_module.ViewModels;
+using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
@@ -33,12 +34,14 @@ namespace Info_module.Pages.TableMenus
         public int BlockSectionId { get; set; }
 
         //public static readonly string ConnectionString = @"Server=26.182.137.35;Database=universitydb;User ID=test;Password=;";
-        private const string connectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
+
+        string connectionString = App.ConnectionString;
 
         public Assignment()
         {
             InitializeComponent();
             LoadUI();
+            
         }
 
         //UI

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 
 namespace Info_module.Pages.Settings_Pages
@@ -25,6 +26,7 @@ namespace Info_module.Pages.Settings_Pages
         public EditAccount()
         {
             InitializeComponent();
+            
         }
 
         string connectionString = App.ConnectionString;

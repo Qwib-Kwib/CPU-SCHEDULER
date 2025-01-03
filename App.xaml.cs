@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages;
+using Info_module.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,17 +16,15 @@ namespace Info_module
     /// </summary>//
     public partial class App : Application
     {
-        //Kim's server
-        //public static readonly string ConnectionString = @"Server=26.182.137.35;Database=universitydb;User ID=test;Password=;";
+        public static string ConnectionString { get; private set; }
 
-        //local
+        public App()
+        {
+            // Initialize the connection string in the constructor
+            var connectionViewModel = ConnectionViewModel.Instance;
+            ConnectionString = connectionViewModel.ConnectionString;
+        }
 
-        string DefaultServer = "localhost";
-        string DefaultDatabase = "universitydb";
-        string DefaultUserId = "root";
-        string DefaultPassword = "";
-
-        public static readonly string ConnectionString = @"Server=localhost;Database=universitydb;User ID=root;Password=;";
 
         public static bool IsTextNumeric(string str)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Info_module.ViewModels;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
             LoadUI();
             LoadDepartmentitems();
+            
         }
 
         #region UI

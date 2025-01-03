@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Globalization;
+using Info_module.ViewModels;
 
 namespace Info_module.Pages.TableMenus.After_College_Selection
 {
@@ -43,6 +44,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             LoadDepartmentDetails();
             LoadInstructors();
             LoadSubjects();
+
+           
         }
 
         private void NavigateBack(string sourceButton)

@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Info_module.ViewModels;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +31,7 @@ namespace Info_module.Pages
         {
             InitializeComponent();
             LoadUI();
+            
         }
         #region UI 
 

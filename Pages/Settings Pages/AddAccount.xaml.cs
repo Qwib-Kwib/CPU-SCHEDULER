@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
 using System.Data;
+using Info_module.ViewModels;
 
 namespace Info_module.Pages.Settings_Pages
 {
@@ -24,11 +25,12 @@ namespace Info_module.Pages.Settings_Pages
     /// </summary>
     public partial class AddAccount : Page
     {
+        
         string connectionString = App.ConnectionString;
-
         public AddAccount()
         {
             InitializeComponent();
+            
         }
 
         private void add_btn_Click(object sender, RoutedEventArgs e)

@@ -32,7 +32,7 @@
                     <TextBox x:Name="deparmentCode_txt" TextWrapping="Wrap" Margin="10,112,10,216"/>
                     <TextBlock TextWrapping="Wrap" Text="College Name" Margin="10,139,85,191" Height="20"/>
                     <TextBox x:Name="departmentName_txt" TextWrapping="Wrap" Margin="10,159,10,156" Height="35"/>
-                    <TextBlock TextWrapping="Wrap" Text="College ID" Margin="10,1,100,329" Height="20"/>
+                    <TextBlock x:Name="test_text" TextWrapping="Wrap" Text="College ID" Margin="10,1,100,329" Height="20"/>
                     <TextBox x:Name="departmentId_txt" TextWrapping="Wrap" IsEnabled="False" Margin="10,22,10,308" Height="20"/>
                     <Button x:Name="addDepartment_btn" Content="Add" Margin="18,298,107,32" Width="75" Height="20" Click="addDepartment_btn_Click"/>
                     <Button x:Name="editDepartment_btn" Content="Update" Margin="108,298,17,32" Width="75" Height="20" Click="editDepartment_btn_Click"/>

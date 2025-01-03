@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus.After_College_Selection.CSVMenu;
+using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection
             InitializeComponent();
             DepartmentId = departmentId;
             LoadUI();
+
+   
         }
         //ui
         #region UI

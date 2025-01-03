@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Info_module.ViewModels;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.Cmp;
 using System;
@@ -43,6 +44,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             LoadBuildingDetails();
             LoadAllData();
             Buttons(false);
+
+            
         }
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {

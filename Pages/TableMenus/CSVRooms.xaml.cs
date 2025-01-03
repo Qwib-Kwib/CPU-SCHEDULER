@@ -18,6 +18,7 @@ using System.IO;
 using System.Data;
 using System.Diagnostics;
 using System.IO.Packaging;
+using Info_module.ViewModels;
 
 namespace Info_module.Pages.TableMenus
 {
@@ -46,6 +47,9 @@ namespace Info_module.Pages.TableMenus
             InitializeComponent();
             this.buildingId = buildingId;
             LoadUI();
+
+            
+            
         }
 
         #region UI

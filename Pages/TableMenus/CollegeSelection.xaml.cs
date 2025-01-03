@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus.After_College_Selection;
+using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -34,36 +35,54 @@ namespace Info_module.Pages.TableMenus
         {
             var departments = new List<(int DeptId, string DeptName, BitmapImage ImageSource)>();
 
-            string query = "SELECT Dept_Id, Dept_Name, Logo_Image FROM departments WHERE Status = 1 ORDER BY Dept_Name";
-
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            try
             {
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-                conn.Open();
-                using (MySqlDataReader reader = cmd.ExecuteReader())
+                string query = "SELECT Dept_Id, Dept_Name, Logo_Image FROM departments WHERE Status = 1 ORDER BY Dept_Name";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    while (reader.Read())
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    conn.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        int deptId = reader.GetInt32("Dept_Id");
-                        string deptName = reader.GetString("Dept_Name");
-                        byte[] logoBytes = reader["Logo_Image"] as byte[];
-
-                        BitmapImage bitmap = new BitmapImage();
-                        using (var stream = new MemoryStream(logoBytes))
+                        while (reader.Read())
                         {
-                            stream.Seek(0, SeekOrigin.Begin);
-                            bitmap.BeginInit();
-                            bitmap.StreamSource = stream;
-                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            bitmap.EndInit();
-                        }
+                            int deptId = reader.GetInt32("Dept_Id");
+                            string deptName = reader.GetString("Dept_Name");
+                            byte[] logoBytes = reader["Logo_Image"] as byte[];
 
-                        departments.Add((deptId, deptName, bitmap));
+                            BitmapImage bitmap = null;
+                            if (logoBytes != null)
+                            {
+                                bitmap = new BitmapImage();
+                                using (var stream = new MemoryStream(logoBytes))
+                                {
+                                    stream.Seek(0, SeekOrigin.Begin);
+                                    bitmap.BeginInit();
+                                    bitmap.StreamSource = stream;
+                                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                    bitmap.EndInit();
+                                    bitmap.Freeze(); // Freeze the bitmap for cross-thread access if needed
+                                }
+                            }
+
+                            departments.Add((deptId, deptName, bitmap));
+                        }
                     }
                 }
-            }
 
-            return departments;
+                return departments;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error retrieving data: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<(int DeptId, string DeptName, BitmapImage ImageSource)>(); // Return an empty list on error
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An unexpected error occurred: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<(int DeptId, string DeptName, BitmapImage ImageSource)>(); // Return an empty list on error
+            }
         }
 
 
@@ -81,7 +100,9 @@ namespace Info_module.Pages.TableMenus
             TopBarFrame.Navigate(topBar);
             SourceButton = sourceButton;
             SourceButton = sourceButton;
-         }
+
+            
+        }
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {

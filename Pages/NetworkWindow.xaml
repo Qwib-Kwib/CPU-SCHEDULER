@@ -1,0 +1,31 @@
+﻿<Window x:Class="Info_module.Pages.NetworkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Info_module.Pages"
+        mc:Ignorable="d"
+        Title="NetworkWindow" Height="450" Width="520"
+        ResizeMode="NoResize"
+        >
+    <Grid>
+        <Viewbox Margin="10,10,10,10" Stretch="Fill" Width="500" Height="383.9" VerticalAlignment="Top">
+            <Grid Background="White" Height="258" Width="330">
+                <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" Text="Configure Connection" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="70,73,0,0" TextWrapping="Wrap" Text="Server:" VerticalAlignment="Top"/>
+                <TextBox x:Name="server_txt" HorizontalAlignment="Left" Margin="111,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="54,115,0,0" TextWrapping="Wrap" Text="Database:" VerticalAlignment="Top"/>
+                <TextBox x:Name="database_txt" HorizontalAlignment="Left" Margin="111,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="66,151,0,0" TextWrapping="Wrap" Text="User Id:" VerticalAlignment="Top"/>
+                <TextBox x:Name="userId_txt" HorizontalAlignment="Left" Margin="111,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <TextBlock HorizontalAlignment="Left" Margin="53,189,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
+                <TextBox x:Name="password_txt" HorizontalAlignment="Left" Margin="111,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="default_btn" Content="Default" HorizontalAlignment="Left" Margin="137,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="default_btn_Click"/>
+                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="73,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="cancel_btn_Click"/>
+                <Button x:Name="save_btn" Content="Save" HorizontalAlignment="Left" Margin="198,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="save_btn_Click"/>
+            </Grid>
+
+        </Viewbox>
+
+    </Grid>
+</Window>

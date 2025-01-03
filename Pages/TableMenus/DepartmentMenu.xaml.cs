@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Info_module.ViewModels;
 using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 
@@ -26,6 +27,9 @@ namespace Info_module.Pages.TableMenus
     {
         public string PageTitle { get; set; }
         public int departmentId;
+
+        string connectionString = App.ConnectionString;
+
         public DepartmentMenu()
         {
             InitializeComponent();
@@ -36,9 +40,11 @@ namespace Info_module.Pages.TableMenus
             TopBarFrame.Navigate(topBar);
             PopulateBuildingCodes();
             LoadDepartmentsData();
+
+            departmentName_txt.Text = connectionString;
         }
 
-        string connectionString = App.ConnectionString;
+        
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {

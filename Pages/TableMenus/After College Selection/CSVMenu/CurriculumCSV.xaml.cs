@@ -27,6 +27,7 @@ using Org.BouncyCastle.Security.Certificates;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static Info_module.Pages.TableMenus.Assignment;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Info_module.ViewModels;
 
 namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 {
@@ -63,6 +64,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             CurriculumId = curriculumId;
 
             LoadUI();
+           
 
         }
 

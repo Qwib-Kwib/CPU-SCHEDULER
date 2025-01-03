@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Info_module.ViewModels;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -45,6 +46,8 @@ namespace Info_module.Pages.TableMenus
             Load_Curriculum_ComboBox_Item();
             Load_BlockSection_Grid();
             Load_Curriculum_Subject_Grid();
+
+            
         }
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {

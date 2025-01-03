@@ -32,44 +32,35 @@
             </Grid>
         </Viewbox>
         <Grid Grid.Column="1" Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="3*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="3*"/>
-            </Grid.RowDefinitions>
-            <Viewbox Margin="13,1,21,3" Grid.Row="1" Grid.Column="1">
-                <Grid Height="136" Width="150">
-                    <TextBox x:Name="username_txt" HorizontalAlignment="Center" Margin="0,21,0,97" TextWrapping="Wrap" Width="150"/>
-                    <PasswordBox x:Name="password_txt" HorizontalAlignment="Center" Margin="0,74,0,0" VerticalAlignment="Top" Width="150" Height="18"/>
-                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Foreground="AntiqueWhite" Height="16" Width="59" FontFamily="C"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="0,53,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Foreground="AntiqueWhite" Height="16" Width="50"/>
-                    <Button x:Name="login_btn" Content="Login" HorizontalAlignment="Center" Margin="0,116,0,0" VerticalAlignment="Top" Width="116" Click="login_btn_Click" Height="20" Background="#FF6D6464" Foreground="White"/>
-                </Grid>
-            </Viewbox>
-        </Grid>
-        <Button x:Name="network_btn" HorizontalAlignment="Left" Margin="10,264,0,0" Grid.Row="2" VerticalAlignment="Top" Height="45" Width="55" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="network_btn_Click">
-            <Image Height="42" Source="/Images/internet.png" Stretch="Fill" Width="45"/>
-        </Button>
-        <Viewbox Grid.Column="1" Grid.Row="2" Margin="25,900,25,-850" Stretch="Fill">
-            <Grid Background="White" Height="265" Width="330">
-                <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" Text="Configure Connection" VerticalAlignment="Top"/>
-                <TextBlock HorizontalAlignment="Left" Margin="70,73,0,0" TextWrapping="Wrap" Text="Server:" VerticalAlignment="Top"/>
-                <TextBox x:Name="server_txt" HorizontalAlignment="Left" Margin="111,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <TextBlock HorizontalAlignment="Left" Margin="54,115,0,0" TextWrapping="Wrap" Text="Database:" VerticalAlignment="Top"/>
-                <TextBox x:Name="database_txt" HorizontalAlignment="Left" Margin="111,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <TextBlock HorizontalAlignment="Left" Margin="66,151,0,0" TextWrapping="Wrap" Text="User Id:" VerticalAlignment="Top"/>
-                <TextBox x:Name="userId_txt" HorizontalAlignment="Left" Margin="111,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <TextBlock HorizontalAlignment="Left" Margin="53,189,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
-                <TextBox x:Name="password_txt1" HorizontalAlignment="Left" Margin="111,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                <Button x:Name="default_btn" Content="Default" HorizontalAlignment="Left" Margin="137,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="default_btn_Click"/>
-                <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="73,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="cancel_btn_Click"/>
-                <Button x:Name="save_btn" Content="Save" HorizontalAlignment="Left" Margin="198,229,0,0" VerticalAlignment="Top" Width="50" Height="20" Click="save_btn_Click"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <Viewbox Margin="13,1,21,3" Grid.Row="1" Grid.Column="1">
+                    <Grid Height="136" Width="150">
+                        <TextBox x:Name="username_txt" HorizontalAlignment="Center" Margin="0,21,0,97" TextWrapping="Wrap" Width="150"/>
+                        <PasswordBox x:Name="password_txt" HorizontalAlignment="Center" Margin="0,74,0,0" VerticalAlignment="Top" Width="150" Height="18"/>
+                        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Foreground="AntiqueWhite" Height="16" Width="59" FontFamily="C"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="0,53,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Foreground="AntiqueWhite" Height="16" Width="50"/>
+                        <Button x:Name="login_btn" Content="Login" HorizontalAlignment="Center" Margin="0,116,0,0" VerticalAlignment="Top" Width="116" Click="login_btn_Click" Height="20" Background="#FF6D6464" Foreground="White"/>
+                    </Grid>
+                </Viewbox>
             </Grid>
-        </Viewbox>
+        </Grid>
+        <Button x:Name="network_btn" HorizontalAlignment="Left" Margin="10,0,0,10" Grid.Row="2" Width="55" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="network_btn_Click" Height="45" VerticalAlignment="Bottom">
+            <Image Height="41" Source="/Images/internet.png" Stretch="Fill" Width="45"/>
+        </Button>
+        <Rectangle x:Name="dim_rectangle" Stroke="Black" Grid.ColumnSpan="3" Grid.RowSpan="3" OpacityMask="Black" Visibility="Collapsed">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" Opacity="0.55"/>
+            </Rectangle.Fill>
+        </Rectangle>
     </Grid>
 </Page>

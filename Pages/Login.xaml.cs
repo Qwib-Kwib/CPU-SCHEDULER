@@ -1,4 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Info_module.ViewModels;
+using MySql.Data.MySqlClient;
+using Mysqlx.Crud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +25,15 @@ namespace Info_module.Pages
     public partial class Login : Page
     {
 
-        string connectionString = App.ConnectionString;
+        public string connectionString;
         public Login()
         {
             InitializeComponent();
+
+            var connectionViewModel = ConnectionViewModel.Instance;
+            connectionString = connectionViewModel.ConnectionString;
+
+
         }
 
         private void login_btn_Click(object sender, RoutedEventArgs e)
@@ -78,7 +85,9 @@ namespace Info_module.Pages
                             MessageBox.Show("User not found.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
+                    connection.Close();
                 }
+               
             }
             catch (MySqlException ex)
             {
@@ -104,22 +113,26 @@ namespace Info_module.Pages
 
         private void network_btn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                dim_rectangle.Visibility = Visibility.Visible;
 
-        }
+                Window hostWindow = Window.GetWindow(this);
 
-        private void cancel_btn_Click(object sender, RoutedEventArgs e)
-        {
+                NetworkWindow networkWindow = new NetworkWindow
+                {
+                    Owner = hostWindow, // Set the current window as the owner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                networkWindow.ShowDialog();
+            }
+            finally
+            {
+                // Hide the dim overlay when the dialog is closed
+                dim_rectangle.Visibility = Visibility.Collapsed;
+                
 
-        }
-
-        private void default_btn_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void save_btn_Click(object sender, RoutedEventArgs e)
-        {
-
+            }
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Info_module.ViewModels;
+using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Windows;
@@ -18,6 +19,8 @@ namespace Info_module.Pages.TableMenus
             InitializeComponent();
             var app = (App)Application.Current;
             app.LoadUI(TopBarFrame, "Building Menu", TopBar_BackButtonClicked);
+
+            
         }
 
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
