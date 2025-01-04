@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu"
         mc:Ignorable="d"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        ResizeMode="NoResize"
         Title="Time Preference" Height="450" Width="400">
     <Viewbox Stretch="Fill">
         <Grid Height="434" Width="400">

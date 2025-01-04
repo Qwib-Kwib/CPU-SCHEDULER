@@ -184,6 +184,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenu.xaml.cs">
+      <DependentUpon>CurriculumMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenuPreAddEddit.xaml.cs">
+      <DependentUpon>CurriculumMenuPreAddEddit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuAdd.xaml.cs">
       <DependentUpon>InstructorMenuAdd.xaml</DependentUpon>
     </Compile>
@@ -250,19 +256,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumConfiguration.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumCSV.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenuMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\CSVMenu\InstructorCSV.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenuPreAddEddit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\CurriculumMenu.xaml">
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorCSV.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -348,17 +354,11 @@
     <Compile Include="Pages\SideBar.xaml.cs">
       <DependentUpon>SideBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumConfiguration.xaml.cs">
-      <DependentUpon>CurriculumConfiguration.xaml</DependentUpon>
+    <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenuMain.xaml.cs">
+      <DependentUpon>CurriculumMenuMain.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\CSVMenu\CurriculumCSV.xaml.cs">
-      <DependentUpon>CurriculumCSV.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\CSVMenu\InstructorCSV.xaml.cs">
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorCSV.xaml.cs">
       <DependentUpon>InstructorCSV.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu.xaml.cs">
-      <DependentUpon>CurriculumMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\Assignment.xaml.cs">
       <DependentUpon>Assignment.xaml</DependentUpon>

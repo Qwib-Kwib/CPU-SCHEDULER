@@ -97,7 +97,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
-            NavigationService.Navigate(new CurriculumMenu(DepartmentId));
+            NavigationService.Navigate(new CurriculumMenu.CurriculumMenu(DepartmentId)); // Use the full namespace
+
         }
 
         #endregion

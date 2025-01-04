@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus.After_College_Selection;
+using Info_module.Pages.TableMenus.After_College_Selection.CurriculumMenu;
 using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
 using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
