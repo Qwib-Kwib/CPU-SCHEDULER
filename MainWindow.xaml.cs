@@ -2,6 +2,7 @@
 using Info_module.Pages.TableMenus;
 using Info_module.Pages.TableMenus.After_College_Selection;
 using Info_module.Pages.TableMenus.After_College_Selection.CSVMenu;
+using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
 using Info_module.Pages.TableMenus.CollegeMenu;
 using Info_module.ViewModels;
 using System;
@@ -34,7 +35,7 @@ namespace Info_module
         public MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(new Login());
+            MainFrame.Navigate(new InstructorMenuMain(4));
             SideFrameInstance = SideFrame;
             MainFrameInstance = MainFrame;
         }

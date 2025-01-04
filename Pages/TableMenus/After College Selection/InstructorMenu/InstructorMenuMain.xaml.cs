@@ -28,6 +28,11 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
 
         public int InternalEmployeeId { get; set; }
 
+        public string EmployeeId;
+        public string EmployeeLastName;
+        public string EmployeeFirstName;
+        public string EmployeeMiddleName;
+
         string connectionString = App.ConnectionString;
 
         public InstructorMenuMain(int departmentId)
@@ -37,7 +42,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
             app.LoadUI(TopBarFrame, "Instructor Menu", TopBar_BackButtonClicked);
 
             DepartmentId = departmentId;
-            InternalEmployeeId = 0;
+            InternalEmployeeId = -1;
             LoadDepartmentDetails();
             LoadInstructors();
         }
@@ -175,6 +180,11 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
                 if (selectedRow != null)
                 {
                     InternalEmployeeId = (int)selectedRow["Internal_Employee_Id"];
+                    EmployeeId = selectedRow["Employee_Id"].ToString();
+                    EmployeeLastName = selectedRow["LastName"].ToString();
+                    EmployeeMiddleName = selectedRow["MiddleName"].ToString();
+                    EmployeeFirstName = selectedRow["FirstName"].ToString();
+                    
                 }
             }
         }
@@ -229,7 +239,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
 
         private void edit_btn_Click(object sender, RoutedEventArgs e)
         {
-            if (InternalEmployeeId == null || InternalEmployeeId == 0)
+            if (InternalEmployeeId == -1)
             {
                 MessageBox.Show("Please select an Instructor ", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -253,7 +263,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
             {
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
-                InternalEmployeeId = 0;
+                InternalEmployeeId = -1;
                 LoadInstructors();
             }
 
@@ -286,7 +296,31 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
 
         private void timePreference_btn_Click(object sender, RoutedEventArgs e)
         {
+            if (InternalEmployeeId == -1) 
+            {
+                MessageBox.Show("Please select an Instructor ", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            try
+            {
+                dim_rectangle.Visibility = Visibility.Visible;
 
+                Window hostWindow = Window.GetWindow(this);
+
+                InstructorMenuTimePref instructorMenuTimePrefWindow = new InstructorMenuTimePref(InternalEmployeeId, EmployeeId, EmployeeLastName, EmployeeMiddleName, EmployeeFirstName)
+                {
+                    Owner = hostWindow, // Set the current window as the owner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+
+                };
+                instructorMenuTimePrefWindow.ShowDialog();
+            }
+            finally
+            {
+                // Hide the dim overlay when the dialog is closed
+                dim_rectangle.Visibility = Visibility.Collapsed;
+                InternalEmployeeId = -1;
+            }
         }
 
         private void csv_btn_Click(object sender, RoutedEventArgs e)
