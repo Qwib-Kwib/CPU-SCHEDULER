@@ -55,6 +55,7 @@
                     <Button x:Name="curriculumStatus_btn" Content="Deactivate" Margin="10,0,695,0" VerticalAlignment="Center" Click="CurriculumStatus_btn_Click" Height="20" Grid.Row="2"/>
                     <Button x:Name="Add_btn_Copy" Content="Add" Margin="170,16,535,16" Height="20" Click="Add_btn_Click" Grid.Row="2"/>
                     <Button x:Name="edit_btn" Content="Edit" Margin="90,16,615,16" Height="20" Click="edit_btn_Click" Grid.Row="2"/>
+                    <Button x:Name="configureSubjects_btn" Content="Configure Subjects" Margin="446,14,234,10" Click="configureSubjects_btn_Click" FontSize="10" Grid.Row="2"/>
                 </Grid>
             </Grid>
         </Viewbox>

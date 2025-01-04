@@ -190,6 +190,9 @@
     <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumMenuPreAddEddit.xaml.cs">
       <DependentUpon>CurriculumMenuPreAddEddit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumSubject.xaml.cs">
+      <DependentUpon>CurriculumSubject.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuAdd.xaml.cs">
       <DependentUpon>InstructorMenuAdd.xaml</DependentUpon>
     </Compile>
@@ -201,6 +204,15 @@
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuTimePref.xaml.cs">
       <DependentUpon>InstructorMenuTimePref.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectAdd.xaml.cs">
+      <DependentUpon>InstructorSubjectAdd.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectLoad.xaml.cs">
+      <DependentUpon>InstructorSubjectLoad.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml.cs">
+      <DependentUpon>InstructorSubjectRemove.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\CollegeMenu\CollegeMenuAdd.xaml.cs">
       <DependentUpon>CollegeMenuAdd.xaml</DependentUpon>
@@ -268,6 +280,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TableMenus\After College Selection\CurriculumMenu\CurriculumSubject.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorCSV.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -289,6 +305,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuTimePref.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectAdd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectLoad.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

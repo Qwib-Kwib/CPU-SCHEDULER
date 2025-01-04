@@ -266,16 +266,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CurriculumMenu
 
 
 
-        private void config_Curriculum_btn_Click(object sender, RoutedEventArgs e)
-        {
-            // Check if the Curriculum_Id textbox is empty
-            if (CurriculumId == -1)
-            {
-                MessageBox.Show("Please select a Curriculum.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            NavigationService.Navigate(new CurriculumConfiguration(DepartmentId, CurriculumId));
-        }
+        
 
 
 
@@ -338,6 +329,22 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CurriculumMenu
                 CurriculumId = -1;
                 LoadCurriculum();
             }
+        }
+
+        private void configureSubjects_btn_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new CurriculumConfiguration(DepartmentId, -1, 1));
+        }
+
+        private void config_Curriculum_btn_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if the Curriculum_Id textbox is empty
+            if (CurriculumId == -1)
+            {
+                MessageBox.Show("Please select a Curriculum.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            NavigationService.Navigate(new CurriculumConfiguration(DepartmentId, CurriculumId, 0));
         }
     }
 }

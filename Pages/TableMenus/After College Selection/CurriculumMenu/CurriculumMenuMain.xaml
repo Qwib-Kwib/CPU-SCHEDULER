@@ -17,7 +17,7 @@
         <Viewbox Grid.Row="1" Stretch="Fill">
 
             <Grid Height="350" Width="800" Background="White">
-                <TabControl Grid.Row="1">
+                <TabControl x:Name="main_tab" Grid.Row="1">
                     <TabItem Header="Curriculum">
                         <Grid Background="#FF7D7C7C">
                             <Grid.ColumnDefinitions>
@@ -25,22 +25,22 @@
                                 <ColumnDefinition Width="70*"/>
                             </Grid.ColumnDefinitions>
                             <Grid x:Name="Semester_grid" Background="White">
-                                <ComboBox x:Name="curriculum_semester_cmbx" Margin="110,31,0,271" FontSize="10" SelectedValuePath="Tag" Height="20" HorizontalAlignment="Left" Width="89">
+                                <ComboBox x:Name="curriculum_semester_cmbx" Margin="122,70,0,232" FontSize="10" SelectedValuePath="Tag" Height="20" HorizontalAlignment="Left" Width="89">
                                     <ComboBoxItem Content="1st Semester" Tag="1"/>
                                     <ComboBoxItem Content="2nd Semester" Tag="2"/>
                                     <ComboBoxItem Content="Summer" Tag="Summer"/>
                                 </ComboBox>
-                                <TextBlock x:Name="test_txt" HorizontalAlignment="Left" Margin="12,10,0,0" TextWrapping="Wrap" Text="Year Level" VerticalAlignment="Top"/>
-                                <ComboBox x:Name="curriculum_year_cmbx" Margin="10,30,0,272" FontSize="10" SelectedValuePath="Tag" Height="20" HorizontalAlignment="Left" Width="89">
+                                <TextBlock x:Name="test_txt" HorizontalAlignment="Left" Margin="12,54,0,0" TextWrapping="Wrap" Text="Year Level" VerticalAlignment="Top"/>
+                                <ComboBox x:Name="curriculum_year_cmbx" Margin="10,70,0,232" FontSize="10" SelectedValuePath="Tag" Height="20" HorizontalAlignment="Left" Width="89">
                                     <ComboBoxItem Content="1" Tag="1"/>
                                     <ComboBoxItem Content="2" Tag="2"/>
                                     <ComboBoxItem Content="3" Tag="3"/>
                                     <ComboBoxItem Content="4" Tag="4"/>
                                 </ComboBox>
-                                <TextBlock x:Name="test_txt1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Subjects:" VerticalAlignment="Top" Margin="11,68,0,0"/>
-                                <Button x:Name="subject_add_to_sem_btn" Content="add to sem" HorizontalAlignment="Left" Width="90" Click="subject_add_to_sem_btn_Click" Background="#FFDDDDDD" Margin="10,274,0,23" Height="25"/>
-                                <Button x:Name="remove_subeject_form_sem_btn" Content="Remove From List" FontSize="10" Click="remove_subject_form_sem_btn_Click" Margin="134,274,0,23" HorizontalAlignment="Left" Width="90" Height="25"/>
-                                <Viewbox Stretch="Fill" Margin="12,89,0,103" HorizontalAlignment="Left" Width="200" Height="130">
+                                <TextBlock x:Name="test_txt1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Subjects:" VerticalAlignment="Top" Margin="11,95,0,0"/>
+                                <Button x:Name="subject_add_to_sem_btn" Content="add to sem" HorizontalAlignment="Left" Width="90" Click="subject_add_to_sem_btn_Click" Background="#FFDDDDDD" Margin="10,287,0,10" Height="25"/>
+                                <Button x:Name="remove_subeject_form_sem_btn" Content="Remove From List" FontSize="10" Click="remove_subject_form_sem_btn_Click" Margin="134,287,0,10" HorizontalAlignment="Left" Width="90" Height="25"/>
+                                <Viewbox Stretch="Fill" Margin="11,111,0,81" HorizontalAlignment="Left" Width="200" Height="130">
                                     <DataGrid x:Name="sem_Subject_data" Height="190" Width="380" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="sem_Subject_data_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Curriculum_Selected_Subject_ID}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
@@ -49,16 +49,17 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Viewbox>
-                                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Subject Code:" VerticalAlignment="Top" Margin="12,229,0,0"/>
-                                <TextBox x:Name="blockSection_subjectCode_txt" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="110" IsReadOnly="True" Margin="89,229,0,0"/>
+                                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Subject Code:" VerticalAlignment="Top" Margin="12,256,0,0"/>
+                                <TextBox x:Name="blockSection_subjectCode_txt" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="110" IsReadOnly="True" Margin="89,256,0,0"/>
                                 <TextBox x:Name="hidden_BlockSection_SubjectId_txt" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="110" IsReadOnly="True" Visibility="Collapsed" Margin="100,180,0,0"/>
-                                <TextBlock x:Name="test1_txt" HorizontalAlignment="Left" Margin="110,10,0,0" TextWrapping="Wrap" Text="Semester" VerticalAlignment="Top"/>
+                                <TextBlock x:Name="test1_txt" HorizontalAlignment="Left" Margin="122,54,0,0" TextWrapping="Wrap" Text="Semester" VerticalAlignment="Top"/>
+                                <TextBlock x:Name="test_txt_Copy" HorizontalAlignment="Left" Margin="14,3,0,0" TextWrapping="Wrap" Text="Curriculum:" VerticalAlignment="Top"/>
+                                <ComboBox x:Name="curriculum_cmbx" Margin="12,23,0,279" FontSize="10" SelectedValuePath="Tag" Height="20" HorizontalAlignment="Left" Width="199" SelectionChanged="curriculum_cmbx_SelectionChanged"/>
                             </Grid>
                             <Grid x:Name="Curriculum_grid" Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="15*"/>
-                                    <RowDefinition Height="85
-                                                   *"/>
+                                    <RowDefinition Height="85                                                    *"/>
                                 </Grid.RowDefinitions>
                                 <Viewbox x:Name="curriculum_viewbox" Stretch="Fill" Margin="10,10,10,10" Grid.Row="1">
                                     <DataGrid x:Name="curriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="970" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="curriculum_data_SelectionChanged">
@@ -110,50 +111,10 @@
                     <TabItem Header="Subjects">
                         <Grid Background="#FFE5E5E5">
                             <Grid Background="White">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="30*"/>
-                                    <ColumnDefinition Width="70*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid x:Name="subject_grid" Height="322" VerticalAlignment="Center">
-                                    <Grid x:Name="subject" Margin="0,0,0,96">
-                                        <Grid.RowDefinitions>
-
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock x:Name="test_txt3" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Subject ID:" VerticalAlignment="Top" Width="60"/>
-                                        <TextBox x:Name="subjectId_txt" HorizontalAlignment="Left" Margin="73,9,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="88" IsReadOnly="True"/>
-                                        <TextBlock HorizontalAlignment="Left" Margin="8,66,0,0" TextWrapping="Wrap" Text="Serving Department:" VerticalAlignment="Top" FontSize="11" Width="102"/>
-                                        <TextBlock HorizontalAlignment="Left" Margin="9,39,0,0" TextWrapping="Wrap" Text="Subject Code:" VerticalAlignment="Top"/>
-                                        <TextBox x:Name="subjectCode_txt" Margin="86,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
-                                        <TextBlock HorizontalAlignment="Left" Margin="12,97,0,0" TextWrapping="Wrap" Text="Subject Title" VerticalAlignment="Top"/>
-                                        <TextBox x:Name="subjectTitle_txt" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="34" Margin="12,113,0,0"/>
-                                        <ComboBox x:Name="subjectType_cmbx" HorizontalAlignment="Left" Margin="12,168,0,0" VerticalAlignment="Top" Width="90" FontSize="10" SelectedValuePath="Tag">
-                                            <ComboBoxItem Content="Major" Tag="major"/>
-                                            <ComboBoxItem Content="Minor" Tag="minor"/>
-                                        </ComboBox>
-                                        <TextBlock HorizontalAlignment="Left" Margin="12,152,0,0" TextWrapping="Wrap" Text="Subject Type" VerticalAlignment="Top"/>
-                                        <ComboBox x:Name="lecLab_cmbx" HorizontalAlignment="Left" Margin="122,167,0,0" VerticalAlignment="Top" Width="90" FontSize="10" SelectedValuePath="Tag">
-                                            <ComboBoxItem Content="Lecture" Tag="LEC"/>
-                                            <ComboBoxItem Content="Laboratory" Tag="LAB"/>
-                                        </ComboBox>
-                                        <TextBlock HorizontalAlignment="Left" Margin="122,152,0,0" TextWrapping="Wrap" Text="LEC/LAB" VerticalAlignment="Top"/>
-                                        <TextBlock HorizontalAlignment="Left" Margin="5,209,0,0" TextWrapping="Wrap" Text="Hours:" VerticalAlignment="Top" RenderTransformOrigin="0.468,0.877"/>
-                                        <TextBox x:Name="hours_txt" Margin="44,208,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="58"/>
-                                        <TextBlock HorizontalAlignment="Left" Margin="122,209,0,0" TextWrapping="Wrap" Text="Units:" VerticalAlignment="Top"/>
-                                        <TextBox x:Name="units_txt" Margin="156,208,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="56"/>
-                                        <ComboBox x:Name="servingDepartment_cmbx" HorizontalAlignment="Left" Margin="117,64,0,0" VerticalAlignment="Top" Width="90" FontSize="10" SelectedIndex="0"/>
-                                    </Grid>
-                                    <Grid x:Name="buttons" Height="57" VerticalAlignment="Top" Margin="0,254,0,0">
-                                        <Button x:Name="subject_add_btn" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="18" FontSize="10" Margin="5,5,0,0" Click="subject_add_btn_Click"/>
-                                        <Button x:Name="update_btn" Content="Update" Margin="119,5,23,0" VerticalAlignment="Top" Click="update_btn_Click" Height="18" FontSize="10"/>
-                                        <Button x:Name="clear_btn" Content="Clear" HorizontalAlignment="Left" Margin="5,29,0,0" VerticalAlignment="Top" Width="100" Click="clear_btn_Click" Height="18" FontSize="10"/>
-                                        <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="119,29,0,0" Width="96" Click="remove_btn_Click" FontSize="10" Height="18" VerticalAlignment="Top"/>
-                                    </Grid>
-                                </Grid>
                                 <Viewbox x:Name="subject_viewbox_Copy" Margin="15,20,15,50" Stretch="Fill" Grid.Column="1">
                                     <DataGrid x:Name="subjectTab_subject_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="970" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="subjectTab_subject_grid_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Department}" Header="Serving College" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
@@ -165,7 +126,7 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Viewbox>
-                                <Viewbox x:Name="status_filter_viewbox_Copy" Stretch="Fill" Margin="373,290,15,10" Grid.Column="1">
+                                <Viewbox x:Name="status_filter_viewbox_Copy" Stretch="Fill" Margin="659,292,15,10" Height="20">
                                     <Grid Height="22" Width="171">
                                         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Show:" VerticalAlignment="Center" Height="22" Width="46" FontSize="16"/>
                                         <ComboBox x:Name="Status_cmb" HorizontalAlignment="Left" Margin="51,0,0,0" VerticalAlignment="Center" Width="120" SelectedIndex="0" SelectionChanged="Status_cmb_SelectionChanged">
@@ -175,6 +136,9 @@
                                         </ComboBox>
                                     </Grid>
                                 </Viewbox>
+                                <Button x:Name="edit_btn" Content="Edit" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="18" FontSize="10" Margin="115,289,0,0" Click="edit_btn_Click"/>
+                                <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="18" FontSize="10" Margin="220,289,0,0" Click="add_btn_Click"/>
+                                <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="10,289,0,0" Width="100" Click="remove_btn_Click" FontSize="10" Height="18" VerticalAlignment="Top"/>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -219,5 +183,10 @@
                 </TabControl>
             </Grid>
         </Viewbox>
+        <Rectangle x:Name="dim_rectangle" Stroke="Black" Grid.RowSpan="2" Visibility="Hidden">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" Opacity="0.3"/>
+            </Rectangle.Fill>
+        </Rectangle>
     </Grid>
 </Page>

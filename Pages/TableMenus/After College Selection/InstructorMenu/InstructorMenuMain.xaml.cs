@@ -65,7 +65,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT Dept_Name, Logo_Image FROM departments WHERE Dept_Id = @deptId";
+                    string query = "SELECT Dept_Name FROM departments WHERE Dept_Id = @deptId";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@deptId", DepartmentId);
 
@@ -327,6 +327,12 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
         {
             InstructorCSV instructorCSV = new InstructorCSV(DepartmentId);
             NavigationService.Navigate(instructorCSV);
+        }
+
+        private void subjectLoad_btn_Click(object sender, RoutedEventArgs e)
+        {
+            InstructorSubjectLoad instructorSubjectLoad = new InstructorSubjectLoad(DepartmentId);
+            NavigationService.Navigate(instructorSubjectLoad);
         }
     }
 }

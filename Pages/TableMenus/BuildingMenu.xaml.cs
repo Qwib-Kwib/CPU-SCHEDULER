@@ -71,10 +71,16 @@ namespace Info_module.Pages.TableMenus
 
         private void Status_cmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            string selectedStatus = "Active";
+            if (status_btn == null)
+            {
+                return;
+            }
+
             if (Status_cmb.SelectedItem != null)
             {
                 ComboBoxItem selectedItem = (ComboBoxItem)Status_cmb.SelectedItem;
-                string selectedStatus = selectedItem.Content.ToString();
+                selectedStatus = selectedItem.Content.ToString();
 
                 // Pass the selected status to filter the data
                 LoadData(selectedStatus);
