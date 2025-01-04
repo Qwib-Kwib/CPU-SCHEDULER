@@ -35,7 +35,7 @@ namespace Info_module
         public MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(new InstructorMenuMain(4));
+            MainFrame.Navigate(new Login());
             SideFrameInstance = SideFrame;
             MainFrameInstance = MainFrame;
         }

@@ -251,6 +251,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
 
         private void save_btn_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("00:00 - 00:00 time are considred day off", "Infromation", MessageBoxButton.OK, MessageBoxImage.Information);
+
             // Validate the data in the DataGrid
             foreach (var item in availabilityList)
             {
