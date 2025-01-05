@@ -600,6 +600,11 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
         private void edit_btn_Click(object sender, RoutedEventArgs e)
         {
+            if (subjectTab_SelectedSubjectId == -1)
+            {
+                MessageBox.Show("Please select a Subject ", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             try
             {
                 dim_rectangle.Visibility = Visibility.Visible;
@@ -619,6 +624,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
                 Load_SubjectTab_Subject_Grid();
+                Load_Curriculum_Subject_Grid();
+                subjectTab_SelectedSubjectId = -1;
             }
         }
 
@@ -643,6 +650,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
                 Load_SubjectTab_Subject_Grid();
+                Load_Curriculum_Subject_Grid();
             }
 
         }

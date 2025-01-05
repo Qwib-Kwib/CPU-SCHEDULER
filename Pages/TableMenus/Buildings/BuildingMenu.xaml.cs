@@ -1,4 +1,5 @@
-﻿using Info_module.ViewModels;
+﻿using Info_module.Pages.TableMenus.Buildings;
+using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
@@ -114,7 +115,7 @@ namespace Info_module.Pages.TableMenus
                 return;
             }
 
-            CSVRooms rooms = new CSVRooms(buildingId);
+            RoomMenuMain rooms = new RoomMenuMain(buildingId);
             NavigationService.Navigate(rooms);
         }
 
@@ -127,11 +128,10 @@ namespace Info_module.Pages.TableMenus
         {
             string buildingCode = buildingCode_txt.Text;
             string buildingName = buildingName_txt.Text;
-            string posX = posX_txt.Text;
-            string posY = PosY_txt.Text;
+            string posX = "0";
+            string posY = "0";
 
-            if (string.IsNullOrWhiteSpace(buildingCode) || string.IsNullOrWhiteSpace(buildingName) ||
-                string.IsNullOrWhiteSpace(posX) || string.IsNullOrWhiteSpace(posY))
+            if (string.IsNullOrWhiteSpace(buildingCode) || string.IsNullOrWhiteSpace(buildingName))
             {
                 MessageBox.Show("Please fill in all fields.");
                 return;
@@ -172,8 +172,8 @@ namespace Info_module.Pages.TableMenus
 
             string buildingCode = buildingCode_txt.Text;
             string buildingName = buildingName_txt.Text;
-            string posX = posX_txt.Text;
-            string posY = PosY_txt.Text;
+            string posX = "0";
+            string posY = "0";
 
             if (string.IsNullOrWhiteSpace(buildingCode) || string.IsNullOrWhiteSpace(buildingName) ||
                 string.IsNullOrWhiteSpace(posX) || string.IsNullOrWhiteSpace(posY))
@@ -276,8 +276,6 @@ namespace Info_module.Pages.TableMenus
             ID_txt.Text = string.Empty;
             buildingCode_txt.Text = string.Empty;
             buildingName_txt.Text = string.Empty;
-            posX_txt.Text = string.Empty;
-            PosY_txt.Text = string.Empty;
         }
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {

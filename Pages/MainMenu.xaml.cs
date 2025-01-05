@@ -55,8 +55,8 @@ namespace Info_module.Pages
 
         private void btnMenuBuilding_Click(object sender, RoutedEventArgs e)
         {
-            BuildingMap buildingMap = new BuildingMap();
-            NavigationService.Navigate(buildingMap);
+            BuildingMenu building = new BuildingMenu();
+            NavigationService.Navigate(building);
             //BuildingMenu buildingMenu = new BuildingMenu();
             //NavigationService.Navigate(buildingMenu);
         }

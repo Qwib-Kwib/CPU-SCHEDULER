@@ -384,6 +384,48 @@ namespace Info_module.Pages.TableMenus
         }
 
         #endregion
+        private void loadScheduleByBlock(int section)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    // Query to load data from the class table
+                    string query = @"
+                SELECT c.Class_Id,
+                       c.Subject_Id,
+                       c.Internal_Employee_Id,
+                       c.Room_Id,
+                       c.Stub_Code,
+                       c.Class_Day,
+                       c.Start_Time,
+                       c.End_Time,
+                       s.Subject_Code AS SubjectCode,
+                       CONCAT(i.Lname, ', ', i.Fname) AS InstructorName,
+                       r.Room_Code AS RoomCode
+                FROM subjects s
+                LEFT JOIN class c ON c.Subject_Id = s.Subject_Id
+                LEFT JOIN instructor i ON c.Internal_Employee_Id = i.Internal_Employee_Id
+                LEFT JOIN rooms r ON c.Room_Id = r.Room_Id
+                Where c.Block_Section_Id = '" + section + "'";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+
+                    // Bind the resulting data to the DataGrid
+                    schedule_data.ItemsSource = dataTable.DefaultView;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error loading class details: " + ex.Message);
+            }
+        }
+
+
 
         #region //algorithm
 
@@ -926,14 +968,17 @@ namespace Info_module.Pages.TableMenus
 
         public class TimeSlotGenerator
         {
+            //Assign Variable NOTED
             private string connectionString;
             private int employeeId_num;
+            private int blockSectionId;
 
             // Constructor to accept the connection string
-            public TimeSlotGenerator(string connectionString, int employeeId)
+            public TimeSlotGenerator(string connectionString, int employeeId, int blockSectionId)
             {
                 this.connectionString = connectionString;
                 this.employeeId_num = employeeId;
+                this.blockSectionId = blockSectionId;
             }
 
             public bool IsStubCodeExistsForDay(int stubCode, string day)
@@ -981,26 +1026,58 @@ namespace Info_module.Pages.TableMenus
                 return availableDays;
             }
 
+            private void RemoveUnavailableDays(ref List<string> dayList)
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = "SELECT Day_Of_Week, Start_Time, End_Time FROM instructor_availability WHERE Internal_Employee_Id = @EmployeeId";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@EmployeeId", employeeId_num);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string dayOfWeek = reader["Day_Of_Week"].ToString();
+                            TimeSpan startTime = TimeSpan.Parse(reader["Start_Time"].ToString());
+                            TimeSpan endTime = TimeSpan.Parse(reader["End_Time"].ToString());
+
+                            // If both Start_Time and End_Time are 00:00:00, remove the day from dayList
+                            if (startTime == TimeSpan.Zero && endTime == TimeSpan.Zero)
+                            {
+                                dayList.Remove(dayOfWeek);
+                            }
+                        }
+                    }
+                }
+            }
+
             public List<(TimeSpan startTime, TimeSpan endTime, string day, int additionalNumber)> GenerateAvailableTimeSlots(TimeSpan interval, string days, int selectedRoom, int stubCode)
             {
                 List<(TimeSpan, TimeSpan, string, int)> availableSlots = new List<(TimeSpan, TimeSpan, string, int)>();
                 List<string> dayList = new List<string>();
 
-                // Populate dayList based on the input 'days'
+                // Populate dayList based on the input 'days' and remove unavailable days
                 switch (days)
                 {
                     case "MTWTHF":
                         dayList.AddRange(new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" });
+                        RemoveUnavailableDays(ref dayList);
                         break;
                     case "TTH":
                         dayList.AddRange(new[] { "Tuesday", "Thursday" });
+                        RemoveUnavailableDays(ref dayList);
                         break;
                     case "MWF":
                         dayList.AddRange(new[] { "Monday", "Wednesday", "Friday" });
+                        RemoveUnavailableDays(ref dayList);
                         break;
                     default:
                         return availableSlots;
                 }
+
 
                 // Flag to keep track if a valid day was found
                 // Flag to keep track if a valid day was found
@@ -1025,6 +1102,7 @@ namespace Info_module.Pages.TableMenus
                     List<(TimeSpan startTime, TimeSpan endTime)> dayTimeSlots = GetTimeSlotsForDay(interval, day);
                     AdjustForRestPeriods(ref dayTimeSlots, day);
                     RemoveOccupiedSlotsByRoom(ref dayTimeSlots, day, selectedRoom);
+                    RemoveOccupiedSlotsBySection(ref dayTimeSlots, day, blockSectionId);
                     RemoveOccupiedSlotsByEmployee(ref dayTimeSlots, day);
                     List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(dayTimeSlots, day);
 
@@ -1047,6 +1125,7 @@ namespace Info_module.Pages.TableMenus
                     List<(TimeSpan startTime, TimeSpan endTime)> singleDayTimeSlots = GetTimeSlotsForDay(interval, singleDay);
                     AdjustForRestPeriods(ref singleDayTimeSlots, singleDay);
                     RemoveOccupiedSlotsByRoom(ref singleDayTimeSlots, singleDay, selectedRoom);
+                    RemoveOccupiedSlotsBySection(ref singleDayTimeSlots, singleDay, blockSectionId);
                     RemoveOccupiedSlotsByEmployee(ref singleDayTimeSlots, singleDay);
                     List<(TimeSpan startTime, TimeSpan endTime)> filteredSlots = CheckInstructorAvailability(singleDayTimeSlots, singleDay);
 
@@ -1167,6 +1246,33 @@ namespace Info_module.Pages.TableMenus
                     string query = "SELECT Start_Time, End_Time FROM class WHERE Room_Id = @RoomId AND Class_Day = @Day";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@RoomId", selectedRoom);
+                    cmd.Parameters.AddWithValue("@Day", day);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            TimeSpan startTime = (TimeSpan)reader["Start_Time"];
+                            TimeSpan endTime = (TimeSpan)reader["End_Time"];
+
+                            // Remove occupied slots from availableSlots
+                            availableSlots.RemoveAll(slot => slot.startTime < endTime && slot.endTime > startTime);
+                        }
+                    }
+                }
+            }
+
+            //To be processed NOTED
+            private void RemoveOccupiedSlotsBySection(ref List<(TimeSpan startTime, TimeSpan endTime)> availableSlots, string day, int blockSectionId)
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Query to find the occupied time slots for the room on the given day
+                    string query = "SELECT Start_Time, End_Time FROM class WHERE Block_Section_Id = @BlockSection AND Class_Day = @Day";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@BlockSection", blockSectionId);
                     cmd.Parameters.AddWithValue("@Day", day);
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -2047,7 +2153,7 @@ namespace Info_module.Pages.TableMenus
                     string mode = subjectMode.GetSubjectMode(subjectId_num);
                     //------------------------------------------------------------------------------------------------------------------------------------
                     // Create an instance of TimeSlotGenerator with the connection string and employee ID
-                    TimeSlotGenerator generator = new TimeSlotGenerator(connectionString, employeeId_num);
+                    TimeSlotGenerator generator = new TimeSlotGenerator(connectionString, employeeId_num, blockSectionId);
 
                     // Initialize the stubCode
                     int stubCode = 0;
@@ -2348,7 +2454,9 @@ namespace Info_module.Pages.TableMenus
                 // Handle errors
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
-        }       
+        }
         #endregion
+
+
     }
 }

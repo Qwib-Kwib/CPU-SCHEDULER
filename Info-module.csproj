@@ -214,6 +214,18 @@
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml.cs">
       <DependentUpon>InstructorSubjectRemove.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\Buildings\RoomMenuCsv.xaml.cs">
+      <DependentUpon>RoomMenuCsv.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\Buildings\RoomMenuEdit.xaml.cs">
+      <DependentUpon>RoomMenuEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\Buildings\RoomMenuAdd.xaml.cs">
+      <DependentUpon>RoomMenuAdd.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\Buildings\RoomMenuMain.xaml.cs">
+      <DependentUpon>RoomMenuMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\CollegeMenu\CollegeMenuAdd.xaml.cs">
       <DependentUpon>CollegeMenuAdd.xaml</DependentUpon>
     </Compile>
@@ -320,6 +332,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TableMenus\Buildings\RoomMenuCsv.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\Buildings\RoomMenuEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TableMenus\BlockSection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -328,7 +348,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\TableMenus\BuildingMenu.xaml">
+    <Page Include="Pages\TableMenus\Buildings\BuildingMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\Buildings\RoomMenuAdd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\Buildings\RoomMenuMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -348,7 +376,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\CSVRooms.xaml">
+    <Page Include="Pages\TableMenus\Buildings\RoomMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -397,14 +425,14 @@
     <Compile Include="Pages\TableMenus\BuildingMap.xaml.cs">
       <DependentUpon>BuildingMap.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\TableMenus\BuildingMenu.xaml.cs">
+    <Compile Include="Pages\TableMenus\Buildings\BuildingMenu.xaml.cs">
       <DependentUpon>BuildingMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\CollegeSelection.xaml.cs">
       <DependentUpon>CollegeSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\TableMenus\CSVRooms.xaml.cs">
-      <DependentUpon>CSVRooms.xaml</DependentUpon>
+    <Compile Include="Pages\TableMenus\Buildings\RoomMenu.xaml.cs">
+      <DependentUpon>RoomMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TopBar.xaml.cs">
       <DependentUpon>TopBar.xaml</DependentUpon>

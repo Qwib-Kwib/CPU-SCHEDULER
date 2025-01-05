@@ -28,16 +28,12 @@
             </Grid.ColumnDefinitions>
             <Viewbox Margin="15,15,15,15" Stretch="Fill">
                 <Grid Height="285" Width="216">
-                    <TextBox x:Name="ID_txt" HorizontalAlignment="Left" Margin="0,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False"/>
+                    <TextBox x:Name="ID_txt" HorizontalAlignment="Left" Margin="0,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" IsEnabled="False" Visibility="Hidden"/>
                     <TextBox x:Name="buildingCode_txt" HorizontalAlignment="Left" Margin="0,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                     <TextBox x:Name="buildingName_txt" HorizontalAlignment="Center" Margin="0,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="216" Height="41"/>
-                    <TextBox x:Name="posX_txt" HorizontalAlignment="Left" Margin="0,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="85" PreviewTextInput="TextBox_PreviewTextInput" Height="18"/>
-                    <TextBox x:Name="PosY_txt" HorizontalAlignment="Left" Margin="108,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="85" PreviewTextInput="TextBox_PreviewTextInput" Height="18"/>
-                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
                     <TextBlock HorizontalAlignment="Left" Margin="0,44,0,0" TextWrapping="Wrap" Text="Building Code" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
                     <TextBlock HorizontalAlignment="Left" Margin="0,88,0,0" TextWrapping="Wrap" Text="Building Name" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="0,155,0,0" TextWrapping="Wrap" Text="Position X:" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="108,155,0,0" TextWrapping="Wrap" Text="Position Y:" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
                     <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top" Width="60" Click="add_btn_Click"/>
                     <Button x:Name="edit_btn" Content="Update" Margin="78,200,78,0" VerticalAlignment="Top" Click="edit_btn_Click"/>
                     <Button x:Name="status_btn" Content="Activate" Margin="145,200,10,0" VerticalAlignment="Top" Click="remove_btn_Click" Height="20" Width="60"/>

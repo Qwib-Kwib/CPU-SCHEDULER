@@ -38,7 +38,7 @@ namespace Info_module.Pages.TableMenus
         private void LoadUI()
         {
             var app = (App)Application.Current;
-            app.LoadUI(TopBarFrame, "Assignment Menu", TopBar_BackButtonClicked);
+            app.LoadUI(TopBarFrame, "Block Sections", TopBar_BackButtonClicked);
 
             LoadCurriculumDataGrid();
             Load_Curriculum_ComboBox_Item();
