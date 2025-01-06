@@ -167,12 +167,41 @@ namespace Info_module.Pages.TableMenus.AssignmentMenu
                 // Retrieve the curriculum ID from the dialog
                 BlockSectionId = windowMenu.SelectedBlockSectionId;
                 BlockSection_txt.Text = windowMenu.SelectedBlockSectionName;
+                
             }
             finally
             {
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
+                loadScheduleByBlock(BlockSectionId);
             }
+        }
+
+        private void edit_btn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                dim_rectangle.Visibility = Visibility.Visible;
+
+                Window hostWindow = Window.GetWindow(this);
+
+                ScheduleMenuEdit windowMenu = new ScheduleMenuEdit(BlockSectionId)
+                {
+                    Owner = hostWindow, // Set the current window as the owner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+
+
+                windowMenu.ShowDialog();
+                
+            }
+            finally
+            {
+                // Hide the dim overlay when the dialog is closed
+                dim_rectangle.Visibility = Visibility.Collapsed;
+                loadScheduleByBlock(BlockSectionId);
+            }
+
         }
     }
 }
