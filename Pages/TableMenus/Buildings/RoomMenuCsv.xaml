@@ -52,13 +52,6 @@
                         CanUserReorder="False"
                         IsReadOnly="True"
                         Width="60" />
-                    <DataGridTextColumn Header="Status"
-                        Binding="{Binding Status}"
-                        CanUserResize="False"
-                        CanUserSort="False"
-                        CanUserReorder="False"
-                        IsReadOnly="True"
-                        Width="70" />
                 </DataGrid.Columns>
             </DataGrid>
             <Grid x:Name="roomCsv_grid" Margin="10,28,437,27">

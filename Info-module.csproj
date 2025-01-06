@@ -214,6 +214,9 @@
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml.cs">
       <DependentUpon>InstructorSubjectRemove.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuMain.xaml.cs">
+      <DependentUpon>BlockSectionMenuMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\Buildings\RoomMenuCsv.xaml.cs">
       <DependentUpon>RoomMenuCsv.xaml</DependentUpon>
     </Compile>
@@ -329,6 +332,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

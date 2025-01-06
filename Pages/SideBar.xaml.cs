@@ -53,7 +53,7 @@ namespace Info_module.Pages
 
         private void Building_btn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.MainFrameInstance.Navigate(new BuildingMap());
+            MainWindow.MainFrameInstance.Navigate(new BuildingMenu());
             // Hide the SideFrame
             MainWindow.SideFrameInstance.Visibility = Visibility.Collapsed;
             MainWindow.SideFrameInstance.IsHitTestVisible = false;

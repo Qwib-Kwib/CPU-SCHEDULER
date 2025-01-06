@@ -107,7 +107,7 @@ namespace Info_module.Pages.TableMenus.Buildings
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
         {
 
-            MessageBox.Show("Exclude ID and Building Code from CSV.");
+            MessageBox.Show("Skips for Header, Collumns order Should be : 'Room Code', 'Floor Level', 'Room Type', 'Max Seat' ");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
@@ -143,21 +143,30 @@ namespace Info_module.Pages.TableMenus.Buildings
                     csvData.Columns.Add("Floor_Level", typeof(int));
                     csvData.Columns.Add("Room_Type", typeof(string));
                     csvData.Columns.Add("Max_Seat", typeof(int));
-                    csvData.Columns.Add("Status", typeof(int));
 
                     // Read the header line first to skip it
-                    sr.ReadLine();
+                    string headerLine = sr.ReadLine();
+                    if (string.IsNullOrWhiteSpace(headerLine))
+                    {
+                        MessageBox.Show("The CSV file is empty or the header line is missing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
 
                     // Read the data lines
                     while (!sr.EndOfStream)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
-
-                        // Ensure that the CSV row has the expected number of columns
-                        if (rows.Length != 6)
+                        string line = sr.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line)) // Skip empty lines
                         {
-                            MessageBox.Show("Error: CSV file format is incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return null;
+                            continue;
+                        }
+
+                        string[] rows = line.Split(',');
+
+                        if (rows.Length < 4) // Ensure there are enough columns
+                        {
+                            MessageBox.Show($"Row does not contain enough columns: {line}", "Format Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            continue; // Skip this row and continue with the next
                         }
 
                         try
@@ -166,15 +175,18 @@ namespace Info_module.Pages.TableMenus.Buildings
                             dr["Room_Code"] = rows[0].Trim();
                             dr["Floor_Level"] = int.Parse(rows[1].Trim());
                             dr["Room_Type"] = rows[2].Trim();
-                            dr["Max_Seat"] = int.Parse(rows[4].Trim());
-                            dr["Status"] = int.Parse(rows[5].Trim());
+                            dr["Max_Seat"] = int.Parse(rows[3].Trim());
 
                             csvData.Rows.Add(dr);
                         }
                         catch (FormatException ex)
                         {
-                            MessageBox.Show($"Error parsing row: {string.Join(",", rows)}\n\n{ex.Message}", "Format Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return null;
+                            MessageBox.Show($"Error parsing row: {line}\n\n{ex.Message}", "Format Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            // Continue to the next row instead of returning null
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Unexpected error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }
