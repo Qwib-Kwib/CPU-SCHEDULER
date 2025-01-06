@@ -1,0 +1,25 @@
+﻿<Window x:Class="Info_module.Pages.TableMenus.BlockSectionMenu.BlockSectionCurriculum"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Info_module.Pages.TableMenus.BlockSectionMenu"
+        mc:Ignorable="d"
+        Title="Select Curriculum" Height="380" Width="620">
+    <Viewbox Stretch="Fill">
+        <Grid Height="364" Width="620">
+            <DataGrid x:Name="BlockSectionCurriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_Curriculum_grid_SelectionChanged" Margin="10,10,10,50">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Curriculum_Id}" Header="Curriculum Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
+                    <DataGridTextColumn Binding="{Binding Curriculum_Revision}" Header="Revision" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Curriculum_Description}" Header="Description" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Year}" Header="Year Effective" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="60,324,0,0" VerticalAlignment="Top" Height="30" FontSize="20" Click="cancel_btn_Click" Width="150"/>
+            <Button x:Name="all_btn" Content="Load All" HorizontalAlignment="Center" Margin="0,324,0,0" VerticalAlignment="Top" Height="30" FontSize="20" Width="150" Click="all_btn_Click"/>
+            <Button x:Name="curriculum_btn" Content="Load Curriculum" Margin="410,324,60,0" VerticalAlignment="Top" Height="30" FontSize="20" Click="curriculum_btn_Click"/>
+
+        </Grid>
+    </Viewbox>
+</Window>

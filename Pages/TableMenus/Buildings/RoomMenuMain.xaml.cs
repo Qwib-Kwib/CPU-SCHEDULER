@@ -46,7 +46,7 @@ namespace Info_module.Pages.TableMenus.Buildings
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.MainFrame.Navigate(new BuildingMap());
+            mainWindow.MainFrame.Navigate(new BuildingMenu());
         }
 
         private void back_btn_Click(object sender, RoutedEventArgs e)
@@ -294,6 +294,7 @@ namespace Info_module.Pages.TableMenus.Buildings
                     Owner = hostWindow, // Set the current window as the owner
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
 
+
                 };
                 windowMenu.ShowDialog();
             }
@@ -301,6 +302,7 @@ namespace Info_module.Pages.TableMenus.Buildings
             {
                 // Hide the dim overlay when the dialog is closed
                 dim_rectangle.Visibility = Visibility.Collapsed;
+             
                 LoadRooms();
             }
 

@@ -3,6 +3,7 @@ using Info_module.Pages.TableMenus;
 using Info_module.Pages.TableMenus.After_College_Selection;
 using Info_module.Pages.TableMenus.After_College_Selection.CSVMenu;
 using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
+using Info_module.Pages.TableMenus.BlockSectionMenu;
 using Info_module.Pages.TableMenus.Buildings;
 using Info_module.Pages.TableMenus.CollegeMenu;
 using Info_module.ViewModels;

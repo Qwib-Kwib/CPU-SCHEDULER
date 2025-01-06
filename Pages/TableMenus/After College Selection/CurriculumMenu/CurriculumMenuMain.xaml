@@ -62,7 +62,7 @@
                                     <RowDefinition Height="85                                                    *"/>
                                 </Grid.RowDefinitions>
                                 <Viewbox x:Name="curriculum_viewbox" Stretch="Fill" Margin="10,10,10,10" Grid.Row="1">
-                                    <DataGrid x:Name="curriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="970" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="curriculum_data_SelectionChanged">
+                                    <DataGrid x:Name="curriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Height="440" Width="1200" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="curriculum_data_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Semester_Id}" Header="Block Section ID" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                             <DataGridTextColumn Binding="{Binding Year_Level}" Header="Year Level" CanUserResize="False" CanUserReorder="False" IsReadOnly="True">

@@ -1,4 +1,5 @@
 ﻿using Info_module.Pages.TableMenus;
+using Info_module.Pages.TableMenus.Assignment;
 using Info_module.Pages.TableMenus.CollegeMenu;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace Info_module.Pages
 
         private void Assignment_btn_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Assignment()) ;
+            NavigationService.Navigate(new AssignMenuMain()) ;
         }
 
         private void BlockSection_btn_Click(object sender, RoutedEventArgs e)

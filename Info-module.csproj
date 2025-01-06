@@ -214,8 +214,23 @@
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorSubjectRemove.xaml.cs">
       <DependentUpon>InstructorSubjectRemove.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\AssignmentMenu\AssignMenuMain.xaml.cs">
+      <DependentUpon>AssignMenuMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionConfig.xaml.cs">
+      <DependentUpon>BlockSectionConfig.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionCurriculum.xaml.cs">
+      <DependentUpon>BlockSectionCurriculum.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuMain.xaml.cs">
       <DependentUpon>BlockSectionMenuMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuSemester.xaml.cs">
+      <DependentUpon>BlockSectionMenuSemester.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionSubjecAdd.xaml.cs">
+      <DependentUpon>BlockSectionSubjecAdd.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\Buildings\RoomMenuCsv.xaml.cs">
       <DependentUpon>RoomMenuCsv.xaml</DependentUpon>
@@ -303,10 +318,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TableMenus\After College Selection\Assignment.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorMenuAdd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -335,7 +346,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TableMenus\AssignmentMenu\AssignMenuMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionCurriculum.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionMenuSemester.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionSubjecAdd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -346,14 +377,6 @@
     <Page Include="Pages\TableMenus\Buildings\RoomMenuEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\TableMenus\BlockSection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\TableMenus\BuildingMap.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\TableMenus\Buildings\BuildingMenu.xaml">
       <SubType>Designer</SubType>
@@ -422,15 +445,6 @@
     </Compile>
     <Compile Include="Pages\TableMenus\After College Selection\InstructorMenu\InstructorCSV.xaml.cs">
       <DependentUpon>InstructorCSV.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\After College Selection\Assignment.xaml.cs">
-      <DependentUpon>Assignment.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\BlockSection.xaml.cs">
-      <DependentUpon>BlockSection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\TableMenus\BuildingMap.xaml.cs">
-      <DependentUpon>BuildingMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TableMenus\Buildings\BuildingMenu.xaml.cs">
       <DependentUpon>BuildingMenu.xaml</DependentUpon>

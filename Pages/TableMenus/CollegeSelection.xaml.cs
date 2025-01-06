@@ -1,6 +1,7 @@
 ﻿using Info_module.Pages.TableMenus.After_College_Selection;
 using Info_module.Pages.TableMenus.After_College_Selection.CurriculumMenu;
 using Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu;
+using Info_module.Pages.TableMenus.BlockSectionMenu;
 using Info_module.ViewModels;
 using MySql.Data.MySqlClient;
 using System;
@@ -126,7 +127,7 @@ namespace Info_module.Pages.TableMenus
             }
             else if(SourceButton == "BlockSection")
             {
-                nextPage = new BlockSection(Department_Id);
+                nextPage = new BlockSectionMenuMain(Department_Id);
             }
 
             // Navigate to the next page if it's not null

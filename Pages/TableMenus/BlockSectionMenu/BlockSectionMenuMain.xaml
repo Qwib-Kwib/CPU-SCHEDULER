@@ -16,7 +16,7 @@
 
         <Frame x:Name="TopBarFrame" Grid.Row="0" Content="" NavigationUIVisibility="Hidden"/>
         <Viewbox Grid.Row="1" Stretch="Fill">
-            <TabControl x:Name="main_tab" Height="350" Width="800" SelectionChanged="main_tab_SelectionChanged">
+            <TabControl x:Name="main_tab" Height="350" Width="800">
                 <TabItem x:Name="CreateBlockTab" Header="Create Block Section" Tag="1">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
@@ -24,39 +24,69 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Margin="635,0,0,0" Grid.ColumnSpan="2" Background="#FF9CABC3">
-                            <TextBlock TextWrapping="Wrap" Text="Year Level" Margin="10,10,10,290"/>
-                            <ComboBox HorizontalAlignment="Center" Margin="0,37,0,0" VerticalAlignment="Top" Width="139">
+                            <TextBlock x:Name="yearLevel_txt" TextWrapping="Wrap" Text="Year Level" Margin="10,10,10,290"/>
+                            <ComboBox x:Name="yearLevel_cmbx" HorizontalAlignment="Center" Margin="0,37,0,0" VerticalAlignment="Top" Width="139" SelectedValuePath="Tag">
                                 <ComboBoxItem Content="1" Tag="1"/>
                                 <ComboBoxItem Content="2" Tag="2"/>
                                 <ComboBoxItem Content="3" Tag="3"/>
                                 <ComboBoxItem Content="4" Tag="4"/>
                             </ComboBox>
-                            <TextBlock TextWrapping="Wrap" Text="Semester" Margin="10,64,10,236"/>
-                            <ComboBox HorizontalAlignment="Center" Margin="0,91,0,0" VerticalAlignment="Top" Width="139"/>
-                            <Button Content="Create Block Section" HorizontalAlignment="Center" Margin="0,292,0,0" VerticalAlignment="Top" Width="120"/>
-                            <TextBox TextWrapping="Wrap" Width="120" Margin="20,207,19,95" Height="20"/>
-                            <Button Content="View Semester" HorizontalAlignment="Center" Margin="0,126,0,0" VerticalAlignment="Top" Width="100"/>
-                            <TextBlock TextWrapping="Wrap" Text="For Year:" Margin="10,180,10,120"/>
+                            <TextBlock x:Name="semester_txt" TextWrapping="Wrap" Text="Semester" Margin="10,64,10,236"/>
+                            <ComboBox x:Name="semester_cmbx" HorizontalAlignment="Center" Margin="0,91,0,0" VerticalAlignment="Top" Width="139" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="1st Semester" Tag="1"/>
+                                <ComboBoxItem Content="2nd Semester" Tag="2"/>
+                                <ComboBoxItem Content="Summer" Tag="Summer"/>
+                            </ComboBox>
+                            <Button x:Name="CreateBlockSection_btn" Content="Create Block Section" HorizontalAlignment="Center" Margin="0,292,0,0" VerticalAlignment="Top" Width="120" Click="CreateBlockSection_btn_Click"/>
+                            <TextBox x:Name="year_txt" TextWrapping="Wrap" Width="120" Margin="20,207,19,95" Height="20" PreviewTextInput="IsTextInt_PreviewTextInput"/>
+                            <Button x:Name="ViewSemester_btn" Content="View Semester" HorizontalAlignment="Center" Margin="0,126,0,0" VerticalAlignment="Top" Width="100" Click="ViewSemester_btn_Click"/>
+                            <TextBlock TextWrapping="Wrap" Text="For Year:" Margin="10,180,10,120 "/>
                         </Grid>
-
-                        <Viewbox Margin="10,10,20,10" Stretch="Fill">
-                            <DataGrid x:Name="BlockSection_Curriculum_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_Curriculum_grid_SelectionChanged" Height="300" Width="600">
+                        <Viewbox Margin="10,10,25,12" Stretch="Fill">
+                            <DataGrid x:Name="BlockSectionCurriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_Curriculum_grid_SelectionChanged" Height="300" Width="600">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Binding="{Binding Curriculum_Id}" Header="Curriculum Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                     <DataGridTextColumn Binding="{Binding Curriculum_Revision}" Header="Revision" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                     <DataGridTextColumn Binding="{Binding Curriculum_Description}" Header="Description" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                    
                                     <DataGridTextColumn Binding="{Binding Year}" Header="Year Effective" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Viewbox>
                     </Grid>
                 </TabItem>
-                <TabItem Header="TabItem" Tag="2">
-                    <Grid Background="#FFE5E5E5"/>
+                <TabItem x:Name="edit_tab" Header="Edit Block Section" Tag="2">
+                    <Grid Background="#FFE5E5E5">
+                        <TextBlock x:Name="curriculumDescription_txt" HorizontalAlignment="Left" Margin="101,1,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" Width="694" Grid.Column="1"/>
+                        <Button x:Name="edit_btn" Content="Update" Margin="125,292,569,10" Height="20" Click="edit_btn_Click"/>
+                        <Button x:Name="status_btn" Content="Deactivate" Margin="10,292,685,10" Click="status_btn_Click" Height="20"/>
+                        <DataGrid x:Name="BlockSection_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_grid_SelectionChanged" Margin="10,32,10,37" Grid.ColumnSpan="2">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Block_Section_Id}" Header="Block Section Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Block_Section_Name}" Header="Block Section Name" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Block_Section_Year}" Header="Year Level" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Block_Section_Semester}" Header="Semester" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding BlockYear}" Header="Year Effective" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Status}" Header="Status" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Margin="589,290,10,10" Height="22" Width="171" Grid.Column="1">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Show:" VerticalAlignment="Center" Height="22" Width="46" FontSize="16"/>
+                            <ComboBox x:Name="Status_cmb" HorizontalAlignment="Left" Margin="46,0,0,0" VerticalAlignment="Center" Width="120" SelectedIndex="0" SelectionChanged="Status_cmb_SelectionChanged">
+                                <ComboBoxItem Content="Active"/>
+                                <ComboBoxItem Content="Inactive"/>
+                                <ComboBoxItem Content="All"/>
+                            </ComboBox>
+                        </Grid>
+                        <Button x:Name="curriculum_btn" Content="Select Curriculum" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="99" Click="curriculum_btn_Click" Grid.ColumnSpan="2"/>
+                    </Grid>
                 </TabItem>
             </TabControl>
-
         </Viewbox>
-
+        <Rectangle x:Name="dim_rectangle" Stroke="Black" Grid.RowSpan="2" Visibility="Hidden">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" Opacity="0.3"/>
+            </Rectangle.Fill>
+        </Rectangle>
     </Grid>
 </Page>

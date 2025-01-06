@@ -1,0 +1,27 @@
+﻿<Window x:Class="Info_module.Pages.TableMenus.BlockSectionMenu.BlockSectionSubjecAdd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Info_module.Pages.TableMenus.BlockSectionMenu"
+        mc:Ignorable="d"
+        Title="BlockSectionSubjecAdd" Height="380" Width="620">
+    <Viewbox Stretch="Fill">
+        <Grid Height="364" Width="620">
+            <DataGrid x:Name="subject_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="subject_grid_SelectionChanged" Margin="10,10,10,50">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
+                    <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Subject_Department}" Header="Serving College" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Subject_Type}" Header="Subject Type" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding LEC_LAB}" Header="LEC/LAB" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Hours}" Header="Hours" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Units}" Header="Units" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="10,324,0,0" VerticalAlignment="Top" Width="130" Height="30" FontSize="20" Click="cancel_btn_Click"/>
+            <Button x:Name="add_btn" Content="Add Subject" HorizontalAlignment="Left" Margin="480,324,0,0" VerticalAlignment="Top" Width="130" Height="30" FontSize="20" Click="add_btn_Click"/>
+        </Grid>
+    </Viewbox>
+</Window>

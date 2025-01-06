@@ -1,5 +1,6 @@
 ﻿using Info_module.Pages.TableMenus;
 using Info_module.Pages.TableMenus.After_College_Selection;
+using Info_module.Pages.TableMenus.Assignment;
 using Info_module.Pages.TableMenus.CollegeMenu;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace Info_module.Pages
 
         private void assignment_btn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.MainFrameInstance.Navigate(new Assignment());
+            MainWindow.MainFrameInstance.Navigate(new AssignMenuMain());
             // Hide the SideFrame
             MainWindow.SideFrameInstance.Visibility = Visibility.Collapsed;
             MainWindow.SideFrameInstance.IsHitTestVisible = false;

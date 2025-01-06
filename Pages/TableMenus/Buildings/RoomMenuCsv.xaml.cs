@@ -85,7 +85,7 @@ namespace Info_module.Pages.TableMenus.Buildings
                                 insertCommand.Parameters.AddWithValue("@Room_Floor", row["Floor_Level"]);
                                 insertCommand.Parameters.AddWithValue("@Room_Type", row["Room_Type"]);
                                 insertCommand.Parameters.AddWithValue("@Max_Seat", row["Max_Seat"]);
-                                insertCommand.Parameters.AddWithValue("@status", row["Status"]);
+                                insertCommand.Parameters.AddWithValue("@status", 1);
 
                                 insertCommand.ExecuteNonQuery();
                             }

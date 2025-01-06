@@ -92,7 +92,7 @@ namespace Info_module.Pages.TableMenus
         private void TopBar_BackButtonClicked(object sender, EventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.MainFrame.Navigate(new BuildingMap());
+            mainWindow.MainFrame.Navigate(new BuildingMenu());
         }
 
         private void back_btn_Click(object sender, RoutedEventArgs e)

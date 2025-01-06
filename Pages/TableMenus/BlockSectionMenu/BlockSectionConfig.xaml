@@ -1,0 +1,54 @@
+﻿<Page x:Class="Info_module.Pages.TableMenus.BlockSectionMenu.BlockSectionConfig"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Info_module.Pages.TableMenus.BlockSectionMenu"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="BlockSectionConfig">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Frame x:Name="TopBarFrame" Grid.Row="0" Content="" NavigationUIVisibility="Hidden"/>
+        <Viewbox Grid.Row="1" Stretch="Fill">
+            <Grid Height="350" Width="800">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Block Section Name:" VerticalAlignment="Top" Margin="10,10,0,0" Width="185" Height="30" FontSize="20"/>
+                    <TextBox x:Name="blockSectionName_txt" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="300" Margin="200,10,0,0" Height="30" TextBlock.FontSize="20"/>
+                    <Viewbox Margin="10,45,10,52" Stretch="Fill">
+                        <DataGrid x:Name="Block_Subject_List_data" ItemsSource="{Binding subjects}" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="300" Width="900">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
+                                <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Serving_Department}" Header="Serving College" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Subject_Type}" Header="Subject Type" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Lecture_Lab}" Header="LEC/LAB" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Hours}" Header="Hours" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Units}" Header="Units" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Viewbox>
+                    <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="10,303,0,0" VerticalAlignment="Top" Height="30" TextBlock.FontSize="20" Width="150" Click="cancel_btn_Click"/>
+                    <Button x:Name="removeSubject_btn" Content="Remove Subject" HorizontalAlignment="Left" Margin="230,303,0,0" VerticalAlignment="Top" Height="30" TextBlock.FontSize="20" Width="150" Click="removeSubject_btn_Click"/>
+                    <Button x:Name="addSubject_btn" Content="Add Subject" Margin="420,303,230,0" VerticalAlignment="Top" Height="30" TextBlock.FontSize="20" Click="addSubject_btn_Click"/>
+                    <Button x:Name="save_btn" Content="Save" HorizontalAlignment="Left" Margin="640,303,0,0" VerticalAlignment="Top" Height="30" TextBlock.FontSize="20" Width="150" Click="save_btn_Click"/>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Year:" VerticalAlignment="Top" Margin="513,10,0,0" Width="50" Height="30" FontSize="20"/>
+                    <TextBox x:Name="year_txt" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="142" Margin="568,10,0,0" Height="30" TextBlock.FontSize="20" PreviewTextInput="year_txt_PreviewTextInput"/>
+
+                </Grid>
+            </Grid>
+        </Viewbox>
+        <Rectangle x:Name="dim_rectangle" Stroke="Black" Visibility="Hidden" Margin="0,0,0,100" Grid.RowSpan="2">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="Black" Opacity="0.3"/>
+            </Rectangle.Fill>
+        </Rectangle>
+
+    </Grid>
+</Page>
