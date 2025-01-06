@@ -217,6 +217,12 @@
     <Compile Include="Pages\TableMenus\AssignmentMenu\AssignMenuMain.xaml.cs">
       <DependentUpon>AssignMenuMain.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\AssignmentMenu\ScheduleMenuBlockSection.xaml.cs">
+      <DependentUpon>ScheduleMenuBlockSection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TableMenus\AssignmentMenu\ScheduleMenuMain.xaml.cs">
+      <DependentUpon>ScheduleMenuMain.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionConfig.xaml.cs">
       <DependentUpon>BlockSectionConfig.xaml</DependentUpon>
     </Compile>
@@ -347,6 +353,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TableMenus\AssignmentMenu\AssignMenuMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\AssignmentMenu\ScheduleMenuBlockSection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\AssignmentMenu\ScheduleMenuMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
