@@ -50,7 +50,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Code" IsReadOnly="True" Binding="{Binding Subject_Code}"/>
                                     <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Name" IsReadOnly="True" Binding="{Binding Subject_Title}" MinWidth="150"/>
-                                    <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Load" IsReadOnly="True" Binding="{Binding subject_load}"/>
+                                    <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Load" IsReadOnly="True" Binding="{Binding subject_load}" MinWidth="50"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Viewbox>

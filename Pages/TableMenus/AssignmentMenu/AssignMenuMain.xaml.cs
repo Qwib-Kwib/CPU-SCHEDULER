@@ -2189,8 +2189,8 @@ namespace Info_module.Pages.TableMenus.Assignment
 
                     if (waitingSubjects.Count == 0)
                     {
-                        Console.WriteLine($"No 'Waiting' subjects found for Subject ID: {currentSubjectId}. Using default values.");
-                        waitingSubjects.Add(("0", currentSubjectId.ToString())); // Add default entry with 0 as employeeId
+                        Console.WriteLine($"No 'Waiting' subjects found for Subject ID: {currentSubjectId}.");
+                        continue;
                     }
 
                     // Limit processing to the required count
