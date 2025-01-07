@@ -29,11 +29,13 @@
                             <DataGridTextColumn Header="Class Mode" Binding="{Binding Lecture_Lab}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                             <DataGridTextColumn Header="Hours" Binding="{Binding Hours}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                             <DataGridTextColumn Header="Units" Binding="{Binding Units}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding status}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Subject List" VerticalAlignment="Top" Width="83" Height="20"/>
                     <TextBlock HorizontalAlignment="Left" Margin="10,170,0,0" TextWrapping="Wrap" Text="Selected:" VerticalAlignment="Top"/>
                     <TextBox x:Name="subjectCode_txt" HorizontalAlignment="Left" Margin="62,168,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" IsReadOnly="True"/>
+                    <Button x:Name="switchStatus_btn" Content="Switch Status" HorizontalAlignment="Left" Margin="383,168,0,0" VerticalAlignment="Top" Click="switchStatus_btn_Click"/>
                 </Grid>
                 <Grid Grid.Row="1" Background="#FF9E9E9E">
                     <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Time Assignment" VerticalAlignment="Top"/>
@@ -55,19 +57,20 @@
                         <ComboBoxItem Content="Saturday"/>
                         <!-- Added Saturday for completeness -->
                     </ComboBox>
-                    <ComboBox HorizontalAlignment="Left" Margin="296,98,0,0" VerticalAlignment="Top" Width="145" SelectedIndex="0" SelectedValuePath="Tag">
+                    <ComboBox HorizontalAlignment="Left" Margin="296,98,0,0" VerticalAlignment="Top" Width="145" SelectedIndex="0" SelectedValuePath="Tag" Visibility="Hidden">
                         <ComboBoxItem Content="1.5 Hours" Tag="1.5"/>
                         <ComboBoxItem Content="3 Hours" Tag="3"/>
                     </ComboBox>
-                    <TextBlock HorizontalAlignment="Left" Margin="280,77,0,0" TextWrapping="Wrap" Text="Hours" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" Margin="296,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="71"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="280,125,0,0" TextWrapping="Wrap" Text="Time Slot (Military Format):" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="280,77,0,0" TextWrapping="Wrap" Text="Hours" VerticalAlignment="Top" Visibility="Hidden"/>
+                    <TextBox x:Name="startTime_txt" HorizontalAlignment="Left" Margin="296,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="71" PreviewTextInput="IsTextInt_PreviewTextInput" TextChanged="StartTime_txt_TextChanged"/>
+                    <TextBox x:Name="endTime_txt" HorizontalAlignment="Left" Margin="389,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68" PreviewTextInput="IsTextInt_PreviewTextInput"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="280,125,0,0" TextWrapping="Wrap" Text="Time Slot (24 - Hour):" VerticalAlignment="Top"/>
                     <Rectangle HorizontalAlignment="Left" Height="3" Margin="372,154,0,0" Stroke="Black" VerticalAlignment="Top" Width="12" Fill="Black"/>
                     <TextBlock HorizontalAlignment="Left" Margin="10,31,0,0" TextWrapping="Wrap" Text="Occupied Time:" VerticalAlignment="Top"/>
                 </Grid>
                 <Grid Grid.Row="2" Background="#FF9CB0D0">
-                    <TextBlock HorizontalAlignment="Left" Margin="10,598,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Room Assignment" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,598,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" ToolTip="Enter time in HH:mm format (24-hour)"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Room Assignment" VerticalAlignment="Top" ToolTip="End time will be calculated automatically"/>
                     <DataGrid x:Name="room_data" Margin="10,65,10,10" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="room_data_SelectionChanged">
                         <DataGrid.Columns>
                             <DataGridTextColumn CanUserReorder="False" Header="Room_Id" Binding="{Binding Room_Id}" IsReadOnly="True" Visibility="Hidden"/>
@@ -83,26 +86,30 @@
                 </Grid>
                 <Grid Grid.Row="3" Background="#FF9E9E9E">
                     <TextBlock HorizontalAlignment="Left" Margin="10,206,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-                    <DataGrid x:Name="instructor_data" Margin="10,38,10,37">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn CanUserReorder="False" Header="instructor Id" Binding="{Binding Internal_Employee_Id}" IsReadOnly="True" Visibility="Hidden"/>
-                            <DataGridTextColumn CanUserReorder="False" Header="Employee Id" Binding="{Binding Employee_Id}" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserReorder="False" Header="Name" Binding="{Binding FullName}" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserReorder="False" Header="Employment" Binding="{Binding Employment_Type}" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserReorder="False" Header="Sex" Binding="{Binding Employee_Sex}" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserReorder="False" Header="Disability" Binding="{Binding Disability}" IsReadOnly="True"/>
-         
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Viewbox Margin="10,38,10,37" Stretch="Fill">
+                        <DataGrid x:Name="instructor_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="150" Width="700" SelectionChanged="instructor_data_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn CanUserReorder="False" Header="instructor Id" Binding="{Binding Internal_Employee_Id}" IsReadOnly="True" Visibility="Hidden"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Employee Id" Binding="{Binding Employee_Id}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Name" Binding="{Binding FullName}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Employment" Binding="{Binding Employment_Type}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Sex" Binding="{Binding Employee_Sex}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Disability" Binding="{Binding Disability}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Subject Id" Binding="{Binding Subject_Id}" IsReadOnly="True" Visibility="Hidden"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="Subject Code" Binding="{Binding Subject_Code}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="waiting" Binding="{Binding TotalWaiting}" IsReadOnly="True"/>
+                                <DataGridTextColumn CanUserReorder="False" Header="assigned" Binding="{Binding TotalAssigned}" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Viewbox>
                     <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Instructor Assignment" VerticalAlignment="Top"/>
                     <TextBlock HorizontalAlignment="Left" Margin="16,170,0,0" TextWrapping="Wrap" Text="Selected:" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" Margin="68,168,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
-                    <Button x:Name="check_btn_Copy" Content="Save New Instructor" HorizontalAlignment="Left" Margin="347,164,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="instructor_txt" HorizontalAlignment="Left" Margin="68,168,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
+                    <Button x:Name="manualAssign_btn" Content="Assign" HorizontalAlignment="Left" Margin="383,168,0,0" VerticalAlignment="Top" Width="74" Click="manualAssign_btn_Click"/>
                 </Grid>
-                <TextBox HorizontalAlignment="Left" Margin="387,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="76" Grid.Row="1"/>
             </Grid>
             <Grid Grid.Column="1">
-                <DataGrid x:Name="schedule_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="30,55,30,153">
+                <DataGrid x:Name="schedule_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="30,55,30,153" SelectionChanged="schedule_data_SelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Class ID" Binding="{Binding Class_Id}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                         <DataGridTextColumn Header="Subject ID" Binding="{Binding Subject_Id}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
@@ -118,12 +125,15 @@
                     </DataGrid.Columns>
                 </DataGrid>
                 <TextBlock x:Name="description_txt" HorizontalAlignment="Left" Margin="30,10,0,0" TextWrapping="Wrap" Text="Block Schedeule Description" VerticalAlignment="Top" Height="40" FontSize="22"/>
-                <Button x:Name="close_btn" Content="Close" HorizontalAlignment="Left" Margin="793,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130"/>
-                <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="294,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130"/>
-                <Button x:Name="check_btn" Content="Check" HorizontalAlignment="Left" Margin="36,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="125"/>
-                <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="521,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130"/>
-                <TextBlock HorizontalAlignment="Left" Margin="30,636,0,0" TextWrapping="Wrap" Text="Selected Stub:" VerticalAlignment="Top" Height="40" FontSize="22"/>
-                <TextBox HorizontalAlignment="Left" Margin="179,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="40" FontSize="22"/>
+                <Button x:Name="close_btn" Content="Close" HorizontalAlignment="Left" Margin="793,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="close_btn_Click"/>
+                <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="467,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="remove_btn_Click"/>
+                <Button x:Name="check_btn" Content="Check" HorizontalAlignment="Left" Margin="303,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="125" Click="check_btn_Click"/>
+                <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="633,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="add_btn_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="3,636,0,0" TextWrapping="Wrap" Text="Selected Stub:" VerticalAlignment="Top" Height="40" FontSize="22"/>
+                <TextBox IsReadOnly="True" x:Name="stubCode_txt" HorizontalAlignment="Left" Margin="145,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="40" FontSize="22"/>
+                <Button x:Name="save_Instructor_btn" Content="Save New Instructor" HorizontalAlignment="Left" Margin="30,732,0,0" VerticalAlignment="Top" Height="40" Click="save_Instructor_btn_Click"/>
+                <TextBox x:Name="insertStubCode_txt" HorizontalAlignment="Left" Margin="673,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="40" FontSize="22" PreviewTextInput="IsTextInt_PreviewTextInput"/>
+                <TextBlock HorizontalAlignment="Left" Margin="559,636,0,0" TextWrapping="Wrap" Text="Insert Stub:" VerticalAlignment="Top" Height="40" FontSize="22"/>
             </Grid>
 
         </Grid>
