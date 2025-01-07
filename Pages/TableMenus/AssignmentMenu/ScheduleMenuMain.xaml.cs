@@ -60,6 +60,7 @@ namespace Info_module.Pages.TableMenus.AssignmentMenu
                        c.Internal_Employee_Id,
                        c.Room_Id,
                        c.Stub_Code,
+                       s.Lecture_Lab as Lec_Lab,
                        c.Class_Day,
                        c.Start_Time,
                        c.End_Time,

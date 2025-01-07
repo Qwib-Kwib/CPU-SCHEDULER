@@ -35,8 +35,8 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button x:Name="back_btn1" Content="Back" Margin="10,299,10,10" RenderTransformOrigin="-0.177,0.501" Width="160" Click="back_btn_Click"/>
-                    <TextBox x:Name="roomId_txt" HorizontalAlignment="Center" Margin="0,26,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" IsReadOnly="True"/>
-                    <TextBlock x:Name="test_txt" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="Room ID" VerticalAlignment="Top"/>
+                    <TextBox x:Name="roomId_txt" HorizontalAlignment="Center" Margin="0,26,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" IsReadOnly="True" Visibility="Hidden"/>
+                    <TextBlock x:Name="test_txt" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="Room ID" VerticalAlignment="Top" Visibility="Hidden"/>
                     <TextBox x:Name="buildingCode_txt" HorizontalAlignment="Center" Margin="0,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" IsReadOnly="True"/>
                     <TextBlock x:Name="Building_Code" HorizontalAlignment="Left" Margin="10,49,0,0" TextWrapping="Wrap" Text="Building Code" VerticalAlignment="Top"/>
                     <TextBox x:Name="roomCode_txt" HorizontalAlignment="Center" Margin="0,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160"/>
@@ -67,7 +67,7 @@
                                         CanUserSort="False"
                                         CanUserReorder="False"
                                         IsReadOnly="True"
-                                        Width="50" Visibility="Visible" />
+                                        Width="50" Visibility="Hidden" />
                                     <DataGridTextColumn Header="Building Code"
                                         Binding="{Binding Building_Code}"
                                         CanUserResize="False"

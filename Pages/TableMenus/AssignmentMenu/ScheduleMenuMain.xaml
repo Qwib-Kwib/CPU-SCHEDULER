@@ -29,6 +29,7 @@
                                 <DataGridTextColumn Header="Start Time" Binding="{Binding Start_Time}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="End Time" Binding="{Binding End_Time}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Subject Code" Binding="{Binding SubjectCode}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="LEC/LAB" Binding="{Binding Lec_Lab}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Instructor Name" Binding="{Binding InstructorName}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Room code" Binding="{Binding RoomCode}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                             </DataGrid.Columns>
@@ -49,9 +50,9 @@
                     </DataGrid>
                 </Viewbox>
                 <TextBlock HorizontalAlignment="Left" Margin="472,136,0,0" TextWrapping="Wrap" Text="Un-Assinged Subjects" VerticalAlignment="Top"/>
-                <TextBox x:Name="BlockSection_txt" HorizontalAlignment="Left" Margin="604,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" IsReadOnly="True"/>
-                <TextBlock HorizontalAlignment="Left" Margin="526,10,0,0" TextWrapping="Wrap" Text="Block Section:" VerticalAlignment="Top"/>
-                <Button x:Name="pickBlock_btn" Content="Change Block Section" HorizontalAlignment="Left" Margin="614,33,0,0" VerticalAlignment="Top" Click="pickBlock_btn_Click"/>
+                <TextBox x:Name="BlockSection_txt" HorizontalAlignment="Left" Margin="564,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="226" IsReadOnly="True" Height="36"/>
+                <TextBlock HorizontalAlignment="Left" Margin="486,21,0,0" TextWrapping="Wrap" Text="Block Section:" VerticalAlignment="Top"/>
+                <Button x:Name="pickBlock_btn" Content="Change Block Section" HorizontalAlignment="Left" Margin="611,52,0,0" VerticalAlignment="Top" Click="pickBlock_btn_Click"/>
                 <Button x:Name="back_btn" Content="Back" HorizontalAlignment="Left" Margin="10,320,0,0" VerticalAlignment="Top" Width="40"/>
                 <Button x:Name="edit_btn" Content="Manual Schedule Edit" HorizontalAlignment="Left" Margin="155,310,0,0" VerticalAlignment="Top" Click="edit_btn_Click"/>
             </Grid>
