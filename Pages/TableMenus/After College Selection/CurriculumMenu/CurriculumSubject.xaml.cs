@@ -239,20 +239,6 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CurriculumMenu
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-
-                    // Check if Subject Code already exists in the database
-                    string checkQuery = "SELECT COUNT(*) FROM subjects WHERE Subject_Code = @SubjectCode";
-                    MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
-                    checkCmd.Parameters.AddWithValue("@SubjectCode", subjectCode);
-
-                    int subjectCodeCount = Convert.ToInt32(checkCmd.ExecuteScalar());
-
-                    if (subjectCodeCount > 0)
-                    {
-                        MessageBox.Show("This Subject Code already exists. Please enter a unique Subject Code.", "Duplicate Entry", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
                     // Insert the new subject into the database
                     string query = @"
             INSERT INTO subjects 

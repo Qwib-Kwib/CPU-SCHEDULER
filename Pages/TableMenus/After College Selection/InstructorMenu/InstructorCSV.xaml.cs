@@ -237,6 +237,11 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                                 command.Parameters.AddWithValue("@Disability", row["Disability"]);
 
                                 command.ExecuteNonQuery();
+
+                                long instructorId = command.LastInsertedId;
+
+                                // Create availability for the new instructor
+                                createTimeAvailability(instructorId);
                             }
                         }
                     }
@@ -249,6 +254,49 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
             }
         }
 
+        private void createTimeAvailability(long instructorId)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"
+                INSERT INTO instructor_availability (Internal_Employee_Id, Day_Of_Week, Start_Time, End_Time)
+                SELECT @instructorId, day, @startTime, @endTime
+                FROM (
+                    SELECT 'Monday' AS day
+                    UNION ALL
+                    SELECT 'Tuesday'
+                    UNION ALL
+                    SELECT 'Wednesday'
+                    UNION ALL
+                    SELECT 'Thursday'
+                    UNION ALL
+                    SELECT 'Friday'
+                    UNION ALL
+                    SELECT 'Saturday'
+                    UNION ALL
+                    SELECT 'Sunday'
+                ) AS days WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM instructor_availability
+                    WHERE Internal_Employee_Id = @instructorId
+                    AND Day_Of_Week = days.day
+                );";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@instructorId", instructorId);
+                    command.Parameters.AddWithValue("@startTime", "07:00:00");
+                    command.Parameters.AddWithValue("@endTime", "18:00:00"); // Corrected parameter name for end time
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error creating time availability: " + ex.Message);
+            }
+        }
 
         private void LoadAllData()
         {

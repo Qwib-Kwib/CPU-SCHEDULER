@@ -10,7 +10,7 @@
         Title="Time Preference" Height="450" Width="400">
     <Viewbox Stretch="Fill">
         <Grid Height="434" Width="400">
-            <Viewbox Margin="20,136,20,78" Stretch="Fill">
+            <Viewbox Margin="20,158,20,65" Stretch="Fill">
                 <DataGrid x:Name="timePref_data" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" Height="170" Width="240" CellEditEnding="timePref_data_CellEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Day" Binding="{Binding Day}" IsReadOnly="True"/>
@@ -27,6 +27,7 @@
 
             <Button x:Name="cancel_btn" Content="Close" HorizontalAlignment="Left" Margin="50,380,0,0" VerticalAlignment="Top" Height="44" Width="90" Click="cancel_btn_Click"/>
             <Button x:Name="save_btn" Content="Save" HorizontalAlignment="Left" Margin="260,380,0,0" VerticalAlignment="Top" Height="44" Width="90" Click="save_btn_Click"/>
+            <TextBlock HorizontalAlignment="Left" Margin="90,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="217" Text="00:00 - 00:00 time are considred day off"/>
 
 
         </Grid>
