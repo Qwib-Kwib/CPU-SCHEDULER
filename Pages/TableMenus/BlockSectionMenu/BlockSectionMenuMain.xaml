@@ -40,7 +40,7 @@
                             <Button x:Name="CreateBlockSection_btn" Content="Create Block Section" HorizontalAlignment="Center" Margin="0,292,0,0" VerticalAlignment="Top" Width="120" Click="CreateBlockSection_btn_Click"/>
                             <TextBox x:Name="year_txt" TextWrapping="Wrap" Width="120" Margin="20,207,19,95" Height="20" PreviewTextInput="IsTextInt_PreviewTextInput"/>
                             <Button x:Name="ViewSemester_btn" Content="View Semester" HorizontalAlignment="Center" Margin="0,126,0,0" VerticalAlignment="Top" Width="100" Click="ViewSemester_btn_Click"/>
-                            <TextBlock TextWrapping="Wrap" Text="For Year:" Margin="10,180,10,120 "/>
+                            <TextBlock x:Name="test_txt" TextWrapping="Wrap" Text="For Year:" Margin="10,180,10,120 "/>
                         </Grid>
                         <Viewbox Margin="10,10,25,12" Stretch="Fill">
                             <DataGrid x:Name="BlockSectionCurriculum_data" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_Curriculum_grid_SelectionChanged" Height="300" Width="600">

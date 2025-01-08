@@ -223,9 +223,13 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
 
         private void CreateBlockSection_btn_Click(object sender, RoutedEventArgs e)
         {
+            SelectedYearLevel = yearLevel_cmbx.SelectedValue?.ToString();
+            SelectedSemester = semester_cmbx.SelectedValue?.ToString();
+
             int curriculumId = SelectedCurrirculumId; // Ensure this is set correctly
             string semester = SelectedSemester; // Ensure this is set correctly
             int yearLevel = Convert.ToInt32(SelectedYearLevel); // Ensure this is valid
+
 
             // Get the semester ID
             int? semesterId = GetSemesterId(curriculumId, yearLevel, semester);
