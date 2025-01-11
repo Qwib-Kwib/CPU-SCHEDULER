@@ -840,16 +840,27 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     csvData.Columns.Add("Hours", typeof(int));
                     csvData.Columns.Add("Units", typeof(int));
 
-                    sr.ReadLine(); // Skip header
+                    string headerLine = sr.ReadLine();
+                    if (string.IsNullOrWhiteSpace(headerLine))
+                    {
+                        MessageBox.Show("The CSV file is empty or the header line is missing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
 
                     while (!sr.EndOfStream)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
+                        string line = sr.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line)) // Skip empty lines
+                        {
+                            continue;
+                        }
 
-                        if (rows.Length != 9)
+                        string[] rows = line.Split(',');
+
+                        if (rows.Length < 9)
                         {
                             MessageBox.Show("Error: Curriculum CSV must have exactly 9 columns.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return null;
+                            continue;
                         }
 
                         try
@@ -900,16 +911,27 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     csvData.Columns.Add("Hours", typeof(int));
                     csvData.Columns.Add("Units", typeof(int));
 
-                    sr.ReadLine(); // Skip header
+                    string headerLine = sr.ReadLine();
+                    if (string.IsNullOrWhiteSpace(headerLine))
+                    {
+                        MessageBox.Show("The CSV file is empty or the header line is missing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
 
                     while (!sr.EndOfStream)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
+                        string line = sr.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line)) // Skip empty lines
+                        {
+                            continue;
+                        }
 
-                        if (rows.Length != 7)
+                        string[] rows = line.Split(',');
+
+                        if (rows.Length < 7)
                         {
                             MessageBox.Show("Error: Subject CSV must have exactly 7 columns.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return null;
+                            continue;
                         }
 
 
@@ -1046,13 +1068,18 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
         }
 
         private int GetOrInsertSubject(MySqlConnection connection, int deptId, string subjectCode,
-                       string subjectTitle, string subjectType, string lectureLab, int hours, int units)
+                   string subjectTitle, string subjectType, string lectureLab, int hours, int units)
         {
-            // Check if subject already exists
-            string checkQuery = "SELECT Subject_Id FROM subjects WHERE Subject_Code = @Subject_Code;";
+            // Check if the subject with the given code and lectureLab combination already exists
+            string checkQuery = @"
+    SELECT Subject_Id 
+    FROM subjects 
+    WHERE Subject_Code = @Subject_Code AND Lecture_Lab = @Lecture_Lab;";
+
             using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection))
             {
                 checkCmd.Parameters.AddWithValue("@Subject_Code", subjectCode);
+                checkCmd.Parameters.AddWithValue("@Lecture_Lab", lectureLab);
                 object result = checkCmd.ExecuteScalar();
 
                 if (result != null && result != DBNull.Value)
@@ -1061,11 +1088,12 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                 }
             }
 
-            // Insert new subject if it does not exist
+            // Insert new subject if the combination does not exist
             string insertQuery = @"
-INSERT INTO subjects (Dept_Id, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units) 
-VALUES (@Dept_Id, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units);
-SELECT LAST_INSERT_ID();";
+    INSERT INTO subjects (Dept_Id, Subject_Code, Subject_Title, Subject_Type, Lecture_Lab, Hours, Units) 
+    VALUES (@Dept_Id, @Subject_Code, @Subject_Title, @Subject_Type, @Lecture_Lab, @Hours, @Units);
+    SELECT LAST_INSERT_ID();";
+
             using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, connection))
             {
                 insertCmd.Parameters.AddWithValue("@Dept_Id", deptId);
@@ -1084,6 +1112,7 @@ SELECT LAST_INSERT_ID();";
             }
         }
 
+
         private void InsertSubjectList(MySqlConnection connection, int semesterId, int subjectId, string subjectCode)
         {
             // Check if the blockSectionId + subjectId combination already exists
@@ -1098,7 +1127,7 @@ SELECT LAST_INSERT_ID();";
 
                 if (result != null && result != DBNull.Value)
                 {
-                    MessageBox.Show($"Subject '{subjectCode}' is already linked to Block Section {semesterId}.",
+                    MessageBox.Show($"Subject '{subjectCode}' is already linked to Semester {semesterId}.",
                                     "Duplicate Entry", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }

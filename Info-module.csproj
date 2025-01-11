@@ -241,6 +241,9 @@
     <Compile Include="Pages\TableMenus\BlockSectionMenu\BlockSectionSubjecAdd.xaml.cs">
       <DependentUpon>BlockSectionSubjecAdd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TableMenus\Buildings\RoomCSVInstruction.xaml.cs">
+      <DependentUpon>RoomCSVInstruction.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TableMenus\Buildings\RoomMenuCsv.xaml.cs">
       <DependentUpon>RoomMenuCsv.xaml</DependentUpon>
     </Compile>
@@ -388,6 +391,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TableMenus\BlockSectionMenu\BlockSectionSubjecAdd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TableMenus\Buildings\RoomCSVInstruction.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

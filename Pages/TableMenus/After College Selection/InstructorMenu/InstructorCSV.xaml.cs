@@ -93,7 +93,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
 
         private void Upload_btn_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Please ensure the CSV columns are: ID, Department Code, Last Name, Middle Name, First Name, Employment, Sex, Email, and Disability.");
+            MessageBox.Show("Skips for hearder. Colllumns order should be: ID, Department Code, Last Name, Middle Name, First Name, Employment, Sex, Email, and Disability.");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
@@ -137,25 +137,37 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     csvData.Columns.Add("Disability", typeof(bool));
 
                     // Read the header line first to skip it
-                    sr.ReadLine();
+                    string headerLine = sr.ReadLine();
+                    if (string.IsNullOrWhiteSpace(headerLine))
+                    {
+                        MessageBox.Show("The CSV file is empty or the header line is missing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
 
                     // Read the data lines
                     while (!sr.EndOfStream)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
+                        string line = sr.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line)) // Skip empty lines
+                        {
+                            continue;
+                        }
+
+                        string[] rows = line.Split(',');
 
                         // Ensure that the CSV row has the expected number of columns
-                        if (rows.Length != 9)
+                        if (rows.Length < 9)
                         {
                             MessageBox.Show("Error: CSV file format is incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return null;
+                            continue;
                         }
 
                         try
                         {
+                            
                             DataRow dr = csvData.NewRow();
                             dr["Employee_Id"] = rows[0].Trim();
-                            dr["Department"] = rows[1].Trim();
+                            dr["Department"] = rows[1].Trim().ToUpper();
                             dr["LastName"] = rows[2].Trim();
                             dr["MiddleName"] = rows[3].Trim();
                             dr["FirstName"] = rows[4].Trim();
