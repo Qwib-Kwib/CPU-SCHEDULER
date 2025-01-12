@@ -240,7 +240,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.CSVMenu
                     SELECT 
                         Subject_Id AS Curriculum_Selected_Subject_ID, 
                         Subject_Code AS Curriculum_Selected_Subject_Code, 
-                        Subject_Title AS Curriculum_Selected_Subject_Tittle 
+                        Subject_Title AS Curriculum_Selected_Subject_Tittle,
+                        Lecture_Lab as Curriculum_Selected_Subject_LecLab
                     FROM 
                         subjects 
                     WHERE 

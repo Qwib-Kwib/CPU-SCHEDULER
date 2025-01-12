@@ -54,7 +54,7 @@ namespace Info_module.Pages.TableMenus.Assignment
 
         private void schedule_btn_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new ScheduleMenuMain());
+            NavigationService.Navigate(new ScheduleMenuView());
         }
 
         public class Department
@@ -270,7 +270,7 @@ namespace Info_module.Pages.TableMenus.Assignment
             END AS Assigned
         FROM block_section bs
         LEFT JOIN block_subject_list bsl ON bsl.blockSectionId = bs.blockSectionId
-        WHERE bs.curriculumId = @curriculumId
+        WHERE bs.curriculumId = @curriculumId AND bs.status = 1
         GROUP BY bs.blockSectionId, bs.blockSectionName, bs.year_level, bs.semester";
 
                     MySqlCommand command = new MySqlCommand(query, connection);

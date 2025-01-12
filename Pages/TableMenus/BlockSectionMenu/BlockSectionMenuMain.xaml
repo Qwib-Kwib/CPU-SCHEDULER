@@ -48,7 +48,7 @@
                                     <DataGridTextColumn Binding="{Binding Curriculum_Id}" Header="Curriculum Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                     <DataGridTextColumn Binding="{Binding Curriculum_Revision}" Header="Revision" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                     <DataGridTextColumn Binding="{Binding Curriculum_Description}" Header="Description" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                    
+
                                     <DataGridTextColumn Binding="{Binding Year}" Header="Year Effective" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -57,8 +57,8 @@
                 </TabItem>
                 <TabItem x:Name="edit_tab" Header="Edit Block Section" Tag="2">
                     <Grid Background="#FFE5E5E5">
-                        <TextBlock x:Name="curriculumDescription_txt" HorizontalAlignment="Left" Margin="101,1,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" Width="694" Grid.Column="1"/>
-                        <Button x:Name="edit_btn" Content="Update" Margin="125,292,569,10" Height="20" Click="edit_btn_Click"/>
+                        <TextBlock x:Name="curriculumDescription_txt" HorizontalAlignment="Left" Margin="125,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" Width="659"/>
+                        <Button x:Name="edit_btn" Content="Edit" Margin="125,292,569,10" Height="20" Click="edit_btn_Click"/>
                         <Button x:Name="status_btn" Content="Deactivate" Margin="10,292,685,10" Click="status_btn_Click" Height="20"/>
                         <DataGrid x:Name="BlockSection_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_grid_SelectionChanged" Margin="10,32,10,37" Grid.ColumnSpan="2">
                             <DataGrid.Columns>

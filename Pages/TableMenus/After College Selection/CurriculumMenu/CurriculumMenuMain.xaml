@@ -41,11 +41,32 @@
                                 <Button x:Name="subject_add_to_sem_btn" Content="add to sem" HorizontalAlignment="Left" Width="90" Click="subject_add_to_sem_btn_Click" Background="#FFDDDDDD" Margin="10,287,0,10" Height="25"/>
                                 <Button x:Name="remove_subeject_form_sem_btn" Content="Remove From List" FontSize="10" Click="remove_subject_form_sem_btn_Click" Margin="134,287,0,10" HorizontalAlignment="Left" Width="90" Height="25"/>
                                 <Viewbox Stretch="Fill" Margin="11,111,0,81" HorizontalAlignment="Left" Width="200" Height="130">
-                                    <DataGrid x:Name="sem_Subject_data" Height="190" Width="380" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="sem_Subject_data_SelectionChanged">
+                                    <DataGrid x:Name="sem_Subject_data" Height="200" Width="425" IsReadOnly="True" CanUserReorderColumns ="False" CanUserResizeColumns ="False" CanUserAddRows ="False" CanUserDeleteRows ="False" CanUserResizeRows ="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="sem_Subject_data_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Binding="{Binding Curriculum_Selected_Subject_ID}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
-                                            <DataGridTextColumn Binding="{Binding Curriculum_Selected_Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                            <DataGridTextColumn Binding="{Binding Curriculum_Selected_Subject_Tittle}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Curriculum_Selected_Subject_ID}" Header="Subject Id" CanUserResize ="False" CanUserReorder ="False" IsReadOnly="True" Visibility="Hidden"/>
+
+                                            <DataGridTemplateColumn Header="Subject Code" CanUserResize ="False" CanUserReorder ="False" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Curriculum_Selected_Subject_Code}" TextWrapping="Wrap"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn Header="Lec/Lab" CanUserResize ="False" CanUserReorder ="False" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Curriculum_Selected_Subject_LecLab}" TextWrapping="Wrap"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Subject Title" CanUserResize ="False" CanUserReorder ="False" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Curriculum_Selected_Subject_Tittle}" TextWrapping="Wrap"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Viewbox>
@@ -117,7 +138,7 @@
                                             <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Department}" Header="Serving College" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                                            <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" MaxWidth="450"/>
                                             <DataGridTextColumn Binding="{Binding Subject_Type}" Header="Subject Type" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding LEC_LAB}" Header="LEC/LAB" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding Hours}" Header="Hours" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>

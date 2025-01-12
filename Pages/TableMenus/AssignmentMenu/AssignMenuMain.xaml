@@ -24,7 +24,7 @@
                                     <DataGridTextColumn Header="ID" Binding="{Binding Curriculum_Id}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" Visibility="Hidden"/>
                                     <DataGridTextColumn Header="Department" Binding="{Binding Department}" CanUserReorder="False" CanUserResize="False" IsReadOnly="True" />
                                     <DataGridTextColumn Header="Curriculum Revision" Binding="{Binding Curriculum_Revision}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
-                                    <DataGridTextColumn Header="Curriculum Description" Binding="{Binding Curriculum_Description}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
+                                    <DataGridTextColumn Header="Curriculum Description" Binding="{Binding Curriculum_Description}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" MaxWidth="350"/>
                                     <DataGridTextColumn Header="Year Effective" Binding="{Binding Year_Effective}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
                                     <DataGridTextColumn Header="Assigned" Binding="{Binding AssignedCount}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
                                     <DataGridTextColumn Header="Unassigned" Binding="{Binding UnassignedCount}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" />
@@ -89,7 +89,7 @@
                 </Viewbox>
                 <Button x:Name="assign_btn" Margin="716,315,10,10" Content="Assign" Height="25" Click="assign_btn_Click"/>
                 <Button x:Name="assingAll_btn" Content="Assign All" HorizontalAlignment="Left" Margin="622,316,0,0" VerticalAlignment="Top" Height="24" Width="74" Click="assingAll_btn_Click"/>
-                <Button x:Name="schedule_btn" Content="See Schedule" HorizontalAlignment="Left" Margin="10,320,0,0" VerticalAlignment="Top" Click="schedule_btn_Click"/>
+                <Button x:Name="schedule_btn" Content="View Schedules" HorizontalAlignment="Left" Margin="10,320,0,0" VerticalAlignment="Top" Click="schedule_btn_Click"/>
             </Grid>
 
         </Viewbox>

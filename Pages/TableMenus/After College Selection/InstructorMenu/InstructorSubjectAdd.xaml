@@ -9,11 +9,12 @@
     Title="Add Subject Load" Height="450" Width="500">
     <Viewbox Stretch="Fill">
         <Grid Height="434" Width="500">
-            <DataGrid x:Name="subject_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="subject_grid_SelectionChanged" Margin="30,10,20,116">
+            <DataGrid x:Name="subject_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="subject_grid_SelectionChanged" Margin="20,10,20,116">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Subject_Id}" Header="Subject Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                     <DataGridTextColumn Binding="{Binding Subject_Code}" Header="Subject Code" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Subject_Title}" Header="Subject Title" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" MaxWidth="285"/>
+                    <DataGridTextColumn Binding="{Binding LecLab}" Header="Lec/Lab" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
             <Button x:Name="add_btn" Content="Add" Margin="295,381,75,23" Click="add_btn_Click" FontSize="20" Height="30"/>

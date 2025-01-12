@@ -142,7 +142,8 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
                     string query = @"
                 SELECT sl.ID AS instructorSubject_Id,
                        COUNT(sl.Subject_Id) AS subject_load, 
-                       sl.Subject_Code, 
+                       sl.Subject_Code,
+                       s.Lecture_Lab AS Subject_LecLab,
                        s.Subject_Title
                 FROM subject_load sl
                 INNER JOIN subjects s ON sl.Subject_Id = s.Subject_Id

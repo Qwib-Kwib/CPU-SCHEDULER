@@ -47,7 +47,7 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
 
                     // Step 1: Get all subjects for the given department, including Subject_Title, ordered by Subject_Code
                     string subjectQuery = @"
-                SELECT Subject_Id, Subject_Code, Subject_Title
+                SELECT Subject_Id, Subject_Code, Subject_Title, Lecture_Lab AS LecLab
                 FROM subjects
                 WHERE Dept_Id = @Dept_Id
                 ORDER BY Subject_Code ASC"; // Order by Subject_Code in ascending order

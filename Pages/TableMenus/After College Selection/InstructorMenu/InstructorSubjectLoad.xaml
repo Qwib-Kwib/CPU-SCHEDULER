@@ -46,10 +46,11 @@
                             <SolidColorBrush Color="#FF6F6F6F" Opacity="0.6"/>
                         </Grid.Background>
                         <Viewbox Margin="10,40,10,10" Stretch="Fill">
-                            <DataGrid x:Name="instrutorSubject_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="200" Width="400">
+                            <DataGrid x:Name="instrutorSubject_data" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="220" Width="520">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Code" IsReadOnly="True" Binding="{Binding Subject_Code}"/>
                                     <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Name" IsReadOnly="True" Binding="{Binding Subject_Title}" MinWidth="150"/>
+                                    <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header= "Lec/Lab" IsReadOnly="True" Binding="{Binding Subject_LecLab}"/>
                                     <DataGridTextColumn CanUserResize="False" CanUserReorder="False" Header="Subject Load" IsReadOnly="True" Binding="{Binding subject_load}" MinWidth="50"/>
                                 </DataGrid.Columns>
                             </DataGrid>

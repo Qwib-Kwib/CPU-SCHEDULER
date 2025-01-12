@@ -80,8 +80,8 @@
                     </Viewbox>
                 </Grid>
             </Viewbox>
-            <TextBlock HorizontalAlignment="Left" Margin="347,253,0,0" TextWrapping="Wrap" Text="Selected Block Section" VerticalAlignment="Top"/>
-            <TextBox x:Name="blockSection_txt" HorizontalAlignment="Left" Margin="321,272,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170" Height="27" IsEnabled="False"/>
+            <TextBlock HorizontalAlignment="Left" Margin="347,248,0,0" TextWrapping="Wrap" Text="Selected Block Section" VerticalAlignment="Top"/>
+            <TextBox x:Name="blockSection_txt" HorizontalAlignment="Left" Margin="306,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="30" IsReadOnly="True"/>
             <Button x:Name="cancel_btn" Content="Cancel" HorizontalAlignment="Left" Margin="10,304,0,0" VerticalAlignment="Top" Width="90" Click="cancel_btn_Click"/>
             <Button x:Name="blockSection_btn" Content="Show Block Section" HorizontalAlignment="Left" Margin="336,304,0,0" VerticalAlignment="Top" Width="140" Click="blockSection_btn_Click"/>
         </Grid>

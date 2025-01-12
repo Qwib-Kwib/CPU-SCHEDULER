@@ -225,14 +225,29 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
         {
             SelectedYearLevel = yearLevel_cmbx.SelectedValue?.ToString();
             SelectedSemester = semester_cmbx.SelectedValue?.ToString();
+            BlockYear = Convert.ToInt32(year_txt);
+            
 
             int curriculumId = SelectedCurrirculumId; // Ensure this is set correctly
             string semester = SelectedSemester; // Ensure this is set correctly
             int yearLevel = Convert.ToInt32(SelectedYearLevel); // Ensure this is valid
+            string year = year_txt.Text;
 
 
             // Get the semester ID
             int? semesterId = GetSemesterId(curriculumId, yearLevel, semester);
+
+            if (string.IsNullOrWhiteSpace(year))
+            {
+                MessageBox.Show("Year cannot be empty.");
+                return;
+            }
+
+            if (!int.TryParse(year, out int yearValue))
+            {
+                MessageBox.Show("Year must be a valid number.");
+                return;
+            }
 
             // Check for valid curriculum ID
             if (curriculumId == 0)
@@ -247,6 +262,8 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
                 MessageBox.Show("No Semester Selected.");
                 return;
             }
+
+            
 
             try
             {
@@ -274,7 +291,7 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
 
                     // Step 3: Create the block section name
                     string formattedSemester = FormatSemester(semester);
-                    string blockSectionName = $"Block Section {yearLevel}-{formattedSemester}-{identifier}-{year_txt.Text}"; // Include year
+                    string blockSectionName = $"Block Section {yearLevel}-{formattedSemester}-{identifier}-{yearValue}"; // Include year
 
                     // Step 4: Insert new block section
                     string blockSectionQuery = @"
@@ -330,6 +347,8 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
                     }
 
                     MessageBox.Show($"Block Section '{blockSectionName}' and Subjects have been successfully created.");
+                    LoadBlockSectionDataGrid();
+
                 }
             }
             catch (MySqlException ex)
@@ -570,6 +589,8 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
                 return;
             }
             NavigationService.Navigate(new BlockSectionConfig(BlockSectionId, BlockSectionName, BlockYear, DepartmentId));
+
+            
         }
     }
 
