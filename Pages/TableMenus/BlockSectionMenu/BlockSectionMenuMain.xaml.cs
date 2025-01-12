@@ -225,7 +225,7 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
         {
             SelectedYearLevel = yearLevel_cmbx.SelectedValue?.ToString();
             SelectedSemester = semester_cmbx.SelectedValue?.ToString();
-            BlockYear = Convert.ToInt32(year_txt);
+            BlockYear = Convert.ToInt32(year_txt.Text);
             
 
             int curriculumId = SelectedCurrirculumId; // Ensure this is set correctly
