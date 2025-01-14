@@ -62,7 +62,7 @@
                         <Button x:Name="status_btn" Content="Deactivate" Margin="10,292,685,10" Click="status_btn_Click" Height="20"/>
                         <DataGrid x:Name="BlockSection_grid" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="BlockSection_grid_SelectionChanged" Margin="10,32,10,37" Grid.ColumnSpan="2">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Block_Section_Id}" Header="Block Section Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Block_Section_Id}" Header="Block Section Id" CanUserResize="False" CanUserReorder="False" IsReadOnly="True" Visibility="Hidden"/>
                                 <DataGridTextColumn Binding="{Binding Block_Section_Name}" Header="Block Section Name" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding Block_Section_Year}" Header="Year Level" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding Block_Section_Semester}" Header="Semester" CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>

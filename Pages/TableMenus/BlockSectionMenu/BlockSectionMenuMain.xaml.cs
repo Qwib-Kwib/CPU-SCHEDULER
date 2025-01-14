@@ -295,8 +295,8 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
 
                     // Step 4: Insert new block section
                     string blockSectionQuery = @"
-            INSERT INTO block_section (blockSectionName, curriculumId, semester, year_level, status) 
-            VALUES (@blockSectionName, @curriculumId, @semester, @yearLevel, b'1');
+            INSERT INTO block_section (blockSectionName, curriculumId, semester, year_level, School_Year, status) 
+            VALUES (@blockSectionName, @curriculumId, @semester, @yearLevel, @schoolYear, b'1');
             SELECT LAST_INSERT_ID();";
 
                     int newBlockSectionId = 0;
@@ -307,6 +307,7 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
                         blockSectionCmd.Parameters.AddWithValue("@curriculumId", curriculumId);
                         blockSectionCmd.Parameters.AddWithValue("@semester", semester);
                         blockSectionCmd.Parameters.AddWithValue("@yearLevel", yearLevel);
+                        blockSectionCmd.Parameters.AddWithValue("@schoolYear", year);
 
                         newBlockSectionId = Convert.ToInt32(blockSectionCmd.ExecuteScalar());
                     }

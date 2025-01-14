@@ -138,17 +138,17 @@ namespace Info_module.Pages.TableMenus.After_College_Selection.InstructorMenu
                 {
                     connection.Open();
 
-                    // Query to retrieve subject count, subject code, and subject title, grouped by subject code and title
+                    // Query to retrieve subject count, subject code, and subject title, grouped by subject code and lecture lab
                     string query = @"
-                SELECT sl.ID AS instructorSubject_Id,
-                       COUNT(sl.Subject_Id) AS subject_load, 
-                       sl.Subject_Code,
-                       s.Lecture_Lab AS Subject_LecLab,
-                       s.Subject_Title
-                FROM subject_load sl
-                INNER JOIN subjects s ON sl.Subject_Id = s.Subject_Id
-                WHERE sl.Internal_Employee_Id = @Employee_Id
-                GROUP BY sl.Subject_Code, s.Subject_Title";
+        SELECT sl.ID AS instructorSubject_Id,
+               COUNT(sl.Subject_Id) AS subject_load, 
+               sl.Subject_Code,
+               s.Lecture_Lab AS Subject_LecLab,
+               s.Subject_Title
+        FROM subject_load sl
+        INNER JOIN subjects s ON sl.Subject_Id = s.Subject_Id
+        WHERE sl.Internal_Employee_Id = @Employee_Id
+        GROUP BY sl.Subject_Code, s.Lecture_Lab, s.Subject_Title"; // Group by Subject_Code and Lecture_Lab
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
