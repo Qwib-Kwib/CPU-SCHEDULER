@@ -105,7 +105,6 @@
                     <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Instructor Assignment" VerticalAlignment="Top"/>
                     <TextBlock HorizontalAlignment="Left" Margin="16,170,0,0" TextWrapping="Wrap" Text="Selected:" VerticalAlignment="Top"/>
                     <TextBox x:Name="instructor_txt" HorizontalAlignment="Left" Margin="68,168,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
-                    <Button x:Name="manualAssign_btn" Content="Assign" HorizontalAlignment="Left" Margin="383,168,0,0" VerticalAlignment="Top" Width="74" Click="manualAssign_btn_Click"/>
                 </Grid>
             </Grid>
             <Grid Grid.Column="1">
@@ -124,16 +123,17 @@
                         <DataGridTextColumn Header="Room code" Binding="{Binding RoomCode}"  CanUserResize="False" CanUserReorder="False" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <TextBlock x:Name="description_txt" HorizontalAlignment="Left" Margin="30,10,0,0" TextWrapping="Wrap" Text="Block Schedeule Description" VerticalAlignment="Top" Height="40" FontSize="22"/>
-                <Button x:Name="close_btn" Content="Close" HorizontalAlignment="Left" Margin="793,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="close_btn_Click"/>
-                <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="467,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="remove_btn_Click"/>
-                <Button x:Name="check_btn" Content="Check" HorizontalAlignment="Left" Margin="303,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="125" Click="check_btn_Click"/>
-                <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="633,712,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="add_btn_Click"/>
+                <TextBlock x:Name="description_txt" HorizontalAlignment="Left" Margin="30,10,0,0" TextWrapping="Wrap" Text="Block Schedule Description" VerticalAlignment="Top" Height="40" FontSize="22"/>
+                <Button x:Name="close_btn" Content="Close" HorizontalAlignment="Left" Margin="793,728,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="close_btn_Click"/>
+                <Button x:Name="remove_btn" Content="Remove" HorizontalAlignment="Left" Margin="467,728,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="remove_btn_Click"/>
+                <Button x:Name="check_btn" Content="Check" HorizontalAlignment="Left" Margin="312,728,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="125" Click="check_btn_Click"/>
+                <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="633,728,0,0" VerticalAlignment="Top" Height="40" FontSize="22" Width="130" Click="add_btn_Click"/>
                 <TextBlock HorizontalAlignment="Left" Margin="3,636,0,0" TextWrapping="Wrap" Text="Selected Stub:" VerticalAlignment="Top" Height="40" FontSize="22"/>
                 <TextBox IsReadOnly="True" x:Name="stubCode_txt" HorizontalAlignment="Left" Margin="145,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="40" FontSize="22"/>
                 <Button x:Name="save_Instructor_btn" Content="Save New Instructor" HorizontalAlignment="Left" Margin="30,732,0,0" VerticalAlignment="Top" Height="40" Click="save_Instructor_btn_Click"/>
-                <TextBox x:Name="insertStubCode_txt" HorizontalAlignment="Left" Margin="673,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="40" FontSize="22" PreviewTextInput="IsTextInt_PreviewTextInput"/>
-                <TextBlock HorizontalAlignment="Left" Margin="559,636,0,0" TextWrapping="Wrap" Text="Insert Stub:" VerticalAlignment="Top" Height="40" FontSize="22"/>
+                <TextBox x:Name="insertStubCode_txt" HorizontalAlignment="Left" Margin="673,636,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Height="30" FontSize="22" PreviewTextInput="IsTextInt_PreviewTextInput" IsReadOnly="True"/>
+                <TextBlock HorizontalAlignment="Left" Margin="559,636,0,0" TextWrapping="Wrap" Text="Insert Stub:" VerticalAlignment="Top" Height="30" FontSize="22"/>
+                <Button x:Name="newStubCode_btn" Content="New Stub Code" HorizontalAlignment="Left" Margin="738,671,0,0" VerticalAlignment="Top" Width="100" Click="newStubCode_btn_Click"/>
             </Grid>
 
         </Grid>
