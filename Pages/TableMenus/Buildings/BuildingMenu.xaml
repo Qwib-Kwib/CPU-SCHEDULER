@@ -34,11 +34,11 @@
                     <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
                     <TextBlock HorizontalAlignment="Left" Margin="0,44,0,0" TextWrapping="Wrap" Text="Building Code" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
                     <TextBlock HorizontalAlignment="Left" Margin="0,88,0,0" TextWrapping="Wrap" Text="Building Name" VerticalAlignment="Top" RenderTransformOrigin="-0.527,-0.533"/>
-                    <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top" Width="60" Click="add_btn_Click"/>
-                    <Button x:Name="edit_btn" Content="Update" Margin="78,200,78,0" VerticalAlignment="Top" Click="edit_btn_Click"/>
-                    <Button x:Name="status_btn" Content="Activate" Margin="145,200,10,0" VerticalAlignment="Top" Click="remove_btn_Click" Height="20" Width="60"/>
-                    <Button x:Name="btnCSVRooms" Content="Configure Rooms" HorizontalAlignment="Left" Margin="8,252,0,0" VerticalAlignment="Top" Height="33" Width="194" Click="btnCSVRooms_Click"/>
-                    <Button x:Name="clear_btn" Content="Clear" HorizontalAlignment="Left" Margin="58,225,0,0" VerticalAlignment="Top" Height="22" Width="96" Click="clear_btn_Click"/>
+                    <Button x:Name="add_btn" Content="Add" HorizontalAlignment="Left" Margin="10,184,0,0" VerticalAlignment="Top" Width="60" Click="add_btn_Click" Height="25"/>
+                    <Button x:Name="edit_btn" Content="Update" Margin="78,184,78,0" VerticalAlignment="Top" Click="edit_btn_Click" Height="25" Width="60"/>
+                    <Button x:Name="status_btn" Content="Activate" Margin="146,184,10,0" VerticalAlignment="Top" Click="remove_btn_Click" Height="25" Width="60"/>
+                    <Button x:Name="btnCSVRooms" Content="Configure Rooms" HorizontalAlignment="Left" Margin="26,260,0,0" VerticalAlignment="Top" Height="25" Width="150" Click="btnCSVRooms_Click"/>
+                    <Button x:Name="clear_btn" Content="Clear" HorizontalAlignment="Center" Margin="0,230,0,0" VerticalAlignment="Top" Height="25" Width="60" Click="clear_btn_Click"/>
                 </Grid>
             </Viewbox>
             <Grid Grid.Column="1">

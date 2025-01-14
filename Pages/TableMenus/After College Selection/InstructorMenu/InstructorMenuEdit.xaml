@@ -7,36 +7,38 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         Title="Edit Instructor" Height="400" Width="500">
-    <Grid>
-        <Grid Margin="10,10,10,10" Height="364">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <TextBox x:Name="employeeId_txt" HorizontalAlignment="Left" Margin="21,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
-            <TextBox x:Name="firstName_txt" HorizontalAlignment="Left" Margin="21,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
-            <TextBox x:Name="middleName_txt" HorizontalAlignment="Left" Margin="21,222,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
-            <TextBox x:Name="email_txt" HorizontalAlignment="Left" Margin="238,97,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" Height="26" FontSize="16"/>
-            <TextBox x:Name="lastName_txt" HorizontalAlignment="Left" Margin="21,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
-            <TextBlock HorizontalAlignment="Left" Margin="21,10,0,0" TextWrapping="Wrap" Text="Employee ID:" VerticalAlignment="Top" Height="25" FontSize="16"/>
-            <TextBlock HorizontalAlignment="Left" Margin="21,261,0,0" TextWrapping="Wrap" Text="First Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
-            <TextBlock HorizontalAlignment="Left" Margin="21,197,0,0" TextWrapping="Wrap" Text="Middle Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
-            <TextBlock HorizontalAlignment="Left" Margin="21,139,0,0" TextWrapping="Wrap" Text="Last Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
-            <TextBlock HorizontalAlignment="Left" Margin="238,10,0,0" TextWrapping="Wrap" Text="Employee Type:" VerticalAlignment="Top" Width="128" FontSize="16" Height="25"/>
-            <TextBlock HorizontalAlignment="Left" Margin="238,72,0,0" TextWrapping="Wrap" Text="Email:" VerticalAlignment="Top" Width="91" Height="26" FontSize="16"/>
-            <RadioButton x:Name="male_rbtn" Content="Male" HorizontalAlignment="Left" Margin="240,206,0,0" VerticalAlignment="Top" Width="77" Height="24" FontSize="16"/>
-            <RadioButton x:Name="female_rbtn" Content="Female" HorizontalAlignment="Left" Margin="338,206,0,0" VerticalAlignment="Top" Width="85" FontSize="16" Height="24"/>
-            <TextBlock HorizontalAlignment="Left" Margin="240,176,0,0" TextWrapping="Wrap" Text="Sex:" VerticalAlignment="Top" Width="30" Height="24" FontSize="16"/>
-            <Button x:Name="update_btn" Content="Update" Margin="271,3,69,3" Width="100" Height="30" Click="update_btn_Click" Grid.Row="1"/>
-            <CheckBox x:Name="disability_ckbox" Content="Disability" HorizontalAlignment="Left" Margin="282,264,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.734" Height="24" FontSize="16"/>
-            <Button x:Name="cancel_btn" Content="Cancel" Margin="70,3,270,3" Width="100" Height="30" Click="cancel_btn_Click" Grid.Row="1"/>
-            <TextBlock TextWrapping="Wrap" Text="College:" Margin="21,72,239,231" Height="25" FontSize="16"/>
-            <ComboBox x:Name="CollegeCode_cbx" VerticalAlignment="Top" Margin="21,97,279,0" Height="25" FontSize="16"/>
-            <ComboBox x:Name="employeeType_cmbx" VerticalAlignment="Top" Margin="238,35,82,0" Height="25" FontSize="16" SelectedIndex="0">
-                <ComboBoxItem Content="Full-Time" Tag="Full-Time"/>
-                <ComboBoxItem Content="Part-Time" Tag="Part-Time"/>
-            </ComboBox>
-        </Grid>
+    <Viewbox Stretch="Fill">
+        <Grid Height="384" Width="500">
+            <Grid Margin="10,10,10,10" Height="364">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="9*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="employeeId_txt" HorizontalAlignment="Left" Margin="21,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
+                <TextBox x:Name="firstName_txt" HorizontalAlignment="Left" Margin="21,218,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
+                <TextBox x:Name="middleName_txt" HorizontalAlignment="Left" Margin="21,154,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
+                <TextBox x:Name="email_txt" HorizontalAlignment="Left" Margin="21,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="299" Height="26" FontSize="16"/>
+                <TextBox x:Name="lastName_txt" HorizontalAlignment="Left" Margin="21,94,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="25" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Left" Margin="21,10,0,0" TextWrapping="Wrap" Text="Employee ID:" VerticalAlignment="Top" Height="25" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Left" Margin="21,193,0,0" TextWrapping="Wrap" Text="First Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Left" Margin="21,128,0,0" TextWrapping="Wrap" Text="Middle Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Left" Margin="21,71,0,0" TextWrapping="Wrap" Text="Last Name:" VerticalAlignment="Top" Height="25" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Left" Margin="241,70,0,0" TextWrapping="Wrap" Text="Employee Type:" VerticalAlignment="Top" Width="128" FontSize="16" Height="25"/>
+                <TextBlock HorizontalAlignment="Left" Margin="21,251,0,0" TextWrapping="Wrap" Text="Email:" VerticalAlignment="Top" Width="91" Height="26" FontSize="16"/>
+                <RadioButton x:Name="male_rbtn" Content="Male" HorizontalAlignment="Left" Margin="243,163,0,0" VerticalAlignment="Top" Width="77" Height="24" FontSize="16"/>
+                <RadioButton x:Name="female_rbtn" Content="Female" HorizontalAlignment="Left" Margin="341,163,0,0" VerticalAlignment="Top" Width="85" FontSize="16" Height="24"/>
+                <TextBlock HorizontalAlignment="Left" Margin="243,133,0,0" TextWrapping="Wrap" Text="Sex:" VerticalAlignment="Top" Width="30" Height="24" FontSize="16"/>
+                <Button x:Name="update_btn" Content="Update" Margin="271,3,69,3" Width="100" Height="30" Click="update_btn_Click" Grid.Row="1"/>
+                <CheckBox x:Name="disability_ckbox" Content="Disability" HorizontalAlignment="Left" Margin="285,221,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.479,0.734" Height="24" FontSize="16"/>
+                <Button x:Name="cancel_btn" Content="Cancel" Margin="70,3,270,3" Width="100" Height="30" Click="cancel_btn_Click" Grid.Row="1"/>
+                <TextBlock TextWrapping="Wrap" Text="College:" Margin="241,7,69,296" Height="25" FontSize="16"/>
+                <ComboBox x:Name="CollegeCode_cbx" VerticalAlignment="Top" Margin="241,35,59,0" Height="25" FontSize="16"/>
+                <ComboBox x:Name="employeeType_cmbx" VerticalAlignment="Top" Margin="240,94,80,0" Height="25" FontSize="16" SelectedIndex="0">
+                    <ComboBoxItem Content="Full-Time" Tag="Full-Time"/>
+                    <ComboBoxItem Content="Part-Time" Tag="Part-Time"/>
+                </ComboBox>
+            </Grid>
 
-    </Grid>
+        </Grid>
+    </Viewbox>
 </Window>

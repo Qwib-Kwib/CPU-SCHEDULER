@@ -318,7 +318,7 @@ namespace Info_module.Pages.TableMenus.Assignment
 
         #endregion
 
-        #region //algorithm
+        #region Algorithm
 
         //------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------
@@ -1413,7 +1413,8 @@ namespace Info_module.Pages.TableMenus.Assignment
             }
 
             // Updated method to update both subject_load and block_subject_list
-            public void UpdateSubjectStatus(int subjectId, int blockSectionId, int limit)
+            // Updated method to update both subject_load and block_subject_list
+            public void UpdateSubjectStatus(int subjectId, int blockSectionId, int limit, string currentEmployeeId)
             {
                 using (var connection = new MySqlConnection(connectionString))
                 {
@@ -1422,34 +1423,75 @@ namespace Info_module.Pages.TableMenus.Assignment
                     {
                         try
                         {
-                            // Update block_subject_list
-                            string queryBlockSubject = @"UPDATE block_subject_list 
-                     SET status = 'assigned' 
-                     WHERE subjectId = @subjectId 
-                       AND blockSectionId = @blockSectionId 
-                       AND status = 'waiting' 
-                     LIMIT @limit";
+                            // Check if blockSectionId in block_subject_list has a match in class table
+                            string validationQuery = @"SELECT EXISTS (
+                    SELECT 1 
+                    FROM block_subject_list bsl
+                    JOIN class c ON bsl.blockSectionId = c.Block_Section_Id
+                    WHERE bsl.blockSectionId = @blockSectionId
+                ) AS IsValid;";
 
-                            using (var commandBlockSubject = new MySqlCommand(queryBlockSubject, connection, transaction))
+                            bool isValid = false;
+
+                            using (var validationCommand = new MySqlCommand(validationQuery, connection, transaction))
                             {
-                                commandBlockSubject.Parameters.AddWithValue("@subjectId", subjectId);
-                                commandBlockSubject.Parameters.AddWithValue("@blockSectionId", blockSectionId);
-                                commandBlockSubject.Parameters.AddWithValue("@limit", limit);
+                                validationCommand.Parameters.AddWithValue("@blockSectionId", blockSectionId);
 
-                                int rowsAffectedBlockSubject = commandBlockSubject.ExecuteNonQuery();
-                                Console.WriteLine($"Updated {rowsAffectedBlockSubject} rows in block_subject_list for Subject_Id: {subjectId}, BlockSectionId: {blockSectionId}.");
+                                using (var reader = validationCommand.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        isValid = reader.GetBoolean("IsValid");
+                                    }
+                                }
                             }
 
-                            // Update subject_load
+                            // Only activate queryBlockSubject if there is a match
+                            if (isValid)
+                            {
+                                // Update block_subject_list
+                                string queryBlockSubject = @"UPDATE block_subject_list 
+                 SET status = 'assigned' 
+                 WHERE subjectId = @subjectId 
+                   AND blockSectionId = @blockSectionId 
+                   AND status = 'waiting' 
+                 LIMIT @limit";
+
+                                using (var commandBlockSubject = new MySqlCommand(queryBlockSubject, connection, transaction))
+                                {
+                                    commandBlockSubject.Parameters.AddWithValue("@subjectId", subjectId);
+                                    commandBlockSubject.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                    commandBlockSubject.Parameters.AddWithValue("@limit", limit);
+
+                                    int rowsAffectedBlockSubject = commandBlockSubject.ExecuteNonQuery();
+                                    Console.WriteLine($"Updated {rowsAffectedBlockSubject} rows in block_subject_list for Subject_Id: {subjectId}, BlockSectionId: {blockSectionId}.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("No matching blockSectionId found between block_subject_list and class. Skipping update for block_subject_list.");
+                            }
+
+                            // Update subject_load based on currentEmployeeId and class table conditions
                             string querySubjectLoad = @"UPDATE subject_load 
-                     SET Status = 'assigned' 
-                     WHERE Subject_Id = @subjectId 
-                       AND Status = 'waiting' 
-                     LIMIT @limit";
+         SET Status = 'assigned' 
+         WHERE Subject_Id = @subjectId 
+           AND Status = 'waiting' 
+           AND Internal_Employee_Id = @currentEmployeeId 
+           AND EXISTS (
+               SELECT 1 
+               FROM class 
+               WHERE Block_Section_Id = @blockSectionId 
+                 AND Internal_Employee_Id = @currentEmployeeId 
+                 AND Subject_Id = @subjectId
+           ) 
+         LIMIT @limit";
 
                             using (var commandSubjectLoad = new MySqlCommand(querySubjectLoad, connection, transaction))
                             {
                                 commandSubjectLoad.Parameters.AddWithValue("@subjectId", subjectId);
+                                commandSubjectLoad.Parameters.AddWithValue("@currentEmployeeId", currentEmployeeId);
+                                commandSubjectLoad.Parameters.AddWithValue("@blockSectionId", blockSectionId);
                                 commandSubjectLoad.Parameters.AddWithValue("@limit", limit);
 
                                 int rowsAffectedSubjectLoad = commandSubjectLoad.ExecuteNonQuery();
@@ -1478,9 +1520,11 @@ namespace Info_module.Pages.TableMenus.Assignment
 
                 using (var connection = new MySqlConnection(connectionString))
                 {
-                    string query = @"SELECT Internal_Employee_Id, Subject_Id 
-                             FROM subject_load 
-                             WHERE Subject_Id = @subjectId AND Status = 'waiting'";
+                    string query = @"
+            SELECT Internal_Employee_Id, Subject_Id 
+            FROM subject_load 
+            WHERE Subject_Id = @subjectId AND Status = 'waiting'
+            ORDER BY RAND()";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -1579,33 +1623,42 @@ namespace Info_module.Pages.TableMenus.Assignment
             public List<TimeSpan> GetSubjectHours()
             {
                 int hours = GetUnitsFromDatabase();
+                string lectureLab = GetLectureLabType();
                 List<TimeSpan> timeSpans = new List<TimeSpan>();
 
-                // Apply the time creation rules based on the hours value
-                if (hours == 1)
+                if (lectureLab == "LEC")
                 {
-                    timeSpans.Add(TimeSpan.FromHours(1)); // 1:00:00
+                    // Apply the time creation rules based on the hours value for LEC
+                    if (hours == 1)
+                    {
+                        timeSpans.Add(TimeSpan.FromHours(1)); // 1:00:00
+                    }
+                    else if (hours == 2)
+                    {
+                        timeSpans.Add(TimeSpan.FromHours(2)); // 2:00:00
+                    }
+                    else if (hours == 3)
+                    {
+                        timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
+                        timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
+                    }
+                    else if (hours % 2 == 0) // Even number of hours > 2
+                    {
+                        timeSpans.Add(TimeSpan.FromHours(hours / 2)); // Split into two equal parts
+                        timeSpans.Add(TimeSpan.FromHours(hours / 2));
+                    }
+                    else // Odd number of hours > 3
+                    {
+                        int lower = hours / 2;
+                        int higher = lower + 1;
+                        timeSpans.Add(TimeSpan.FromHours(higher)); // Higher part
+                        timeSpans.Add(TimeSpan.FromHours(lower)); // Lower part
+                    }
                 }
-                else if (hours == 2)
+                else if (lectureLab == "LAB")
                 {
-                    timeSpans.Add(TimeSpan.FromHours(2)); // 2:00:00
-                }
-                else if (hours == 3)
-                {
-                    timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
-                    timeSpans.Add(TimeSpan.FromHours(1.5)); // 1:30:00
-                }
-                else if (hours % 2 == 0) // Even number of hours > 2
-                {
-                    timeSpans.Add(TimeSpan.FromHours(hours / 2)); // Split into two equal parts
-                    timeSpans.Add(TimeSpan.FromHours(hours / 2));
-                }
-                else // Odd number of hours > 3
-                {
-                    int lower = hours / 2;
-                    int higher = lower + 1;
-                    timeSpans.Add(TimeSpan.FromHours(higher)); // Higher part
-                    timeSpans.Add(TimeSpan.FromHours(lower)); // Lower part
+                    // For LAB, do not split the hours
+                    timeSpans.Add(TimeSpan.FromHours(hours));
                 }
 
                 return timeSpans;
@@ -1644,6 +1697,41 @@ namespace Info_module.Pages.TableMenus.Assignment
                 }
 
                 return hours;
+            }
+
+            // Method to fetch the Lecture_Lab value from the database based on subjectId_num
+            private string GetLectureLabType()
+            {
+                string lectureLab = string.Empty;
+
+                // Query to fetch the Lecture_Lab value
+                string query = "SELECT Lecture_Lab FROM subjects WHERE Subject_Id = @SubjectId";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@SubjectId", subjectId_num);
+
+                    try
+                    {
+                        connection.Open();
+                        MySqlDataReader reader = command.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            lectureLab = reader["Lecture_Lab"].ToString();
+                        }
+
+                        reader.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions (log, rethrow, etc.)
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+
+                return lectureLab;
             }
         }
 
@@ -1705,6 +1793,33 @@ namespace Info_module.Pages.TableMenus.Assignment
                 }
 
                 return updatedSlots;
+            }
+        }
+
+        public class ListShuffler
+        {
+            private Random random;
+
+            public ListShuffler()
+            {
+                random = new Random();
+            }
+
+            public List<int> ShuffleList(List<int> sortedRoomIds)
+            {
+                List<int> shuffledList = new List<int>(sortedRoomIds);
+                int count = shuffledList.Count;
+
+                for (int i = count - 1; i > 0; i--)
+                {
+                    int j = random.Next(i + 1);
+                    // Swap elements
+                    int temp = shuffledList[i];
+                    shuffledList[i] = shuffledList[j];
+                    shuffledList[j] = temp;
+                }
+
+                return shuffledList;
             }
         }
 
@@ -2012,7 +2127,12 @@ namespace Info_module.Pages.TableMenus.Assignment
                     //------------------------------------------------------------------------------------------------------------------------------------
                     //Sorting from highest value to lowest
                     RoomWeightSorter sorter = new RoomWeightSorter();
-                    List<int> sortedRoomIds = sorter.SortByWeightDescending(transformedList);
+                    List<int> sortingRoomIds = sorter.SortByWeightDescending(transformedList);
+                    //------------------------------------------------------------------------------------------------------------------------------------
+                    ListShuffler shuffler = new ListShuffler();
+
+                    // Shuffle the list
+                    List<int> sortedRoomIds = shuffler.ShuffleList(sortingRoomIds);
                     //------------------------------------------------------------------------------------------------------------------------------------
                     //hours to hours conversion
                     SubjectHours subjectHours = new SubjectHours(subjectId_num, connectionString);
@@ -2208,6 +2328,9 @@ namespace Info_module.Pages.TableMenus.Assignment
                             DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
                             processor.ProcessData();
 
+                            // Update only the processed rows' status to 'Assigned'
+                            subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess, currentEmployeeId);
+
                             // Output to show successful processing
                             Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
                         }
@@ -2216,9 +2339,6 @@ namespace Info_module.Pages.TableMenus.Assignment
                             Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
                         }
                     }
-
-                    // Update only the processed rows' status to 'Assigned'
-                    subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess);
                 }
 
                 // Indicate processing completion
@@ -2322,6 +2442,9 @@ namespace Info_module.Pages.TableMenus.Assignment
                                 DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
                                 processor.ProcessData();
 
+                                // Update only the processed rows' status to 'Assigned'
+                                subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess, currentEmployeeId);
+
                                 // Output to show successful processing
                                 Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
                             }
@@ -2330,9 +2453,6 @@ namespace Info_module.Pages.TableMenus.Assignment
                                 Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
                             }
                         }
-
-                        // Update only the processed rows' status to 'Assigned'
-                        subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess);
                     }
                 }
 
@@ -2346,8 +2466,11 @@ namespace Info_module.Pages.TableMenus.Assignment
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+
+
+
         #endregion
 
-        
+
     }
 }
