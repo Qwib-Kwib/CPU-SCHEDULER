@@ -52,6 +52,7 @@
                 </Grid>
             </Viewbox>
         </Grid>
+        <TextBox x:Name="DepartmentCode_txtblck" HorizontalAlignment="Left" Margin="1348,175,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
 
     </Grid>
 </Page>
