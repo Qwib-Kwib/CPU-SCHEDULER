@@ -497,24 +497,32 @@ namespace Info_module.Pages.TableMenus.BlockSectionMenu
                         foreach (DataRowView rowView in BlockSection_grid.SelectedItems)
                         {
                             DataRow row = rowView.Row;
-                            int blockSectionId = BlockSectionId;
-                            int currentStatus = 0;
-                            if (row["Status"].ToString() == "Active")
+                            int blockSectionId = Convert.ToInt32(row["blockSectionId"]); // Get the blockSectionId from the selected row
+                            int currentStatus = row["Status"].ToString() == "Active" ? 1 : 0;
+
+                            // Check if the blockSectionId is referenced in the class table
+                            string checkQuery = "SELECT COUNT(*) FROM class WHERE Block_Section_Id = @blockSectionId";
+                            using (MySqlCommand checkCommand = new MySqlCommand(checkQuery, connection))
                             {
-                                currentStatus = 1;
-                            }
-                            else if (row["Status"].ToString() == "Inactive")
-                            {
-                                currentStatus = 0;
+                                checkCommand.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                int referenceCount = Convert.ToInt32(checkCommand.ExecuteScalar());
+
+                                if (referenceCount > 0)
+                                {
+                                    MessageBox.Show($"Cannot change status for Block Section ID {blockSectionId} because it is referenced in the class table.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    continue; // Skip to the next iteration if there are references
+                                }
                             }
 
+                            // Toggle the status
                             int newStatus = (currentStatus == 1) ? 0 : 1;
 
-                            string query = "UPDATE block_section SET status = @Status WHERE blockSectionId = @blockSectionId";
+                            // Update the status
+                            string query = "UPDATE block_section SET Status = @Status WHERE blockSectionId = @blockSectionId";
                             using (MySqlCommand command = new MySqlCommand(query, connection))
                             {
                                 command.Parameters.AddWithValue("@Status", newStatus);
-                                command.Parameters.AddWithValue("@blockSectionId", BlockSectionId);
+                                command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
                                 command.ExecuteNonQuery();
                             }
                         }

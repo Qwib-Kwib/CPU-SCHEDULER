@@ -318,7 +318,7 @@ namespace Info_module.Pages.TableMenus.Assignment
 
         #endregion
 
-        #region Algorithm
+        #region //algorithm
 
         //------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------
@@ -1057,6 +1057,8 @@ namespace Info_module.Pages.TableMenus.Assignment
                     }
                 }
 
+                bool slotsUpdated = false;
+
                 // Determine break duration based on the day
                 TimeSpan breakDuration = (day == "Monday" || day == "Wednesday" || day == "Friday")
                     ? TimeSpan.FromHours(1)  // 1 hour break
@@ -1089,6 +1091,7 @@ namespace Info_module.Pages.TableMenus.Assignment
 
                                 // Update previousEnd for the next iteration
                                 previousEnd = newEndTime;
+                                slotsUpdated = true;
                             }
                         }
 
@@ -1101,7 +1104,65 @@ namespace Info_module.Pages.TableMenus.Assignment
                         break;  // Apply the rest period adjustment only once per day
                     }
                 }
+
+                if (!slotsUpdated)
+                {
+                    List<(TimeSpan startTime, TimeSpan endTime)> blockTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>();
+
+                    // Query to find the occupied time slots for the block section on the given day
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    {
+                        connection.Open();
+
+                        string query = "SELECT Start_Time, End_Time FROM class WHERE Block_Section_Id = @BlockSectionId AND Class_Day = @Day";
+                        MySqlCommand cmd = new MySqlCommand(query, connection);
+                        cmd.Parameters.AddWithValue("@BlockSectionId", blockSectionId);
+                        cmd.Parameters.AddWithValue("@Day", day);
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                TimeSpan startTime = (TimeSpan)reader["Start_Time"];
+                                TimeSpan endTime = (TimeSpan)reader["End_Time"];
+                                blockTimeBlocks.Add((startTime, endTime));
+                            }
+                        }
+                    }
+
+                    // Adjust the time slots if consecutive blocks exceed two hours for block section
+                    for (int i = 0; i < blockTimeBlocks.Count - 1; i++)
+                    {
+                        var currentBlock = blockTimeBlocks[i];
+                        var nextBlock = blockTimeBlocks[i + 1];
+
+                        if (nextBlock.startTime - currentBlock.endTime <= TimeSpan.FromHours(2))
+                        {
+                            TimeSpan previousEnd = currentBlock.endTime;
+
+                            for (int j = 0; j < dayTimeSlots.Count; j++)
+                            {
+                                var originalSlot = dayTimeSlots[j];
+
+                                if (originalSlot.startTime >= previousEnd)
+                                {
+                                    TimeSpan newStartTime = originalSlot.startTime.Add(breakDuration);
+                                    TimeSpan newEndTime = originalSlot.endTime.Add(breakDuration);
+
+                                    dayTimeSlots[j] = (newStartTime, newEndTime);
+                                    previousEnd = newEndTime;
+                                }
+                            }
+
+                            dayTimeSlots.RemoveAll(slot => slot.startTime >= new TimeSpan(17, 30, 0) && slot.endTime <= new TimeSpan(17, 40, 0));
+                            dayTimeSlots.RemoveAll(slot => slot.endTime > new TimeSpan(21, 40, 0));
+
+                            break;
+                        }
+                    }
+                }
             }
+
 
             private List<(TimeSpan startTime, TimeSpan endTime)> GetTimeSlotsForDay(TimeSpan interval, string day)
             {
@@ -1544,38 +1605,6 @@ namespace Info_module.Pages.TableMenus.Assignment
                 }
 
                 return results;
-            }
-        }
-
-        public class EmployeeIdRetriever
-        {
-            private readonly string connectionString;
-
-            public EmployeeIdRetriever(string connectionString)
-            {
-                this.connectionString = connectionString;
-            }
-
-            public List<int> GetUniqueEmployeeIds()
-            {
-                List<int> employeeIds = new List<int>();
-
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "SELECT DISTINCT Internal_Employee_Id FROM subject_load";
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            employeeIds.Add(reader.GetInt32(0)); // Use GetInt32 to retrieve the integer value
-                        }
-                    }
-                }
-
-                return employeeIds;
             }
         }
 
@@ -2272,6 +2301,87 @@ namespace Info_module.Pages.TableMenus.Assignment
             }
         }
 
+        public class EmployeeReplacer
+        {
+            private string connectionString;
+
+            public EmployeeReplacer(string connectionString)
+            {
+                this.connectionString = connectionString;
+            }
+
+            public string ReplaceEmployeeId(string currentSubjectIdToProcess, string currentEmployeeId, int blockSectionId)
+            {
+                bool newEmployeeIdFound = false;
+                string newEmployeeId = currentEmployeeId;
+
+                try
+                {
+                    using (var connection = new MySqlConnection(connectionString))
+                    {
+                        connection.Open();
+
+                        // Step 1: Retrieve Subject_Code for the current Subject_Id
+                        string subjectCodeQuery = "SELECT Subject_Code FROM subjects WHERE Subject_Id = @subjectId";
+                        string currentSubjectCode;
+                        using (var command = new MySqlCommand(subjectCodeQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@subjectId", currentSubjectIdToProcess);
+                            currentSubjectCode = command.ExecuteScalar()?.ToString();
+                        }
+
+                        if (!string.IsNullOrEmpty(currentSubjectCode))
+                        {
+                            // Step 2: Look for complementary Subject_Code
+                            string newSubjectCode = currentSubjectCode.Contains("- L")
+                                ? currentSubjectCode.Replace("- L", "")
+                                : $"{currentSubjectCode} - L";
+
+                            // Step 3: Find Subject_Id of the complementary Subject_Code
+                            string newSubjectIdQuery = "SELECT Subject_Id FROM subjects WHERE Subject_Code = @subjectCode";
+                            string newSubjectId;
+                            using (var command = new MySqlCommand(newSubjectIdQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@subjectCode", newSubjectCode);
+                                newSubjectId = command.ExecuteScalar()?.ToString();
+                            }
+
+                            if (!string.IsNullOrEmpty(newSubjectId))
+                            {
+                                // Step 4: Retrieve Internal_Employee_Id for the new Subject_Id
+                                string employeeIdQuery = "SELECT Internal_Employee_Id FROM class WHERE Block_Section_Id = @blockSectionId AND Subject_Id = @subjectId";
+                                using (var command = new MySqlCommand(employeeIdQuery, connection))
+                                {
+                                    command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                    command.Parameters.AddWithValue("@subjectId", newSubjectId);
+                                    newEmployeeId = command.ExecuteScalar()?.ToString();
+                                }
+
+                                if (!string.IsNullOrEmpty(newEmployeeId))
+                                {
+                                    newEmployeeIdFound = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (newEmployeeIdFound)
+                    {
+                        Console.WriteLine($"New Internal_Employee_Id {newEmployeeId} found for Subject_Id {currentSubjectIdToProcess}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No new Internal_Employee_Id found for Subject_Id {currentSubjectIdToProcess}. Using original Employee_Id.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error while replacing employee ID: {ex.Message}");
+                }
+
+                return newEmployeeId;
+            }
+        }
 
 
         private void assign_btn_Click(object sender, RoutedEventArgs e)
@@ -2321,22 +2431,54 @@ namespace Info_module.Pages.TableMenus.Assignment
                         var pair = waitingSubjects[i];
                         string currentEmployeeId = pair.employeeId;
                         string currentSubjectIdToProcess = pair.subjectId;
+                        int currentSubjectIdToProcess_num = Int32.Parse(currentSubjectIdToProcess);
+
+                        // Use EmployeeReplacer to replace currentEmployeeId if applicable
+                        EmployeeReplacer replacer = new EmployeeReplacer(connectionString);
+                        string replacedEmployeeId = replacer.ReplaceEmployeeId(currentSubjectIdToProcess, currentEmployeeId, blockSectionId);
 
                         try
                         {
                             // Process data for the pair
-                            DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
+                            DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, replacedEmployeeId, blockSectionId, connectionString);
                             processor.ProcessData();
 
-                            // Update only the processed rows' status to 'Assigned'
-                            subjectLoader.UpdateSubjectStatus(currentSubjectId, blockSectionId, countToProcess, currentEmployeeId);
-
                             // Output to show successful processing
-                            Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
+                            Console.WriteLine($"Processed (Employee: {replacedEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
                         }
                         catch (ArgumentException ex)
                         {
-                            Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
+                            Console.WriteLine($"Error processing (Employee: {replacedEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
+                        }
+
+                        try
+                        {
+                            // Verify if the blockSectionId and currentSubjectIdToProcess exist in the class table
+                            using (var connection = new MySqlConnection(connectionString))
+                            {
+                                connection.Open();
+                                string query = "SELECT COUNT(*) FROM class WHERE Block_Section_Id = @blockSectionId AND Subject_Id = @subjectId";
+                                using (var command = new MySqlCommand(query, connection))
+                                {
+                                    command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                    command.Parameters.AddWithValue("@subjectId", currentSubjectIdToProcess);
+
+                                    int result = Convert.ToInt32(command.ExecuteScalar());
+                                    if (result > 0)
+                                    {
+                                        // Update only if both blockSectionId and subjectId exist
+                                        subjectLoader.UpdateSubjectStatus(currentSubjectIdToProcess_num, blockSectionId, countToProcess, replacedEmployeeId);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Skipping UpdateSubjectStatus: (Block Section: {blockSectionId}, Subject: {currentSubjectIdToProcess}) not found in class table.");
+                                    }
+                                }
+                            }
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Console.WriteLine($"Error verifying subject in class table: {ex.Message}");
                         }
                     }
                 }
@@ -2453,6 +2595,8 @@ namespace Info_module.Pages.TableMenus.Assignment
                                 Console.WriteLine($"Error processing (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
                             }
                         }
+
+
                     }
                 }
 
@@ -2466,9 +2610,6 @@ namespace Info_module.Pages.TableMenus.Assignment
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
-
-
-
         #endregion
 
 
