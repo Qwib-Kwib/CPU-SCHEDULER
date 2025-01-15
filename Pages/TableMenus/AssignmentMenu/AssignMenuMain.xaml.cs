@@ -1034,7 +1034,11 @@ namespace Info_module.Pages.TableMenus.Assignment
 
             private void AdjustForRestPeriods(ref List<(TimeSpan startTime, TimeSpan endTime)> dayTimeSlots, string day)
             {
-                List<(TimeSpan startTime, TimeSpan endTime)> employeeTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>();
+                List<(TimeSpan startTime, TimeSpan endTime)> employeeTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>
+    {
+        // Add default 6:00-7:00 time slot
+        (new TimeSpan(6, 0, 0), new TimeSpan(7, 0, 0))
+    };
 
                 // Query to find the occupied time slots for the employee on the given day
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -1107,7 +1111,11 @@ namespace Info_module.Pages.TableMenus.Assignment
 
                 if (!slotsUpdated)
                 {
-                    List<(TimeSpan startTime, TimeSpan endTime)> blockTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>();
+                    List<(TimeSpan startTime, TimeSpan endTime)> blockTimeBlocks = new List<(TimeSpan startTime, TimeSpan endTime)>
+        {
+            // Add default 6:00-7:00 time slot
+            (new TimeSpan(6, 0, 0), new TimeSpan(7, 0, 0))
+        };
 
                     // Query to find the occupied time slots for the block section on the given day
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -1535,18 +1543,18 @@ namespace Info_module.Pages.TableMenus.Assignment
 
                             // Update subject_load based on currentEmployeeId and class table conditions
                             string querySubjectLoad = @"UPDATE subject_load 
-         SET Status = 'assigned' 
-         WHERE Subject_Id = @subjectId 
-           AND Status = 'waiting' 
-           AND Internal_Employee_Id = @currentEmployeeId 
-           AND EXISTS (
-               SELECT 1 
-               FROM class 
-               WHERE Block_Section_Id = @blockSectionId 
-                 AND Internal_Employee_Id = @currentEmployeeId 
-                 AND Subject_Id = @subjectId
-           ) 
-         LIMIT @limit";
+                                                SET Status = 'assigned' 
+                                                WHERE Subject_Id = @subjectId 
+                                                AND Status = 'waiting' 
+                                                AND Internal_Employee_Id = @currentEmployeeId 
+                                                AND EXISTS (
+                                                SELECT 1 
+                                                FROM class 
+                                                WHERE Block_Section_Id = @blockSectionId 
+                                                AND Internal_Employee_Id = @currentEmployeeId 
+                                                AND Subject_Id = @subjectId
+                                                ) 
+                                                LIMIT @limit";
 
                             using (var commandSubjectLoad = new MySqlCommand(querySubjectLoad, connection, transaction))
                             {
@@ -1574,7 +1582,7 @@ namespace Info_module.Pages.TableMenus.Assignment
             }
 
 
-            // Existing method to retrieve subjects with 'Waiting' status
+            // Modified method to retrieve a single distinct Internal_Employee_Id with 'Waiting' status
             public List<(string employeeId, string subjectId)> GetSubjectsByEmployeeIdAndSubjectId(int subjectId)
             {
                 List<(string employeeId, string subjectId)> results = new List<(string, string)>();
@@ -1582,10 +1590,11 @@ namespace Info_module.Pages.TableMenus.Assignment
                 using (var connection = new MySqlConnection(connectionString))
                 {
                     string query = @"
-            SELECT Internal_Employee_Id, Subject_Id 
-            FROM subject_load 
-            WHERE Subject_Id = @subjectId AND Status = 'waiting'
-            ORDER BY RAND()";
+                    SELECT DISTINCT Internal_Employee_Id, Subject_Id 
+                    FROM subject_load 
+                    WHERE Subject_Id = @subjectId AND Status = 'waiting'
+                    ORDER BY RAND()
+                    LIMIT 1";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -2288,7 +2297,7 @@ namespace Info_module.Pages.TableMenus.Assignment
                         // If no slots were found after trying all rooms, output a message
                         if (!slotsFound)
                         {
-                            MessageBox.Show($"No available time slots for subject:{subjectId_num} in any of the specified rooms or employee:{employeeId_num} schedule full.");
+                            //MessageBox.Show($"No available time slots for subject:{subjectId_num} in any of the specified rooms or employee:{employeeId_num} schedule full.");
                             Console.WriteLine($"No available time slots for {days} in any of the specified rooms.", "Time Slots");
                         }
                     }
@@ -2388,10 +2397,7 @@ namespace Info_module.Pages.TableMenus.Assignment
         {
             try
             {
-                // Retrieve the blockSectionId from the textbox
                 int blockSectionId = int.Parse(blocksection_Id_txt.Text);
-
-                // Retrieve the list of SubjectIds associated with the given blockSectionId
                 List<int> subjectIds = GetSubjectIdsByBlockSectionId(blockSectionId);
 
                 if (subjectIds.Count == 0)
@@ -2400,10 +2406,7 @@ namespace Info_module.Pages.TableMenus.Assignment
                     return;
                 }
 
-                // Initialize the SubjectLoader
                 SubjectLoader subjectLoader = new SubjectLoader(connectionString);
-
-                // Group SubjectIds and their counts based on the subject_list table
                 var subjectIdCounts = subjectIds
                     .GroupBy(sid => sid)
                     .ToDictionary(g => g.Key, g => g.Count());
@@ -2411,9 +2414,8 @@ namespace Info_module.Pages.TableMenus.Assignment
                 foreach (var entry in subjectIdCounts)
                 {
                     int currentSubjectId = entry.Key;
-                    int requiredCount = entry.Value; // Number of times this subjectId should be updated
+                    int requiredCount = entry.Value;
 
-                    // Retrieve subjects with 'Waiting' status for the current SubjectId
                     List<(string employeeId, string subjectId)> waitingSubjects =
                         subjectLoader.GetSubjectsByEmployeeIdAndSubjectId(currentSubjectId);
 
@@ -2423,73 +2425,149 @@ namespace Info_module.Pages.TableMenus.Assignment
                         continue;
                     }
 
-                    // Limit processing to the required count
-                    int countToProcess = Math.Min(requiredCount, waitingSubjects.Count);
+                    int successfulAssignments = 0;
+                    int currentIndex = 0;
 
-                    for (int i = 0; i < countToProcess; i++)
+                    while (successfulAssignments < requiredCount && currentIndex < waitingSubjects.Count)
                     {
-                        var pair = waitingSubjects[i];
+                        var pair = waitingSubjects[currentIndex];
                         string currentEmployeeId = pair.employeeId;
                         string currentSubjectIdToProcess = pair.subjectId;
-                        int currentSubjectIdToProcess_num = Int32.Parse(currentSubjectIdToProcess);
+                        int currentSubjectIdToProcess_int = Int32.Parse(currentSubjectIdToProcess);
 
-                        // Use EmployeeReplacer to replace currentEmployeeId if applicable
-                        EmployeeReplacer replacer = new EmployeeReplacer(connectionString);
-                        string replacedEmployeeId = replacer.ReplaceEmployeeId(currentSubjectIdToProcess, currentEmployeeId, blockSectionId);
-
-                        try
-                        {
-                            // Process data for the pair
-                            DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, replacedEmployeeId, blockSectionId, connectionString);
-                            processor.ProcessData();
-
-                            // Output to show successful processing
-                            Console.WriteLine($"Processed (Employee: {replacedEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
-                        }
-                        catch (ArgumentException ex)
-                        {
-                            Console.WriteLine($"Error processing (Employee: {replacedEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
-                        }
+                        bool newEmployeeIdFound = false;
+                        bool processingSuccessful = false;
 
                         try
                         {
-                            // Verify if the blockSectionId and currentSubjectIdToProcess exist in the class table
                             using (var connection = new MySqlConnection(connectionString))
                             {
                                 connection.Open();
-                                string query = "SELECT COUNT(*) FROM class WHERE Block_Section_Id = @blockSectionId AND Subject_Id = @subjectId";
-                                using (var command = new MySqlCommand(query, connection))
-                                {
-                                    command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
-                                    command.Parameters.AddWithValue("@subjectId", currentSubjectIdToProcess);
 
-                                    int result = Convert.ToInt32(command.ExecuteScalar());
-                                    if (result > 0)
+                                // Step 1: Retrieve Subject_Code for the current Subject_Id
+                                string subjectCodeQuery = "SELECT Subject_Code FROM subjects WHERE Subject_Id = @subjectId";
+                                string currentSubjectCode;
+                                using (var command = new MySqlCommand(subjectCodeQuery, connection))
+                                {
+                                    command.Parameters.AddWithValue("@subjectId", currentSubjectIdToProcess);
+                                    currentSubjectCode = command.ExecuteScalar()?.ToString();
+                                }
+
+                                if (!string.IsNullOrEmpty(currentSubjectCode))
+                                {
+                                    // Step 2: Look for complementary Subject_Code
+                                    string newSubjectCode = currentSubjectCode.Contains("- L")
+                                        ? currentSubjectCode.Replace("- L", "")
+                                        : $"{currentSubjectCode} - L";
+
+                                    // Step 3: Find Subject_Id of the complementary Subject_Code
+                                    string newSubjectIdQuery = "SELECT Subject_Id FROM subjects WHERE Subject_Code = @subjectCode";
+                                    string newSubjectId;
+                                    using (var command = new MySqlCommand(newSubjectIdQuery, connection))
                                     {
-                                        // Update only if both blockSectionId and subjectId exist
-                                        subjectLoader.UpdateSubjectStatus(currentSubjectIdToProcess_num, blockSectionId, countToProcess, replacedEmployeeId);
+                                        command.Parameters.AddWithValue("@subjectCode", newSubjectCode);
+                                        newSubjectId = command.ExecuteScalar()?.ToString();
                                     }
-                                    else
+
+                                    if (!string.IsNullOrEmpty(newSubjectId))
                                     {
-                                        Console.WriteLine($"Skipping UpdateSubjectStatus: (Block Section: {blockSectionId}, Subject: {currentSubjectIdToProcess}) not found in class table.");
+                                        // Step 4: Retrieve Internal_Employee_Id for the new Subject_Id
+                                        string employeeIdQuery = "SELECT Internal_Employee_Id FROM class WHERE Block_Section_Id = @blockSectionId AND Subject_Id = @subjectId";
+                                        string newEmployeeId;
+                                        using (var command = new MySqlCommand(employeeIdQuery, connection))
+                                        {
+                                            command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                            command.Parameters.AddWithValue("@subjectId", newSubjectId);
+                                            newEmployeeId = command.ExecuteScalar()?.ToString();
+                                        }
+
+                                        if (!string.IsNullOrEmpty(newEmployeeId))
+                                        {
+                                            currentEmployeeId = newEmployeeId;
+                                            newEmployeeIdFound = true;
+                                        }
                                     }
                                 }
                             }
+
+                            if (newEmployeeIdFound)
+                            {
+                                Console.WriteLine($"New Internal_Employee_Id {currentEmployeeId} found for Subject_Id {currentSubjectIdToProcess}. Running modified logic.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"No new Internal_Employee_Id found for Subject_Id {currentSubjectIdToProcess}. Running original logic.");
+                            }
+
+                            try
+                            {
+                                DataProcessor processor = new DataProcessor(currentSubjectIdToProcess, currentEmployeeId, blockSectionId, connectionString);
+                                processor.ProcessData();
+                                processingSuccessful = true;
+                                Console.WriteLine($"Processed (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}) successfully.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Processing failed for Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}: {ex.Message}");
+                                currentIndex++;  // Try next employee
+                                continue;  // Skip the database update and try next employee
+                            }
+
+                            // Only proceed with database update if processing was successful
+                            if (processingSuccessful)
+                            {
+                                try
+                                {
+                                    using (var connection = new MySqlConnection(connectionString))
+                                    {
+                                        connection.Open();
+                                        string query = "SELECT COUNT(*) FROM class WHERE Block_Section_Id = @blockSectionId AND Subject_Id = @subjectId";
+                                        using (var command = new MySqlCommand(query, connection))
+                                        {
+                                            command.Parameters.AddWithValue("@blockSectionId", blockSectionId);
+                                            command.Parameters.AddWithValue("@subjectId", currentSubjectIdToProcess);
+
+                                            int result = Convert.ToInt32(command.ExecuteScalar());
+                                            if (result > 0)
+                                            {
+                                                subjectLoader.UpdateSubjectStatus(currentSubjectIdToProcess_int, blockSectionId, 1, currentEmployeeId);
+                                                successfulAssignments++;  // Increment only on successful processing and update
+                                                currentIndex++;  // Move to next entry after successful processing
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($"Skipping UpdateSubjectStatus: (Block Section: {blockSectionId}, Subject: {currentSubjectIdToProcess}) not found in class table.");
+                                                currentIndex++;  // Move to next entry if verification fails
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (ArgumentException ex)
+                                {
+                                    Console.WriteLine($"Error verifying subject in class table: {ex.Message}");
+                                    currentIndex++;  // Move to next entry if update fails
+                                }
+                            }
                         }
-                        catch (ArgumentException ex)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine($"Error verifying subject in class table: {ex.Message}");
+                            Console.WriteLine($"Error in complementary subject processing for (Employee: {currentEmployeeId}, Subject: {currentSubjectIdToProcess}): {ex.Message}");
+                            currentIndex++;  // Move to next entry if complementary processing fails
                         }
+                    }
+
+                    if (successfulAssignments < requiredCount)
+                    {
+                        Console.WriteLine($"Warning: Could not fulfill all required assignments for Subject ID: {currentSubjectId}. " +
+                            $"Completed {successfulAssignments} out of {requiredCount} required assignments.");
                     }
                 }
 
-                // Indicate processing completion
                 MessageBox.Show("Finished processing all subjects.");
                 Console.WriteLine("Finished processing all subjects.");
             }
             catch (Exception ex)
             {
-                // Handle errors
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
